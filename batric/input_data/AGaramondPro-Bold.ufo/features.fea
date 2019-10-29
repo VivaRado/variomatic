@@ -1,0 +1,1352 @@
+languagesystem DFLT dflt;
+languagesystem latn dflt;
+languagesystem latn AZE ;
+languagesystem latn TRK ;
+languagesystem latn MOL ;
+languagesystem latn ROM ;
+languagesystem latn CRT ;
+
+
+
+feature aalt{
+  feature locl;
+  feature ornm;
+  feature case;
+  feature numr;
+  feature dnom;
+  feature sups;
+  feature ordn;
+  feature sinf;
+  feature subs;
+  feature onum;
+  feature lnum;
+  feature pnum;
+  feature tnum;
+  feature zero;
+} aalt;
+
+
+feature cpsp { # Capital Spacing
+ # DEFAULT
+    pos @cpsp1 <7 0 14 0>;
+ script latn; # Latin
+    pos @cpsp1 <7 0 14 0>;
+ language AZE ; # Azeri
+ language TRK ; # Turkish
+ language MOL ; # Moldavian
+ language ROM ; # Romanian
+ language CRT ; # Crimean Tatar
+} cpsp;
+
+
+feature kern { # Kerning
+ # DEFAULT
+lookup kern1 {
+    pos space V -36;
+    pos space W -36;
+    pos quoteright quoteright -46;
+    pos quoteright m -70;
+    pos quoteright v -50;
+    pos quoteright scaron -47;
+    pos parenleft J 72;
+    pos parenleft V 24;
+    pos parenleft W 24;
+    pos B h -12;
+    pos C icircumflex -4;
+    pos C idieresis 22;
+    pos C imacron 15;
+    pos E idieresis 12;
+    pos E imacron 2;
+    pos F comma -120;
+    pos F period -120;
+    pos F icircumflex -2;
+    pos F idieresis 5;
+    pos F imacron 5;
+    pos F emdash.cap 25;
+    pos F endash.cap 25;
+    pos F hyphen.cap 25;
+    pos J igrave -10;
+    pos K igrave 20;
+    pos M j -18;
+    pos P comma -180;
+    pos P period -180;
+    pos P H -6;
+    pos P h -12;
+    pos P idieresis 8;
+    pos P imacron 8;
+    pos P emdash.cap 30;
+    pos P endash.cap 30;
+    pos P hyphen.cap 30;
+    pos Q V -18;
+    pos Q W -30;
+    pos Q X -12;
+    pos Q emdash.cap 40;
+    pos Q endash.cap 40;
+    pos Q hyphen.cap 40;
+    pos S idieresis 8;
+    pos S imacron 8;
+    pos T acircumflex -82;
+    pos T adieresis -60;
+    pos T agrave -77;
+    pos T aring -78;
+    pos T atilde -78;
+    pos T ecircumflex -86;
+    pos T edieresis -70;
+    pos T egrave -80;
+    pos T icircumflex -12;
+    pos T idieresis 20;
+    pos T igrave 3;
+    pos T odieresis -90;
+    pos T ograve -96;
+    pos T otilde -96;
+    pos T scaron -45;
+    pos T udieresis -85;
+    pos T ydieresis -85;
+    pos T zcaron -50;
+    pos T abreve -65;
+    pos T amacron -65;
+    pos T ecaron -80;
+    pos T emacron -80;
+    pos T imacron 8;
+    pos T omacron -94;
+    pos T umacron -109;
+    pos U igrave -8;
+    pos V quoteright 52;
+    pos V parenright 42;
+    pos V comma -120;
+    pos V hyphen -60;
+    pos V period -120;
+    pos V colon -18;
+    pos V semicolon -45;
+    pos V Q -24;
+    pos V bracketright 42;
+    pos V braceright 42;
+    pos V quotedblright 24;
+    pos V adieresis -30;
+    pos V agrave -35;
+    pos V aring -35;
+    pos V ecircumflex -59;
+    pos V edieresis -37;
+    pos V egrave -42;
+    pos V odieresis -60;
+    pos V ograve -52;
+    pos V udieresis -60;
+    pos V ugrave -57;
+    pos V ydieresis -42;
+    pos V abreve -30;
+    pos V amacron -62;
+    pos V ecaron -52;
+    pos V edotaccent -82;
+    pos V emacron -62;
+    pos V ohungarumlaut -72;
+    pos V omacron -74;
+    pos V uhungarumlaut -82;
+    pos V umacron -82;
+    pos V uring -77;
+    pos W quoteright 52;
+    pos W parenright 42;
+    pos W comma -120;
+    pos W hyphen -40;
+    pos W period -120;
+    pos W colon -60;
+    pos W semicolon -60;
+    pos W Q -24;
+    pos W bracketright 48;
+    pos W braceright 42;
+    pos W quotedblright 30;
+    pos W acircumflex -47;
+    pos W adieresis -37;
+    pos W agrave -27;
+    pos W aring -47;
+    pos W ecircumflex -72;
+    pos W edieresis -50;
+    pos W egrave -47;
+    pos W icircumflex 20;
+    pos W idieresis 50;
+    pos W igrave 55;
+    pos W odieresis -57;
+    pos W ograve -27;
+    pos W ugrave -64;
+    pos W ydieresis -55;
+    pos W abreve -55;
+    pos W amacron -62;
+    pos W ecaron -50;
+    pos W emacron -60;
+    pos W imacron 15;
+    pos W omacron -75;
+    pos X quoteright 24;
+    pos X Q -24;
+    pos Y adieresis -25;
+    pos Y agrave -20;
+    pos Y aring -35;
+    pos Y ecircumflex -30;
+    pos Y edieresis -6;
+    pos Y egrave -20;
+    pos Y odieresis -50;
+    pos Y ograve -30;
+    pos Y ugrave -40;
+    pos Y abreve -43;
+    pos Y ecaron -45;
+    pos Y emacron -63;
+    pos Y omacron -65;
+    pos Z idieresis 6;
+    pos Z igrave 18;
+    pos bracketleft J 36;
+    pos quoteleft V 18;
+    pos quoteleft W 18;
+    pos quoteleft X 12;
+    pos quoteleft quoteleft -46;
+    pos quoteleft f -40;
+    pos quoteleft m -60;
+    pos quoteleft p -60;
+    pos quoteleft q -50;
+    pos quoteleft v -34;
+    pos quoteleft w -40;
+    pos quoteleft x -50;
+    pos b quoteright -50;
+    pos b v -10;
+    pos b w -10;
+    pos b quotedblright -50;
+    pos f quotedbl 90;
+    pos f quoteright 120;
+    pos f parenright 114;
+    pos f bracketright 108;
+    pos f braceright 96;
+    pos f quotesingle 78;
+    pos f quotedblright 120;
+    pos h quoteright -60;
+    pos h quotedblright -60;
+    pos m quoteright -70;
+    pos m quotedblright -70;
+    pos p quoteright -50;
+    pos p w -12;
+    pos p quotedblright -50;
+    pos q quoteright -38;
+    pos q quotedblright -50;
+    pos v quoteright -12;
+    pos v comma -75;
+    pos v period -75;
+    pos v q -36;
+    pos v quotedblright -12;
+    pos w comma -75;
+    pos w period -75;
+    pos w q -6;
+    pos x quoteright -40;
+    pos x q -6;
+    pos x quotedblright -40;
+    pos braceleft J 36;
+    pos fraction zero.denominator 28;
+    pos fraction one.denominator 8;
+    pos fraction two.denominator 14;
+    pos fraction four.denominator -23;
+    pos fraction five.denominator 18;
+    pos fraction six.denominator 28;
+    pos fraction seven.denominator 28;
+    pos fraction eight.denominator 37;
+    pos fraction nine.denominator 28;
+    pos quotedblleft V 18;
+    pos quotedblleft W 18;
+    pos quotedblleft f -40;
+    pos quotedblleft m -60;
+    pos quotedblleft p -60;
+    pos quotedblleft q -50;
+    pos quotedblleft v -40;
+    pos quotedblleft w -40;
+    pos quotedblleft x -50;
+    pos Ccedilla icircumflex -2;
+    pos Ccedilla idieresis 22;
+    pos Ccedilla igrave -2;
+    pos Ccedilla imacron 15;
+    pos Eacute icircumflex 4;
+    pos Eacute idieresis 12;
+    pos Eacute imacron 2;
+    pos Ecircumflex idieresis 12;
+    pos Ecircumflex imacron 2;
+    pos Edieresis idieresis 12;
+    pos Edieresis imacron 2;
+    pos Egrave idieresis 12;
+    pos Egrave imacron 2;
+    pos Ntilde igrave 10;
+    pos Scaron idieresis 8;
+    pos Scaron imacron 8;
+    pos Uacute idieresis 6;
+    pos Uacute igrave -8;
+    pos Ucircumflex igrave -8;
+    pos Udieresis igrave -8;
+    pos Ugrave igrave -8;
+    pos Yacute adieresis -25;
+    pos Yacute agrave -20;
+    pos Yacute aring -35;
+    pos Yacute ecircumflex -30;
+    pos Yacute edieresis -6;
+    pos Yacute egrave -20;
+    pos Yacute odieresis -50;
+    pos Yacute ograve -30;
+    pos Yacute udieresis -55;
+    pos Yacute ugrave -40;
+    pos Yacute abreve -43;
+    pos Yacute ecaron -45;
+    pos Yacute emacron -63;
+    pos Yacute omacron -65;
+    pos Ydieresis adieresis -25;
+    pos Ydieresis agrave -20;
+    pos Ydieresis aring -35;
+    pos Ydieresis ecircumflex -30;
+    pos Ydieresis edieresis -6;
+    pos Ydieresis egrave -20;
+    pos Ydieresis odieresis -50;
+    pos Ydieresis ograve -30;
+    pos Ydieresis ugrave -40;
+    pos Ydieresis abreve -43;
+    pos Ydieresis ecaron -45;
+    pos Ydieresis emacron -63;
+    pos Ydieresis omacron -65;
+    pos Zcaron idieresis 6;
+    pos Zcaron igrave 18;
+    pos idieresis quoteright 30;
+    pos idieresis quotedblright 30;
+    pos zero.fitted zero.fitted 25;
+    pos zero.fitted one.fitted -8;
+    pos zero.fitted three.fitted -2;
+    pos zero.fitted four.fitted 37;
+    pos zero.fitted five.fitted -4;
+    pos zero.fitted six.fitted 18;
+    pos zero.fitted seven.fitted 10;
+    pos zero.fitted nine.fitted 17;
+    pos one.fitted zero.fitted -8;
+    pos one.fitted two.fitted 16;
+    pos one.fitted three.fitted 8;
+    pos one.fitted five.fitted -10;
+    pos one.fitted seven.fitted -12;
+    pos two.fitted zero.fitted 12;
+    pos two.fitted one.fitted 4;
+    pos two.fitted two.fitted 5;
+    pos two.fitted five.fitted -25;
+    pos two.fitted six.fitted 12;
+    pos two.fitted seven.fitted 8;
+    pos two.fitted eight.fitted 8;
+    pos two.fitted nine.fitted 6;
+    pos three.fitted zero.fitted 18;
+    pos three.fitted one.fitted -11;
+    pos three.fitted two.fitted -23;
+    pos three.fitted three.fitted -31;
+    pos three.fitted four.fitted 32;
+    pos three.fitted five.fitted -29;
+    pos three.fitted six.fitted 11;
+    pos three.fitted seven.fitted -18;
+    pos three.fitted eight.fitted 3;
+    pos three.fitted nine.fitted -14;
+    pos four.fitted zero.fitted 23;
+    pos four.fitted two.fitted 12;
+    pos four.fitted four.fitted 38;
+    pos four.fitted five.fitted -20;
+    pos four.fitted six.fitted 30;
+    pos four.fitted seven.fitted -14;
+    pos four.fitted eight.fitted 14;
+    pos five.fitted one.fitted -21;
+    pos five.fitted two.fitted -38;
+    pos five.fitted three.fitted -29;
+    pos five.fitted four.fitted 18;
+    pos five.fitted five.fitted -40;
+    pos five.fitted six.fitted 4;
+    pos five.fitted seven.fitted -14;
+    pos five.fitted eight.fitted -10;
+    pos five.fitted nine.fitted -22;
+    pos six.fitted zero.fitted 26;
+    pos six.fitted one.fitted 5;
+    pos six.fitted two.fitted -5;
+    pos six.fitted four.fitted 39;
+    pos six.fitted five.fitted -21;
+    pos six.fitted six.fitted 25;
+    pos six.fitted seven.fitted 19;
+    pos six.fitted eight.fitted 23;
+    pos seven.fitted one.fitted 27;
+    pos seven.fitted three.fitted -10;
+    pos seven.fitted four.fitted -50;
+    pos seven.fitted five.fitted -20;
+    pos seven.fitted six.fitted -27;
+    pos seven.fitted seven.fitted 33;
+    pos seven.fitted eight.fitted -12;
+    pos seven.fitted nine.fitted 8;
+    pos eight.fitted zero.fitted 6;
+    pos eight.fitted one.fitted -12;
+    pos eight.fitted two.fitted -15;
+    pos eight.fitted three.fitted -25;
+    pos eight.fitted four.fitted 15;
+    pos eight.fitted five.fitted -40;
+    pos eight.fitted six.fitted 4;
+    pos nine.fitted zero.fitted 15;
+    pos nine.fitted one.fitted -5;
+    pos nine.fitted two.fitted -14;
+    pos nine.fitted three.fitted -22;
+    pos nine.fitted four.fitted 12;
+    pos nine.fitted five.fitted -7;
+    pos nine.fitted six.fitted 19;
+    pos nine.fitted seven.fitted 15;
+    pos nine.fitted nine.fitted 14;
+    pos Aogonek uni0123 46;
+    pos Cacute icircumflex -4;
+    pos Cacute idieresis 23;
+    pos Cacute imacron 15;
+    pos Ccaron icircumflex -4;
+    pos Ccaron idieresis 25;
+    pos Ccaron imacron 15;
+    pos Ecaron idieresis 12;
+    pos Ecaron imacron 2;
+    pos Edotaccent idieresis 12;
+    pos Edotaccent imacron 2;
+    pos Emacron idieresis 12;
+    pos Emacron imacron 2;
+    pos Eogonek j 25;
+    pos Eogonek y -15;
+    pos Eogonek idieresis 12;
+    pos Eogonek yacute -15;
+    pos Eogonek ydieresis -15;
+    pos Eogonek imacron 2;
+    pos uni0136 igrave 20;
+    pos Lcaron quoteright -10;
+    pos Lcaron V 20;
+    pos Lcaron W 15;
+    pos Lcaron Y 20;
+    pos Lcaron quotedblright -10;
+    pos Lcaron Uacute -11;
+    pos Lcaron Ucircumflex -11;
+    pos Lcaron Udieresis -11;
+    pos Lcaron Ugrave -11;
+    pos Lcaron Yacute 20;
+    pos Lcaron Ydieresis 20;
+    pos Lcaron Uhungarumlaut -11;
+    pos Lcaron Umacron -11;
+    pos Lcaron Uogonek -11;
+    pos Lcaron Uring -11;
+    pos Nacute igrave 10;
+    pos Ncaron igrave 10;
+    pos uni0145 igrave 10;
+    pos Sacute idieresis 8;
+    pos Sacute imacron 8;
+    pos uni015E idieresis 8;
+    pos uni015E imacron 8;
+    pos uni0218 idieresis 8;
+    pos uni0218 imacron 8;
+    pos Tcaron acircumflex -75;
+    pos Tcaron adieresis -60;
+    pos Tcaron agrave -77;
+    pos Tcaron aring -78;
+    pos Tcaron atilde -78;
+    pos Tcaron ecircumflex -86;
+    pos Tcaron edieresis -70;
+    pos Tcaron egrave -80;
+    pos Tcaron icircumflex -12;
+    pos Tcaron idieresis 20;
+    pos Tcaron igrave 3;
+    pos Tcaron ocircumflex -100;
+    pos Tcaron odieresis -90;
+    pos Tcaron ograve -96;
+    pos Tcaron otilde -96;
+    pos Tcaron scaron -45;
+    pos Tcaron udieresis -85;
+    pos Tcaron ugrave -100;
+    pos Tcaron ydieresis -85;
+    pos Tcaron zcaron -50;
+    pos Tcaron abreve -65;
+    pos Tcaron amacron -65;
+    pos Tcaron ecaron -80;
+    pos Tcaron edotaccent -106;
+    pos Tcaron emacron -80;
+    pos Tcaron imacron 8;
+    pos Tcaron ohungarumlaut -90;
+    pos Tcaron omacron -94;
+    pos Tcaron umacron -109;
+    pos uni021A acircumflex -82;
+    pos uni021A adieresis -60;
+    pos uni021A agrave -77;
+    pos uni021A aring -78;
+    pos uni021A atilde -78;
+    pos uni021A ecircumflex -86;
+    pos uni021A edieresis -70;
+    pos uni021A egrave -80;
+    pos uni021A icircumflex -12;
+    pos uni021A idieresis 20;
+    pos uni021A igrave 3;
+    pos uni021A odieresis -90;
+    pos uni021A ograve -96;
+    pos uni021A otilde -96;
+    pos uni021A scaron -45;
+    pos uni021A udieresis -85;
+    pos uni021A ugrave -95;
+    pos uni021A ydieresis -85;
+    pos uni021A zcaron -50;
+    pos uni021A abreve -65;
+    pos uni021A amacron -65;
+    pos uni021A ecaron -80;
+    pos uni021A emacron -80;
+    pos uni021A imacron 8;
+    pos uni021A omacron -94;
+    pos uni021A umacron -109;
+    pos Uhungarumlaut igrave -8;
+    pos Umacron idieresis 10;
+    pos Umacron igrave -8;
+    pos Uogonek igrave -8;
+    pos Uring igrave -8;
+    pos Zacute idieresis 6;
+    pos Zacute igrave 18;
+    pos Zdotaccent idieresis 6;
+    pos Zdotaccent igrave 18;
+    pos dcaron quoteright 110;
+    pos dcaron b 62;
+    pos dcaron h 62;
+    pos dcaron i 16;
+    pos dcaron k 62;
+    pos dcaron l 62;
+    pos dcaron quotedblright 110;
+    pos dcaron lslash 62;
+    pos dcaron icircumflex 44;
+    pos dcaron idieresis 90;
+    pos dcaron igrave 90;
+    pos dcaron imacron 90;
+    pos dcaron iogonek 16;
+    pos dcaron uni0137 62;
+    pos dcaron lacute 62;
+    pos dcaron lcaron 62;
+    pos dcaron uni013C 62;
+    pos lcaron quoteright 110;
+    pos lcaron b 62;
+    pos lcaron h 62;
+    pos lcaron i 16;
+    pos lcaron k 62;
+    pos lcaron l 62;
+    pos lcaron quotedblright 110;
+    pos lcaron lslash 62;
+    pos lcaron icircumflex 44;
+    pos lcaron idieresis 90;
+    pos lcaron igrave 90;
+    pos lcaron imacron 90;
+    pos lcaron iogonek 16;
+    pos lcaron uni0137 62;
+    pos lcaron lacute 62;
+    pos lcaron lcaron 62;
+    pos lcaron uni013C 62;
+    pos ohungarumlaut quoteright -17;
+    pos ohungarumlaut quotedblright -17;
+    pos tcaron quoteright 68;
+    pos tcaron quotedblright 68;
+    pos zero.numerator fraction -18;
+    pos one.numerator fraction -5;
+    pos two.numerator fraction -15;
+    pos three.numerator fraction -23;
+    pos four.numerator fraction -15;
+    pos five.numerator fraction 4;
+    pos six.numerator fraction -33;
+    pos eight.numerator fraction -15;
+    pos nine.numerator fraction -8;
+    pos emdash.cap Q 35;
+    pos endash.cap Q 35;
+    pos hyphen.cap Q 35;
+    pos braceleft.cap J 20;
+    pos bracketleft.cap J 20;
+    pos parenleft.cap J 20;
+    pos [space] @_T -36;
+    pos [space] @_Y -36;
+    pos [quoteright] @_d -100;
+    pos [quoteright] @_l -12;
+    pos [quoteright] @_r -70;
+    pos [quoteright] @_s -92;
+    pos [quoteright] @_t -80;
+    pos [parenleft] @_Y 12;
+    pos @_A [quoteright] -90;
+    pos @_A @_C -24;
+    pos @_A @_G -24;
+    pos @_A @_O -24;
+    pos @_A [Q] -24;
+    pos @_A @_T -70;
+    pos @_A @_U -48;
+    pos @_A [V] -80;
+    pos @_A [W] -92;
+    pos @_A @_Y -62;
+    pos @_A @_a 6;
+    pos @_A [b] -6;
+    pos @_A @_c -6;
+    pos @_A @_d -6;
+    pos @_A @_e -6;
+    pos @_A @_g 6;
+    pos @_A @_o -6;
+    pos @_A [p] -12;
+    pos @_A [q] -6;
+    pos @_A @_s 6;
+    pos @_A @_t -6;
+    pos @_A @_u -18;
+    pos @_A [v] -42;
+    pos @_A [w] -42;
+    pos @_A @_z 6;
+    pos @_A [quotedblright] -90;
+    pos [B] @_a -6;
+    pos [B] @_i -12;
+    pos [B] @_l -12;
+    pos [B] @_o 6;
+    pos [B] @_r -6;
+    pos [B] @_u -12;
+    pos [B] @_y -18;
+    pos @_C @_C -12;
+    pos @_C @_G -12;
+    pos @_C @_O -12;
+    pos @_C [Q] -12;
+    pos @_C @_a -12;
+    pos @_C @_i -12;
+    pos @_C @_r -6;
+    pos @_C @_u -18;
+    pos @_C @_y -24;
+    pos @_C @_z -18;
+    pos @_C [emdash.cap] 15;
+    pos @_C [endash.cap] 15;
+    pos @_C [hyphen.cap] 15;
+    pos @_C [braceright.cap] 30;
+    pos @_C [bracketright.cap] 30;
+    pos @_C [parenright.cap] 30;
+    pos @_D [V] -36;
+    pos @_D [W] -36;
+    pos @_D @_a -6;
+    pos @_D @_e -6;
+    pos @_D [h] -18;
+    pos @_D @_i -12;
+    pos @_D @_o -12;
+    pos @_D @_r -12;
+    pos @_D @_u -12;
+    pos @_D [emdash.cap] 40;
+    pos @_D [endash.cap] 40;
+    pos @_D [hyphen.cap] 40;
+    pos @_E [V] -6;
+    pos @_E [W] -12;
+    pos @_E @_Y -12;
+    pos @_E [b] -12;
+    pos @_E @_c -6;
+    pos @_E @_d -6;
+    pos @_E @_e -6;
+    pos @_E [f] -12;
+    pos @_E @_g -6;
+    pos @_E @_i -6;
+    pos @_E [j] -12;
+    pos @_E @_k -6;
+    pos @_E @_l -6;
+    pos @_E [m] -6;
+    pos @_E @_n -6;
+    pos @_E @_o -6;
+    pos @_E [p] -18;
+    pos @_E [q] -6;
+    pos @_E @_r -6;
+    pos @_E @_t -18;
+    pos @_E @_u -18;
+    pos @_E [v] -30;
+    pos @_E [w] -30;
+    pos @_E [x] -6;
+    pos @_E @_y -36;
+    pos @_E @_z -6;
+    pos [F] @_A -42;
+    pos [F] @_a -32;
+    pos [F] @_e -36;
+    pos [F] @_i -22;
+    pos [F] @_l -6;
+    pos [F] @_o -36;
+    pos [F] @_r -42;
+    pos [F] @_u -18;
+    pos [F] @_y -18;
+    pos @_G @_a -6;
+    pos @_G @_e -6;
+    pos @_G [h] -12;
+    pos @_G @_i -12;
+    pos @_G @_l -6;
+    pos @_G @_n -18;
+    pos @_G @_o -6;
+    pos @_G @_r -24;
+    pos @_G @_u -12;
+    pos @_G @_y -12;
+    pos @_G [emdash.cap] 15;
+    pos @_G [endash.cap] 15;
+    pos @_G [hyphen.cap] 15;
+    pos [H] @_a -12;
+    pos [H] @_e -18;
+    pos [H] @_i -12;
+    pos [H] @_o -18;
+    pos [H] @_u -24;
+    pos [H] @_y -24;
+    pos @_I @_a -12;
+    pos @_I [b] -6;
+    pos @_I @_c -18;
+    pos @_I @_d -18;
+    pos @_I [f] -6;
+    pos @_I @_g -12;
+    pos @_I [h] -6;
+    pos @_I @_k -6;
+    pos @_I @_l -6;
+    pos @_I [m] -12;
+    pos @_I @_n -12;
+    pos @_I @_o -24;
+    pos @_I [p] -32;
+    pos @_I @_r -18;
+    pos @_I @_s -18;
+    pos @_I @_t -24;
+    pos @_I @_u -32;
+    pos @_I [v] -24;
+    pos @_I [w] -18;
+    pos @_I @_y -6;
+    pos @_I @_z -6;
+    pos [J] @_a -24;
+    pos [J] @_e -24;
+    pos [J] @_i -18;
+    pos [J] @_o -24;
+    pos [J] @_u -36;
+    pos [J] @_y -6;
+    pos @_K @_C -42;
+    pos @_K @_G -42;
+    pos @_K @_O -42;
+    pos @_K [Q] -42;
+    pos @_K @_a 6;
+    pos @_K @_e -6;
+    pos @_K [h] 6;
+    pos @_K @_i 6;
+    pos @_K @_o -18;
+    pos @_K @_r 6;
+    pos @_K @_u -24;
+    pos @_K [w] -56;
+    pos @_K @_y -32;
+    pos @_L [quoteright] -130;
+    pos @_L @_A 12;
+    pos @_L @_C -30;
+    pos @_L @_G -30;
+    pos @_L @_O -30;
+    pos @_L [Q] -30;
+    pos @_L @_T -106;
+    pos @_L @_U -36;
+    pos @_L [V] -90;
+    pos @_L [W] -110;
+    pos @_L @_Y -70;
+    pos @_L [j] -12;
+    pos @_L @_u -6;
+    pos @_L [w] -48;
+    pos @_L @_y -46;
+    pos @_L [quotedblright] -186;
+    pos [M] @_a -12;
+    pos [M] @_e -24;
+    pos [M] @_i -12;
+    pos [M] @_n -6;
+    pos [M] @_o -24;
+    pos [M] @_u -36;
+    pos [M] @_y -30;
+    pos @_N @_a -30;
+    pos @_N @_e -30;
+    pos @_N @_i -24;
+    pos @_N @_o -30;
+    pos @_N @_u -30;
+    pos @_N @_y -30;
+    pos @_O @_A -30;
+    pos @_O @_T -30;
+    pos @_O [V] -24;
+    pos @_O [W] -52;
+    pos @_O [X] -30;
+    pos @_O @_Y -60;
+    pos @_O @_a -6;
+    pos @_O [b] -6;
+    pos @_O @_c -6;
+    pos @_O @_d -6;
+    pos @_O @_e -6;
+    pos @_O [f] -6;
+    pos @_O @_g -6;
+    pos @_O [h] -12;
+    pos @_O @_i -6;
+    pos @_O [j] -6;
+    pos @_O @_k -6;
+    pos @_O @_l -6;
+    pos @_O [m] -6;
+    pos @_O @_n -6;
+    pos @_O @_o -6;
+    pos @_O [p] -6;
+    pos @_O [q] -6;
+    pos @_O @_r -6;
+    pos @_O @_s -6;
+    pos @_O @_t -6;
+    pos @_O @_u -6;
+    pos @_O [x] 6;
+    pos @_O @_y 6;
+    pos @_O @_z -6;
+    pos @_O [emdash.cap] 40;
+    pos @_O [endash.cap] 40;
+    pos @_O [hyphen.cap] 40;
+    pos [P] @_A -94;
+    pos [P] @_E -18;
+    pos [P] @_I -6;
+    pos [P] @_a -48;
+    pos [P] @_e -60;
+    pos [P] @_i -12;
+    pos [P] @_l -6;
+    pos [P] @_n -30;
+    pos [P] @_o -60;
+    pos [P] @_r -30;
+    pos [P] @_s -36;
+    pos [P] @_t -18;
+    pos [P] @_u -30;
+    pos [P] @_y -6;
+    pos [Q] @_A -24;
+    pos [Q] @_T -24;
+    pos [Q] @_U -24;
+    pos [Q] @_Y -24;
+    pos [Q] @_a -6;
+    pos [Q] @_u -6;
+    pos @_R @_C -30;
+    pos @_R @_G -30;
+    pos @_R @_O -30;
+    pos @_R [Q] -30;
+    pos @_R @_T -52;
+    pos @_R @_U -36;
+    pos @_R [V] -54;
+    pos @_R [W] -56;
+    pos @_R @_Y -38;
+    pos @_R @_a 6;
+    pos @_R @_e -12;
+    pos @_R @_o -12;
+    pos @_R @_u -12;
+    pos @_R @_y -30;
+    pos @_S @_a -12;
+    pos @_S @_e -12;
+    pos @_S [h] -12;
+    pos @_S @_i -12;
+    pos @_S [j] -12;
+    pos @_S @_k -18;
+    pos @_S @_l -18;
+    pos @_S [m] -24;
+    pos @_S @_n -24;
+    pos @_S @_o -6;
+    pos @_S [p] -24;
+    pos @_S [q] -6;
+    pos @_S @_t -24;
+    pos @_S @_u -18;
+    pos @_S [w] -30;
+    pos @_S @_y -6;
+    pos @_S [emdash.cap] 25;
+    pos @_S [endash.cap] 25;
+    pos @_T [quoteright] 36;
+    pos @_T [comma] -120;
+    pos @_T [hyphen] -100;
+    pos @_T [period] -120;
+    pos @_T [colon] -80;
+    pos @_T [semicolon] -80;
+    pos @_T @_A -77;
+    pos @_T @_C -36;
+    pos @_T @_G -36;
+    pos @_T @_O -36;
+    pos @_T [Q] -36;
+    pos @_T @_S -12;
+    pos @_T @_T 12;
+    pos @_T [V] 6;
+    pos @_T [W] 6;
+    pos @_T [X] 18;
+    pos @_T @_Y 18;
+    pos @_T @_a -110;
+    pos @_T @_e -120;
+    pos @_T @_i -32;
+    pos @_T [m] -107;
+    pos @_T @_o -120;
+    pos @_T @_r -107;
+    pos @_T @_s -100;
+    pos @_T @_u -124;
+    pos @_T [w] -120;
+    pos @_T @_y -100;
+    pos @_T @_z -70;
+    pos @_U @_A -66;
+    pos @_U [b] -6;
+    pos @_U @_d -30;
+    pos @_U [f] -12;
+    pos @_U @_g -24;
+    pos @_U [h] -6;
+    pos @_U @_i -18;
+    pos @_U @_k -6;
+    pos @_U @_l -6;
+    pos @_U [m] -42;
+    pos @_U @_n -42;
+    pos @_U [p] -36;
+    pos @_U @_r -42;
+    pos @_U @_s -30;
+    pos @_U @_t -30;
+    pos @_U [x] -18;
+    pos @_U @_z -18;
+    pos [V] @_A -75;
+    pos [V] @_C -24;
+    pos [V] @_G -24;
+    pos [V] @_O -24;
+    pos [V] @_a -92;
+    pos [V] @_e -92;
+    pos [V] @_o -92;
+    pos [V] @_r -90;
+    pos [V] @_u -92;
+    pos [V] @_y -62;
+    pos [W] @_A -117;
+    pos [W] @_C -24;
+    pos [W] @_G -24;
+    pos [W] @_O -24;
+    pos [W] @_T 12;
+    pos [W] @_a -92;
+    pos [W] @_e -92;
+    pos [W] @_i -10;
+    pos [W] @_o -100;
+    pos [W] @_r -92;
+    pos [W] @_u -84;
+    pos [W] @_y -80;
+    pos [X] @_C -24;
+    pos [X] @_G -24;
+    pos [X] @_O -24;
+    pos [X] @_e -6;
+    pos [X] @_u -24;
+    pos [X] @_y -18;
+    pos @_Y [quoteright] 52;
+    pos @_Y [parenright] 48;
+    pos @_Y [comma] -80;
+    pos @_Y [hyphen] -74;
+    pos @_Y [period] -80;
+    pos @_Y [colon] -60;
+    pos @_Y [semicolon] -37;
+    pos @_Y @_A -18;
+    pos @_Y @_C -12;
+    pos @_Y @_G -12;
+    pos @_Y @_O -12;
+    pos @_Y [Q] -12;
+    pos @_Y @_T 12;
+    pos @_Y [V] 12;
+    pos @_Y [W] 12;
+    pos @_Y [X] 12;
+    pos @_Y @_Y 18;
+    pos @_Y [bracketright] 48;
+    pos @_Y @_a -68;
+    pos @_Y @_e -90;
+    pos @_Y @_l 12;
+    pos @_Y @_o -92;
+    pos @_Y [q] -100;
+    pos @_Y @_t -52;
+    pos @_Y @_u -80;
+    pos @_Y [v] -50;
+    pos @_Y [braceright] 42;
+    pos @_Y [quotedblright] 36;
+    pos @_Z @_A 12;
+    pos @_Z @_C -30;
+    pos @_Z @_G -30;
+    pos @_Z @_O -30;
+    pos @_Z [Q] -30;
+    pos @_Z @_a -6;
+    pos @_Z @_e -6;
+    pos @_Z @_i -12;
+    pos @_Z @_o -12;
+    pos @_Z @_u -6;
+    pos @_Z [w] -36;
+    pos @_Z @_y -36;
+    pos [quoteleft] @_A -96;
+    pos [quoteleft] @_T 24;
+    pos [quoteleft] @_Y 18;
+    pos [quoteleft] @_a -60;
+    pos [quoteleft] @_c -50;
+    pos [quoteleft] @_d -50;
+    pos [quoteleft] @_e -50;
+    pos [quoteleft] @_g -40;
+    pos [quoteleft] @_n -60;
+    pos [quoteleft] @_o -50;
+    pos [quoteleft] @_s -50;
+    pos [quoteleft] @_t -60;
+    pos [quoteleft] @_u -60;
+    pos [quoteleft] @_y -50;
+    pos [quoteleft] @_z -50;
+    pos @_a [quoteright] -62;
+    pos @_a [quotedblright] -62;
+    pos [b] @_y -6;
+    pos @_c [quoteright] -12;
+    pos @_c [quotedblright] -12;
+    pos @_d [quoteright] -12;
+    pos @_d [quotedblright] -12;
+    pos @_e [quoteright] -24;
+    pos @_e @_y -5;
+    pos @_e [quotedblright] -24;
+    pos @_g [quoteright] -18;
+    pos @_g [quotedblright] -18;
+    pos @_i [quoteright] -10;
+    pos @_i [quotedblright] -10;
+    pos @_k [quoteright] -40;
+    pos @_k [quotedblright] -40;
+    pos @_l [quoteright] -6;
+    pos @_l [quotedblright] -6;
+    pos @_n [quoteright] -70;
+    pos @_n [quotedblright] -70;
+    pos @_o [quoteright] -50;
+    pos @_o [v] -18;
+    pos @_o [w] -18;
+    pos @_o [x] -10;
+    pos @_o @_y -12;
+    pos @_o [quotedblright] -50;
+    pos @_r [quoteright] -20;
+    pos @_r [comma] -60;
+    pos @_r [period] -60;
+    pos @_r @_c -12;
+    pos @_r @_d -20;
+    pos @_r @_e -20;
+    pos @_r [f] 8;
+    pos @_r @_k -6;
+    pos @_r [m] -16;
+    pos @_r @_n -16;
+    pos @_r @_o -6;
+    pos @_r [q] -6;
+    pos @_r @_t 8;
+    pos @_r @_u 8;
+    pos @_r [v] 18;
+    pos @_r [w] 18;
+    pos @_r [x] 12;
+    pos @_r @_y 18;
+    pos @_r @_z 20;
+    pos @_r [quotedblright] -20;
+    pos @_s [quoteright] -32;
+    pos @_s [quotedblright] -40;
+    pos @_t [quoteright] -18;
+    pos @_t [quotedblright] -18;
+    pos @_u [quoteright] -50;
+    pos @_u [quotedblright] -50;
+    pos [v] @_a -6;
+    pos [v] @_c -36;
+    pos [v] @_d -30;
+    pos [v] @_e -30;
+    pos [v] @_o -36;
+    pos [w] @_c -6;
+    pos [w] @_d -6;
+    pos [w] @_e -6;
+    pos [x] @_c -18;
+    pos [x] @_d -12;
+    pos [x] @_e -12;
+    pos [x] @_o -6;
+    pos @_y [quoteright] -12;
+    pos @_y [comma] -85;
+    pos @_y [period] -85;
+    pos @_y @_c -24;
+    pos @_y @_d -36;
+    pos @_y @_e -36;
+    pos @_y @_o -36;
+    pos @_y [q] -6;
+    pos @_y [quotedblright] -12;
+    pos @_z [quoteright] -40;
+    pos @_z @_c -6;
+    pos @_z @_d -6;
+    pos @_z @_e -6;
+    pos @_z @_o -6;
+    pos @_z [quotedblright] -40;
+    pos [quotedblleft] @_A -90;
+    pos [quotedblleft] @_T 18;
+    pos [quotedblleft] @_Y 12;
+    pos [quotedblleft] @_a -60;
+    pos [quotedblleft] @_c -50;
+    pos [quotedblleft] @_d -50;
+    pos [quotedblleft] @_e -50;
+    pos [quotedblleft] @_g -40;
+    pos [quotedblleft] @_n -60;
+    pos [quotedblleft] @_o -50;
+    pos [quotedblleft] @_r -50;
+    pos [quotedblleft] @_s -50;
+    pos [quotedblleft] @_t -60;
+    pos [quotedblleft] @_u -60;
+    pos [quotedblleft] @_y -50;
+    pos [quotedblleft] @_z -50;
+    pos [emdash.cap] @_C 35;
+    pos [emdash.cap] @_G 35;
+    pos [emdash.cap] @_O 35;
+    pos [endash.cap] @_C 35;
+    pos [endash.cap] @_G 35;
+    pos [endash.cap] @_O 35;
+    pos [hyphen.cap] @_C 35;
+    pos [hyphen.cap] @_G 35;
+    pos [hyphen.cap] @_O 35;
+} kern1;
+ script latn; # Latin
+lookup kern1;
+ language AZE ; # Azeri
+ language TRK ; # Turkish
+ language MOL ; # Moldavian
+ language ROM ; # Romanian
+ language CRT ; # Crimean Tatar
+} kern;
+
+
+feature locl { # Localized Forms
+ script latn; # Latin
+ language AZE  exclude_dflt; # Azeri
+    sub i by i.dot;
+ language TRK  exclude_dflt; # Turkish
+    sub i by i.dot;
+ language MOL  exclude_dflt; # Moldavian
+    sub [uni015E uni015F] by [uni0218 uni0219];
+ language ROM  exclude_dflt; # Romanian
+    sub [uni015E uni015F] by [uni0218 uni0219];
+ language CRT  exclude_dflt; # Crimean Tatar
+    sub i by i.dot;
+} locl;
+
+
+feature ornm { # Ornaments
+ # DEFAULT
+lookup ornm6 {
+    sub bullet from [bullet.001 bullet.002 bullet.003];
+} ornm6;
+lookup ornm7 {
+    sub [one two three] by [bullet.001 bullet.002 bullet.003];
+} ornm7;
+ script latn; # Latin
+lookup ornm6;
+lookup ornm7;
+ language AZE ; # Azeri
+ language TRK ; # Turkish
+ language MOL ; # Moldavian
+ language ROM ; # Romanian
+ language CRT ; # Crimean Tatar
+} ornm;
+
+
+feature case { # Case-Sensitive Forms
+ # DEFAULT
+    sub @case1 by @case2;
+ script latn; # Latin
+    sub @case1 by @case2;
+ language AZE ; # Azeri
+ language TRK ; # Turkish
+ language MOL ; # Moldavian
+ language ROM ; # Romanian
+ language CRT ; # Crimean Tatar
+} case;
+
+
+feature numr { # Numerators
+ # DEFAULT
+    sub @numr1 by @numr2;
+ script latn; # Latin
+    sub @numr1 by @numr2;
+ language AZE ; # Azeri
+ language TRK ; # Turkish
+ language MOL ; # Moldavian
+ language ROM ; # Romanian
+ language CRT ; # Crimean Tatar
+} numr;
+
+
+feature frac { # Fractions
+ # DEFAULT
+lookup frac9 {
+    sub @numr1 by @numr2;
+} frac9;
+lookup frac11 {
+    sub @frac1 [space uni00A0]' by [space.frac uni00A0.frac];
+} frac11;
+lookup frac12 {
+    sub slash by slash.frac;
+} frac12;
+lookup frac13 {
+    sub one.numerator fraction two.numerator by onehalf;
+    sub one.numerator fraction three.numerator by onethird;
+    sub one.numerator fraction four.numerator by onequarter;
+    sub one.numerator fraction eight.numerator by oneeighth;
+    sub one.numerator uni2215 two.numerator by onehalf;
+    sub one.numerator uni2215 three.numerator by onethird;
+    sub one.numerator uni2215 four.numerator by onequarter;
+    sub one.numerator uni2215 eight.numerator by oneeighth;
+    sub one.numerator slash.frac two.numerator by onehalf;
+    sub one.numerator slash.frac three.numerator by onethird;
+    sub one.numerator slash.frac four.numerator by onequarter;
+    sub one.numerator slash.frac eight.numerator by oneeighth;
+    sub two.numerator fraction three.numerator by twothirds;
+    sub two.numerator uni2215 three.numerator by twothirds;
+    sub two.numerator slash.frac three.numerator by twothirds;
+    sub three.numerator fraction four.numerator by threequarters;
+    sub three.numerator fraction eight.numerator by threeeighths;
+    sub three.numerator uni2215 four.numerator by threequarters;
+    sub three.numerator uni2215 eight.numerator by threeeighths;
+    sub three.numerator slash.frac four.numerator by threequarters;
+    sub three.numerator slash.frac eight.numerator by threeeighths;
+    sub five.numerator fraction eight.numerator by fiveeighths;
+    sub five.numerator uni2215 eight.numerator by fiveeighths;
+    sub five.numerator slash.frac eight.numerator by fiveeighths;
+    sub seven.numerator fraction eight.numerator by seveneighths;
+    sub seven.numerator uni2215 eight.numerator by seveneighths;
+    sub seven.numerator slash.frac eight.numerator by seveneighths;
+} frac13;
+lookup frac14 {
+    sub @frac4 @frac2' by [zero.denominator one.denominator two.denominator three.denominator four.denominator five.denominator six.denominator seven.denominator eight.denominator nine.denominator period.denominator comma.denominator dollar.denominator cent.denominator hyphen.denominator parenleft.denominator parenright.denominator];
+    sub @frac3 [space.frac uni00A0.frac] @frac2' by [zero.denominator one.denominator two.denominator three.denominator four.denominator five.denominator six.denominator seven.denominator eight.denominator nine.denominator period.denominator comma.denominator dollar.denominator cent.denominator hyphen.denominator parenleft.denominator parenright.denominator];
+} frac14;
+ script latn; # Latin
+lookup frac9;
+lookup frac11;
+lookup frac12;
+lookup frac13;
+lookup frac14;
+ language AZE ; # Azeri
+ language TRK ; # Turkish
+ language MOL ; # Moldavian
+ language ROM ; # Romanian
+ language CRT ; # Crimean Tatar
+} frac;
+
+
+feature dnom { # Denominators
+ # DEFAULT
+    sub @numr1 by @dnom1;
+ script latn; # Latin
+    sub @numr1 by @dnom1;
+ language AZE ; # Azeri
+ language TRK ; # Turkish
+ language MOL ; # Moldavian
+ language ROM ; # Romanian
+ language CRT ; # Crimean Tatar
+} dnom;
+
+
+feature sups { # Superscript
+ # DEFAULT
+lookup sups15 {
+    sub @sups1 by @sups2;
+} sups15;
+lookup sups16 {
+    sub @numr1 by @sups3;
+} sups16;
+ script latn; # Latin
+lookup sups15;
+lookup sups16;
+ language AZE ; # Azeri
+ language TRK ; # Turkish
+ language MOL ; # Moldavian
+ language ROM ; # Romanian
+ language CRT ; # Crimean Tatar
+} sups;
+
+
+feature ordn { # Ordinals
+ # DEFAULT
+    sub @sups1 by @sups2;
+ script latn; # Latin
+    sub @sups1 by @sups2;
+ language AZE ; # Azeri
+ language TRK ; # Turkish
+ language MOL ; # Moldavian
+ language ROM ; # Romanian
+ language CRT ; # Crimean Tatar
+} ordn;
+
+
+feature sinf { # Scientific Inferiors
+ # DEFAULT
+    sub @numr1 by @sinf1;
+ script latn; # Latin
+    sub @numr1 by @sinf1;
+ language AZE ; # Azeri
+ language TRK ; # Turkish
+ language MOL ; # Moldavian
+ language ROM ; # Romanian
+ language CRT ; # Crimean Tatar
+} sinf;
+
+
+feature subs { # Subscript
+ # DEFAULT
+    sub @numr1 by @sinf1;
+ script latn; # Latin
+    sub @numr1 by @sinf1;
+ language AZE ; # Azeri
+ language TRK ; # Turkish
+ language MOL ; # Moldavian
+ language ROM ; # Romanian
+ language CRT ; # Crimean Tatar
+} subs;
+
+
+feature onum { # Oldstyle Figures
+ # DEFAULT
+    sub @onum1 by @onum2;
+ script latn; # Latin
+    sub @onum1 by @onum2;
+ language AZE ; # Azeri
+ language TRK ; # Turkish
+ language MOL ; # Moldavian
+ language ROM ; # Romanian
+ language CRT ; # Crimean Tatar
+} onum;
+
+
+feature lnum { # Lining Figures
+ # DEFAULT
+    sub @lnum1 by @lnum2;
+ script latn; # Latin
+    sub @lnum1 by @lnum2;
+ language AZE ; # Azeri
+ language TRK ; # Turkish
+ language MOL ; # Moldavian
+ language ROM ; # Romanian
+ language CRT ; # Crimean Tatar
+} lnum;
+
+
+feature pnum { # Proportional Figures
+ # DEFAULT
+    sub @pnum1 by @pnum2;
+ script latn; # Latin
+    sub @pnum1 by @pnum2;
+ language AZE ; # Azeri
+ language TRK ; # Turkish
+ language MOL ; # Moldavian
+ language ROM ; # Romanian
+ language CRT ; # Crimean Tatar
+} pnum;
+
+
+feature tnum { # Tabular Figures
+ # DEFAULT
+    sub @tnum1 by @tnum2;
+ script latn; # Latin
+    sub @tnum1 by @tnum2;
+ language AZE ; # Azeri
+ language TRK ; # Turkish
+ language MOL ; # Moldavian
+ language ROM ; # Romanian
+ language CRT ; # Crimean Tatar
+} tnum;
+
+
+feature liga { # Standard Ligatures
+ # DEFAULT
+    sub T h by T_h;
+    sub f f i by f_f_i;
+    sub f f j by f_f_j;
+    sub f f l by f_f_l;
+    sub f f by f_f;
+    sub f i by f_i;
+    sub f j by f_j;
+    sub f l by f_l;
+    sub Tcaron h by Tcaron_h;
+    sub uni021A h by uni021A_h;
+ script latn; # Latin
+    sub T h by T_h;
+    sub f f i by f_f_i;
+    sub f f j by f_f_j;
+    sub f f l by f_f_l;
+    sub f f by f_f;
+    sub f i by f_i;
+    sub f j by f_j;
+    sub f l by f_l;
+    sub Tcaron h by Tcaron_h;
+    sub uni021A h by uni021A_h;
+ language AZE ; # Azeri
+ language TRK ; # Turkish
+ language MOL ; # Moldavian
+ language ROM ; # Romanian
+ language CRT ; # Crimean Tatar
+} liga;
+
+
+feature zero { # Slashed Zero
+ # DEFAULT
+    sub [zero zero.fitted] by [zero.slash zero.slash];
+ script latn; # Latin
+    sub [zero zero.fitted] by [zero.slash zero.slash];
+ language AZE ; # Azeri
+ language TRK ; # Turkish
+ language MOL ; # Moldavian
+ language ROM ; # Romanian
+ language CRT ; # Crimean Tatar
+} zero;
+
+

@@ -1,0 +1,13 @@
+/_planning
+/_scripts
+_old*
+_old/
+README/README_variomatic.zip
+__pycache__*
+__pycache__/
+temp*
+temp/
+*.pyc
+*.pyo
+.DS_Store
+
