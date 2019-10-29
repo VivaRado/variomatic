@@ -1,7 +1,6 @@
+---
+
 ![IMG](assets/media/variomatic_logo.svg)
-
-
-
 
 
 ##  **Introduction**

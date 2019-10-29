@@ -67,10 +67,9 @@
 
 
 
+---
+
 ![IMG](README/assets/media/variomatic_logo.svg)
-
-
-
 
 
 ##  **Introduction**
