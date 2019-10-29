@@ -1,1 +1,0 @@
-Given the possible reduction the new format presents, we are tasked to create a concept or a working product that will be able to understand and resolve mainly cross instance contour interpolation. That will allow Google Fonts to Variate their whole font directory, subsequently reduce the server loads, increase font quality and designer collaboration.
