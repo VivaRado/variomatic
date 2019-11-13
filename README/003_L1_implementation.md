@@ -63,6 +63,37 @@ Moving on to triangle comparison, we can now create the barycentric of the sPSCA
 
 We now know if P, SC or A is incorrect and create a new line by combining the other lines. This means that if by increasing radius to gather agnostic points in the target that do not properly create a line, we correct this by always getting 7 points, 3 points from each side of the most favorite to the SC, we do this by using our P and A points as observers, we also know if any of the P SC or A do not exist, we will use this to filter out a perfect agnostic line before triangulation. Now by perfecting triangulation we hope to be able to get 100% best matches in any shape that looks identical.
 
+
+#### Solutions offered
+
+**Not Matching Glyph Order:**
+
+One of the solutions helps match the contour order with certainty. Having two contours of unmatched starting points, but even contour lengths, we can produce an appropriate match by either reproducing the contour array according to the match or shifting the contour array according to the match.
+
+We can see the red and blue outline circles that denote the start and end points for each instance don't match. The script solves the start points and equally denotes them with green outline circles.
+
+This also would be the case even if we would have in between points that don't match any other point in a secondary instance, those points would be bypassed and we would still have a proper match. Only in extreme scenarios the matching fails.
+
+---
+
+![IMG](assets/media/SOL_a_001.svg)
+
+image: #034, 0.001, svg, letter "i" with same number of points but not same start point solved. Letter part has unmatched initial start points, the accent has matched initial.
+
+---
+
+![IMG](assets/media/SOL_a_002.svg)
+
+image: #035, 0.001, svg, letter "eight" with same number of points but not same start point solved. External contour starts from the top and the opposite instance starts from the bottom. The solution repositions it to the top. The internal contours have the same start points.
+
+---
+
+![IMG](assets/media/SOL_a_003.svg)
+
+image: #036, 0.001, svg, letter "r" with uneven number of points but same start point solved.
+
+---
+
 <small>
 
 **SCHEDULE:** ```VRM-1010```

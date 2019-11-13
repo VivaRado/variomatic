@@ -1207,6 +1207,13 @@ def plot_certainty_line(tx, coords, _c, _plt):
 		#
 		if _plt:
 			#
+			# show start point for matching
+			if i == 0:
+				#
+				draw.draw_circle_on_coord(x[0], tx, 10, "green", False)
+				draw.draw_circle_on_coord(x[1], tx, 10, "green", False)
+				#
+			#
 			_p = mpatches.ConnectionPatch(midpoint(x[0], x[1]),midpoint(coords[i+1][0], coords[i+1][1]),"data", lw=2, alpha=0.5, color=_c)
 			tx.add_patch(_p)
 			#
@@ -3818,6 +3825,7 @@ class variom:
 			#
 			self.m_instances[x]["graph"] = self.vrmstart.make_topo(self.m_instances[x], color[x])
 			#
+
 		#
 	def run(self):
 		#
@@ -5297,9 +5305,12 @@ class vrmcomb:
 			#
 			comb_plot = combiner(vrm_data_a,vrm_data_b, cax)
 			#
-			#
 			len_strt_a = len(vrm_data_a.initial_coords_strt_a)
 			len_strt_b = len(vrm_data_a.initial_coords_strt_b)
+			#
+			# Show contour start points
+			draw.draw_circle_on_coord(vrm_data_a.initial_coords_strt_a[0], cax, 20, "red", False)
+			draw.draw_circle_on_coord(vrm_data_a.initial_coords_strt_b[0], cax, 20, "blue", False)
 			#
 			cert_s = self.get_most_certain_lines(comb_plot, len_strt_a, vrm_data_a)
 			#
@@ -5810,7 +5821,7 @@ if __name__ == '__main__':
 	max_items = start_from + 100
 	i = 0
 	#
-	run_specific = "" # run a specific glyph by glif file name "H_", "a" ...
+	run_specific = "r" # run a specific glyph by glif file name "H_", "a" ...
 	run_specific_contour = 0 # Not Implemented, runs all contours sorted by distance traveled - total line length between points
 	#
 	with open(os.path.join(font_path_r,'contents.plist'), 'rb') as f:
