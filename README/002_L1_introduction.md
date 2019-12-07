@@ -812,7 +812,7 @@ From the points we gather we can then run triangle matching further on points we
 Review the whole set of initial data at the repository here: 
 
 
-```lib/batric/output_data/a/```
+```lib/batric/output_data/```
 
 
 ---
@@ -839,6 +839,48 @@ image: #009, 0.001, svg, Simplification Gradient - Just SGRAD-abduct points from
 #### Conclusion
 
 SGRAD if not the easiest method is definitely a promising one. Given that the Max Error can be adjusted to be more granular, this only gives a more precise measurement for what are the points that keep persisting across. Those points are the most important ones and the ones we eventually keep for the final variable interpolation. We think that it provides good enough certainty by using straight no curve lines, and then we can step in and do bezier curve analysis, maybe with dynamic re-positioning.
+
+---
+
+### **Introduction / Phase Introduction / Planning Phase / Safe Planning / Project Plan / Simplification Gradient / Usage**
+
+Run ```python3 lib/batric/sample/main.py``` with arguments:
+
+
+```
+
+Source UFO Instance Files:
+
+	-a, "--instance_a"
+	-b, "--instance_b"
+
+	-a "/font_regular.ufo -b "/font_bold.ufo"
+
+Log Directory for Output:
+
+	-l, "--log_output"
+	
+	-l "/log_output"
+
+Run Specific Glyph:
+
+	-g, "--specific_glyph"
+
+Or provide start and end number of glyphs to run:
+
+	-s, "--start_glyph_num"
+	-e, "--end_glyph_num"
+
+	Start Glyph Number and End Glyph Number (-s from, -e to): -s 17 -e 117
+
+```
+
+For example run:
+
+```
+python3 lib/batric/sample/main.py -a "provide_ufo_a" -b "provide_ufo_b" -l "provide_directory_for_log_output" -g "A"
+```
+
 
 ---
 

@@ -41,6 +41,7 @@ sys.path.insert(0, os.path.join(dir_path,'helpers'))
 # for tests (python ../tests/test_advanced.py)
 sys.path.insert(0, os.path.abspath(os.path.join(dir_path, '..', 'sample')))
 #
+from combine_log import combine_log
 from helpers import helpers
 from colors import tcolor
 from pnt import *
@@ -53,6 +54,27 @@ from svgPathPen import SVGPathPen
 from svgpath2mpl import parse_path as mpl_parse_path
 #
 from glyph_strings import *
+#
+from argparse import ArgumentParser
+#
+#
+parser = ArgumentParser()
+parser.add_argument("-a", "--instance_a", dest="instance_a",
+                    help="Source instance A", metavar="FILE")
+parser.add_argument("-b", "--instance_b", dest="instance_b",
+                    help="Source instance B", metavar="FILE")
+parser.add_argument("-l", "--log_output", dest="log_output",
+                    help="Output Directory", metavar="FILE")
+parser.add_argument("-g", "--specific_glyph", dest="specific_glyph",
+                    help="Run Specific Glyph", metavar="value")
+
+parser.add_argument("-s", "--start_glyph_num", dest="start_glyph_num",
+                    help="Start Glyph Number", metavar="value")
+parser.add_argument("-e", "--end_glyph_num", dest="end_glyph_num",
+                    help="End Glyph Number", metavar="value")
+#
+args = parser.parse_args()
+#
 #
 hide_labels = True
 #
@@ -620,8 +642,8 @@ def combiner(inst_s,inst_t, cax):
 			all_conn[repr([c_s,c_t,c_t,c_s])].append(["st",coord_s,coord_t,certainty, [c_s,c_t]])
 
 		# #
-		draw.draw_circle_on_coord(coord_s, cax, (certainty+1)/2, "b")
-		draw.draw_circle_on_coord(coord_t, cax, (certainty+1)/2, "r")
+		draw.draw_circle_on_coord(coord_s, cax, (certainty+1)/2, "b", True, False, '["g_s":'+str(c_s)+',"g_t":'+str(c_t)+',"coords":['+str(coord_s)+','+str(coord_t)+'],"certainty":'+str(certainty)+']')
+		draw.draw_circle_on_coord(coord_t, cax, (certainty+1)/2, "r", True, False, '["g_s":'+str(c_t)+',"g_t":'+str(c_s)+',"coords":['+str(coord_t)+','+str(coord_s)+'],"certainty":'+str(certainty)+']')#'["g_s":'+str(c_t)+',"coords":'+str(coord_t)+',"certainty":'+str(certainty)+']')
 		#
 		_p = mpatches.ConnectionPatch( coord_s, coord_t,"data", lw=((certainty+1)*5)/20, arrowstyle='->,head_width=.15,head_length=.15', shrinkB=2, alpha=0.5, color="b",label='Label')
 		cax.add_patch(_p)
@@ -654,8 +676,8 @@ def combiner(inst_s,inst_t, cax):
 			all_conn[repr([c_s,c_t,c_t,c_s])].append(["ts",coord_t,coord_s,certainty,[c_s,c_t]])
 
 		#
-		draw.draw_circle_on_coord(coord_t, cax, (certainty+1)/2, "b")
-		draw.draw_circle_on_coord(coord_s, cax, (certainty+1)/2, "r")
+		draw.draw_circle_on_coord(coord_t, cax, (certainty+1)/2, "b", True, False, '["g_s":'+str(c_t)+',"g_t":'+str(c_s)+',"coords":['+str(coord_t)+','+str(coord_s)+'],"certainty":'+str(certainty)+']')
+		draw.draw_circle_on_coord(coord_s, cax, (certainty+1)/2, "r", True, False, '["g_s":'+str(c_s)+',"g_t":'+str(c_t)+',"coords":['+str(coord_s)+','+str(coord_t)+'],"certainty":'+str(certainty)+']')
 		#
 		_p = mpatches.ConnectionPatch( coord_t, coord_s,"data", lw=((certainty+1)*5)/20, arrowstyle='->,head_width=.15,head_length=.15', shrinkB=2, alpha=0.5, color="r",label='Label')
 		cax.add_patch(_p)
@@ -4112,7 +4134,7 @@ def get_dist_list(center_point, points, cax):
 #
 class vrmcomb:
 	#
-	def __init__(self, vrm_data, name, run_sp):
+	def __init__(self, vrm_data, name, run_sp, log_output):
 		#
 		if debug:
 			#
@@ -4124,6 +4146,7 @@ class vrmcomb:
 		self._movepos = 550
 		#
 		self.run_sp = run_sp
+		self.log_output = log_output
 		#
 		draw.init_plot_comb(plt)
 		t_plt = plt.figure(4)
@@ -5374,9 +5397,16 @@ class vrmcomb:
 			#
 			bsc_clean = self.basic_cleanup(s_unc_line, t_unc_line, unc_lines_s, s_mc_line, t_mc_line, get_cert_line_to_plot, cax, t_plt)
 			#
+			save_dir = os.path.join(self.log_output, name.split('.glif')[0]+'.json')
+			#
+			with open(save_dir, 'w') as f:
+				json.dump(comb_plot, f)
+			#
 			if show_low_uncertainty_lines:
 				#
+				#
 				for z in get_cert_line_to_plot:
+					#
 					#
 					plot_certainty_line(cax, z, 'g', plt)
 					#
@@ -5558,7 +5588,7 @@ class vrmcomb:
 			# HIGH UNCERTAINTY LINE SOLUTIONS END
 			# 
 			#
-			save_dir = os.path.abspath(os.path.join(dir_path, '..', 'output_data', name.split('.glif')[0]+'.svg') )
+			save_dir = os.path.join(self.log_output, name.split('.glif')[0]+'.svg')
 			# 
 			print ('\n'+tcolor.WARNING + "SAVING SVG MATCHING RESULT: " + tcolor.ENDC)
 			print('\n'+save_dir)
@@ -5743,7 +5773,7 @@ if __name__ == '__main__':
 	'''
 	
 	#
-	def run_vmatic(font_path_r, font_path_b, x, run_sp):
+	def run_vmatic(font_path_r, font_path_b, x, run_sp, log_output):
 		#
 		input_contours = []
 		#
@@ -5787,7 +5817,7 @@ if __name__ == '__main__':
 					pprint.pprint(var_glifs)
 					#
 				#
-				vrm_comb = vrmcomb(var_glifs, x[1], run_sp)
+				vrm_comb = vrmcomb(var_glifs, x[1], run_sp, log_output)
 				#
 			else:
 				#
@@ -5813,71 +5843,122 @@ if __name__ == '__main__':
 
 	'''
 	#
-	font_path_r = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Regular.ufo', 'glyphs') )
-	font_path_b = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
+	faults = False
 	#
-	# if run specific, run only that letter, else take into account start_from and how many letters after that max_items
-	start_from = 17
-	max_items = start_from + 100
-	i = 0
-	#
-	run_specific = "r" # run a specific glyph by glif file name "H_", "a" ...
-	run_specific_contour = 0 # Not Implemented, runs all contours sorted by distance traveled - total line length between points
-	#
-	with open(os.path.join(font_path_r,'contents.plist'), 'rb') as f:
-		pl = plistlib.load(f)
+	if  args.instance_a is None or args.instance_b is None:
 		#
-		for x in pl.items():
+		faults = True
+		#
+		print('=\n=> Please Provide Source UFO Instance Files (a and b): -a "/font_regular.ufo -b "/font_bold.ufo"\n=')	
+		#
+	if args.log_output is None:
+		#
+		faults = True
+		#
+		print('=\n=> Please Provide Log Directory for Output: -l "/log_output"\n=')	
+		#
+	if faults == False:
+		#
+		font_path_r = os.path.abspath(os.path.join(args.instance_a, 'glyphs') )#os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Regular.ufo', 'glyphs') )
+		font_path_b = os.path.abspath(os.path.join(args.instance_b, 'glyphs') )#os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
+		#
+		
+		i = 0
+		#
+		print(args.specific_glyph)
+		#
+		if args.specific_glyph is None:
 			#
-			if run_specific != "":
+			run_specific = ""
+			#
+			print('=\n=> To Run Specific Glyph: -g "H_"\n=')
+			#
+			if args.start_glyph_num is None or args.end_glyph_num is None:
 				#
-				if run_specific == x[1].split(".glif")[0]:
-					#
-					print ('\n'+tcolor.WARNING + "RUNNING: " + run_specific + tcolor.ENDC)
-					#
-					run_vmatic(font_path_r, font_path_b, x, run_specific)
-					#
-					plt.show()
-					#
-				else:
-					#
-					pass
-					#
+				print('=\n=> Start Glyph Number and End Glyph Number (-s from, -e to): -s 17 -e 117\n=')
+				#
+				start_from = 0#17
+				max_items = len([f for f in os.listdir(font_path_r) 
+					if f.endswith('.glif') and os.path.isfile(os.path.join(font_path_r, f))])
+				#
+				print('\n'+tcolor.WARNING + "Start Glyph Number and End Glyph Number not provided, Running all Glyphs: "+ str(start_from)+" to "+str(max_items)  + tcolor.ENDC)	
 				#
 			else:
+				# if run specific, run only that letter, else take into account start_from and how many letters after that max_items
+				start_from = int(args.start_glyph_num)#17
+				max_items = int(args.end_glyph_num)#start_from + 100
 				#
-				if i < start_from:
-					print('passing', x[1])
-					pass
-				else:
+			#
+		else:
+			#
+			run_specific = args.specific_glyph # run a specific glyph by glif file name "H_", "a" ...
+			#
+			print('\n'+tcolor.WARNING + "Running Specific Glyph: "+ str(run_specific)  + tcolor.ENDC)	
+			#
+			#
+		#
+		run_specific_contour = 0 # Not Implemented, runs all contours sorted by distance traveled - total line length between points
+		#
+		with open(os.path.join(font_path_r,'contents.plist'), 'rb') as f:
+			pl = plistlib.load(f)
+			#
+			for x in pl.items():
+				#
+				if run_specific != "":
 					#
-					if i > max_items:
+					if run_specific == x[1].split(".glif")[0]:
 						#
-						break
+						print ('\n'+tcolor.WARNING + "RUNNING: " + run_specific + tcolor.ENDC)
+						#
+						run_vmatic(font_path_r, font_path_b, x, run_specific, args.log_output)
+						#
+						combine_log(args.log_output)
+						#
+						plt.show()
+						#
 						#
 					else:
 						#
-						try:
-							#
-							print ('\n'+tcolor.WARNING + "RUNNING: " + x[1] + tcolor.ENDC)
-							#
-							run_vmatic(font_path_r, font_path_b, x, run_specific)
-							#
-							#plt.show()
-							#
-						except Exception as e:
-							#
-							print ('\n'+tcolor.FAIL + "FAILED: " + x[1] + tcolor.ENDC)
-							print (e)
-							#
-							pass
+						pass
+						#
 					#
-				i = i + 1
+				else:
+					#
+					if i < start_from:
+						print('passing', x[1])
+						pass
+					else:
+						#
+						if i > max_items:
+							#
+							break
+							#
+						else:
+							#
+							try:
+								#
+								print ('\n'+tcolor.WARNING + "RUNNING: " + x[1] + tcolor.ENDC)
+								#
+								run_vmatic(font_path_r, font_path_b, x, run_specific, args.log_output)
+								#
+								#plt.show()
+								#
+							except Exception as e:
+								#
+								print ('\n'+tcolor.FAIL + "FAILED: " + x[1] + tcolor.ENDC)
+								print (e)
+								#
+								pass
+						#
+					i = i + 1
+				#
 			#
 		#
-	#
-	if run_specific == "":
+		if run_specific == "":
+			#
+			plt.close('all')
+			#
 		#
-		plt.close('all')
+		combine_log(args.log_output)
 		#
 	#

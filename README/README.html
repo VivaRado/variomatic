@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
-		<title>VRD | variomatic | 0.056 | 2019/11/13</title>
+		<title>VRD | variomatic | 0.057 | 2019/12/07</title>
 		<link rel="icon" href="assets/media/thumb.ico">
 		<link rel="stylesheet" type="text/css" href="assets/css/style.css">
 		<link rel="stylesheet" type="text/css" href="assets/css/code_native.css">
@@ -83,6 +83,7 @@
 <li><strong>Line Matching</strong></li>
 <li><strong>Naturalisation</strong></li>
 </ol></li>
+<li><strong>Usage</strong></li>
 </ol></li>
 </ol></li>
 <li><strong>Work Planning</strong>
@@ -1313,7 +1314,7 @@ From the points we gather we can then run triangle matching further on points we
 
 <p>Review the whole set of initial data at the repository here: </p>
 
-<p><code>lib/batric/output_data/a/</code></p>
+<p><code>lib/batric/output_data/</code></p>
 
 <hr />
 
@@ -1338,6 +1339,44 @@ From the points we gather we can then run triangle matching further on points we
 <h4>Conclusion</h4>
 
 <p>SGRAD if not the easiest method is definitely a promising one. Given that the Max Error can be adjusted to be more granular, this only gives a more precise measurement for what are the points that keep persisting across. Those points are the most important ones and the ones we eventually keep for the final variable interpolation. We think that it provides good enough certainty by using straight no curve lines, and then we can step in and do bezier curve analysis, maybe with dynamic re-positioning.</p>
+
+<hr />
+
+<h3><strong>Introduction / Phase Introduction / Planning Phase / Safe Planning / Project Plan / Simplification Gradient / Usage</strong></h3>
+
+<p>Run <code>python3 lib/batric/sample/main.py</code> with arguments:</p>
+
+<pre><code>
+Source UFO Instance Files:
+
+    -a, "--instance_a"
+    -b, "--instance_b"
+
+    -a "/font_regular.ufo -b "/font_bold.ufo"
+
+Log Directory for Output:
+
+    -l, "--log_output"
+
+    -l "/log_output"
+
+Run Specific Glyph:
+
+    -g, "--specific_glyph"
+
+Or provide start and end number of glyphs to run:
+
+    -s, "--start_glyph_num"
+    -e, "--end_glyph_num"
+
+    Start Glyph Number and End Glyph Number (-s from, -e to): -s 17 -e 117
+
+</code></pre>
+
+<p>For example run:</p>
+
+<pre><code>python3 lib/batric/sample/main.py -a "provide_ufo_a" -b "provide_ufo_b" -l "provide_directory_for_log_output" -g "A"
+</code></pre>
 
 <hr />
 

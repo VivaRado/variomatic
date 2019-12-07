@@ -22,11 +22,11 @@ def label(xy, text, tx, _size=5, _pos=10, _color = "k"):
 	tx.text(xy[0],xy[1]+_pos, text, color=_color, ha="center", family='monospace', size=_size, bbox=dict( boxstyle="round",ec=(1, 1, 1,0.3),fc=(1, 1, 1,0.3),alpha=0.4))
 	#
 
-def draw_circle_on_coord(coords, ax, rad, _color, _fill=True, _return=False):
+def draw_circle_on_coord(coords, ax, rad, _color, _fill=True, _return=False, _gid=''):
 	#
 	v_c = coords
 	#
-	s_circle = plt.Circle(v_c, rad, color=_color, alpha=0.2, lw=2, fill=_fill)
+	s_circle = plt.Circle(v_c, rad, color=_color, alpha=0.2, lw=2, fill=_fill, gid=_gid)
 	#
 	if _return == True:
 		#

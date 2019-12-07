@@ -42,6 +42,7 @@
                             1.  **Graph Matching**
                             1.  **Line Matching**
                             1.  **Naturalisation**
+                        1.  **Usage**
                 1.  **Work Planning**
                     1.  **Task Assignments**
                     1.  **Dependencies**
