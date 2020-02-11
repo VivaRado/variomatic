@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
-		<title>VRD | variomatic | 0.057 | 2019/12/07</title>
+		<title>VRD | variomatic | 0.058 | 2020/02/11</title>
 		<link rel="icon" href="assets/media/thumb.ico">
 		<link rel="stylesheet" type="text/css" href="assets/css/style.css">
 		<link rel="stylesheet" type="text/css" href="assets/css/code_native.css">
@@ -16,6 +16,9 @@
 		<script type="text/javascript" src="assets/js/sequence-diagram.js"></script>
 		<script type="text/javascript" src="assets/js/flowchart.js"></script>
 		<script type="text/javascript" src="assets/js/script.js"></script>
+
+		<script type="text/javascript" src="assets/js/tex-mml-chtml.js"></script>
+
 	</head>
 	<body class="markdown">
 		<article class="markdown-body" id="body"><div class="sidebar">
@@ -85,6 +88,7 @@
 </ol></li>
 <li><strong>Usage</strong></li>
 </ol></li>
+<li><strong>Secondary Review</strong></li>
 </ol></li>
 <li><strong>Work Planning</strong>
 <ol>
@@ -109,6 +113,16 @@
 <li><strong>Solutions</strong>
 <ol>
 <li><strong>BATRIC</strong></li>
+<li><strong>Revisional</strong>
+<ol>
+<li><strong>Parts</strong></li>
+<li><strong>Mechanisms</strong></li>
+<li><strong>Complete Logic</strong></li>
+<li><strong>Functions</strong>
+<ol>
+<li><strong>Function Review</strong></li>
+</ol></li>
+</ol></li>
 </ol></li>
 </ol></li>
 </ol></li>
@@ -200,85 +214,6 @@
 </ul>
 
 <hr />
-
-<h3><strong>Introduction / Organisational Documents</strong></h3>
-
-<p>The documentation for this project and the project modules has been split to partial MD files for easier editing and alterations. Three options are provided (HTML,PDF,MD) Contents of generated files are stored in the <code>/README</code> folder as numbered main files and includes in the <code>/README/partials</code> as partial MD files.</p>
-
-<p>Documentation Types and generating them:</p>
-
-<ul>
-<li><p>HTML - Responsive preview in HTML format - At README directory:</p>
-
-<p><code>python3 README/gen_readme.py -f 'html' -l "L1"</code></p></li>
-<li><p>Standard Repository README - At the root of the repository:</p>
-
-<p><code>python3 README/gen_readme.py -f 'md' -l "L1"</code></p></li>
-<li><p>PDF - At the root of the repository:</p>
-
-<p><code>python3 README/gen_readme.py -f 'pdf' -l "L1"</code></p></li>
-</ul>
-
-<p>You can pass multiple formats:</p>
-
-<p><code>python3 README/gen_readme.py -f 'html,pdf,md' -l "L1"</code></p>
-
-<p>You can pass documentation Level:</p>
-
-<p>Requirements:</p>
-
-<ul>
-<li><p>Markdown2 module for python3</p>
-
-<ul>
-<li>Linux: <code>pip3 install markdown2</code></li>
-<li>Windows: <code>py -m pip install markdown2</code></li>
-</ul></li>
-<li><p>pygments</p>
-
-<ul>
-<li>Linux: <code>pip3 install pygments</code></li>
-<li>Windows: <code>py -m pip install pygments</code></li>
-</ul></li>
-<li><p>weasyprint</p>
-
-<ul>
-<li>Linux: <code>pip3 install weasyprint</code></li>
-<li>Windows: <code>py -m pip install weasyprint</code></li>
-</ul></li>
-</ul>
-
-<p>Features:</p>
-
-<ul>
-<li>Responsive Interface</li>
-<li>Synchronized Sidebar</li>
-<li>Hashtag Navigation</li>
-<li>PDF with TOC and Cover</li>
-</ul>
-
-<p>Drawbacks:</p>
-
-<ul>
-<li>Graphs and Diagrams will not work in github and bitbucket preview, but are still readable.</li>
-<li>Graphs and Diagrams will not work in PDF will be assessed.</li>
-</ul>
-
-<p>Details:</p>
-
-<ul>
-<li><p>For the PDF Contents. As we generate URL style blocks:</p>
-
-<ul>
-<li>We override the weasyprint Document.make<em>bookmark</em>tree</li>
-</ul></li>
-<li><p>For the HTML and the Diagrams. As we load them into Codeblocks:</p>
-
-<ul>
-<li>We override the markdown2 <code>Markdown._code_block_sub</code></li>
-<li>We override the markdown2 <code>Markdown._color_with_pygments</code></li>
-</ul></li>
-</ul>
 
 <hr />
 
@@ -1380,6 +1315,16 @@ Or provide start and end number of glyphs to run:
 
 <hr />
 
+<h3><strong>Introduction / Phase Introduction / Planning Phase / Safe Planning / Project Plan / Secondary Review</strong></h3>
+
+<p>
+Mathjax test:
+When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
+\[x = {-b \pm \sqrt{b^2-4ac} \over 2a}.\]
+</p>
+
+<hr />
+
 <h3><strong>Introduction / Phase Introduction / Planning Phase / Safe Planning / Work Planning / Task Assignments</strong></h3>
 
 <p>We have identified a possible solution, and we are waiting for plan approval by Stakeholders.</p>
@@ -1841,6 +1786,107 @@ Or provide start and end number of glyphs to run:
 
 <hr />
 
+<h3><strong>Introduction / Phase Introduction / Implementation Phase / Solutions / Revisional</strong></h3>
+
+<hr />
+
+<h3><strong>Introduction / Phase Introduction / Implementation Phase / Solutions / Revisional / Parts</strong></h3>
+
+<h3>Parts</h3>
+
+<ul>
+<li>V(Instance)
+<ul>
+<li>Vertices of instace A</li>
+</ul></li>
+<li>E(Instance)
+<ul>
+<li>Edges of instace A</li>
+</ul></li>
+<li>B(Instance)
+<ul>
+<li>Barycentric Edges of instace A, Function B needs the rest of the instances for δ. Starts count from zero as Barycentric point.</li>
+</ul></li>
+</ul>
+
+<hr />
+
+<h3><strong>Introduction / Phase Introduction / Implementation Phase / Solutions / Revisional / Mechanisms</strong></h3>
+
+<h4>Center Transfer Tree (κ, kappa):</h4>
+
+<p>Works only for <strong>B</strong> Barycentric Edges, <code>κB(Vertice Index, Other Instance)</code>. Returns Center Transfer Tree of the provided instance against the other instance.</p>
+
+<h4>Tree (δ, delta):</h4>
+
+<p>On the Current Vertice (cV), we get the Barycentric Vertice it corresponds, we create a perpendicular infinite line (PIL) on that B. Then in the other instances we look for Vertices that are close to that line and create further perpendicular lines extending from those points to meet the PIL. </p>
+
+<p>The intersection point from the other Instances Vertice (oV) to the Current Vertice PIL is called P. The cV, P and oV create a triangle <code>Δ = (cV,P,oV)</code> and an area of the triangle <code>A = (Δ)</code>, we store this for each point for each instance as AreaTriangle (ΔA) that includes <code>ΔA = [ΔA, A(Δ)]</code>. <strong>The ΔA best match is one from ΔA with the smallest Area</strong>.</p>
+
+<p><code>δB(Vertice Index, Other Instance) = sort([ΔA(v23)[A],ΔA(v24)[A],ΔA(v25)[A]]</code></p>
+
+<hr />
+
+<h3><strong>Introduction / Phase Introduction / Implementation Phase / Solutions / Revisional / Complete Logic</strong></h3>
+
+<pre><code>i1 = ([x,y], ...)
+
+Instances = (i1, i2, i3)
+
+i1 = (V(i1), E(i1), B(i1, Instances))
+
+for instance i1
+
+    V(i1) = {v1, v2, ..., vn }
+    E(i1) = {e1, e2, ..., en }
+    B(i1, Instances) = {b0, b1, ..., bn}
+
+provided B(i1) and V(i1) of instance.
+
+    b0 = barycentric of Instance only no kappa.
+    b1 = { κB(v1,i2), κB(v1,i3) }
+    κB(v1,i2) = { δB(v1,i2),δB(v2,i2) }
+
+</code></pre>
+
+<hr />
+
+<h3><strong>Introduction / Phase Introduction / Implementation Phase / Solutions / Revisional / Functions</strong></h3>
+
+<h4>Preparatory Functions</h4>
+
+<p>These functions are used to create the numbers we need to run further comparison logic. We create the graphs and Center Transfer Trees for each Instance.</p>
+
+<ul>
+<li>Prep Functions:
+<ul>
+<li>make_graphs
+<ul>
+<li>make_v</li>
+<li>make_e</li>
+<li>make_b</li>
+</ul></li>
+<li>make_ctt
+<ul>
+<li>make_delta</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<hr />
+
+<h3><strong>Introduction / Phase Introduction / Implementation Phase / Solutions / Revisional / Functions / Function Review</strong></h3>
+
+<h4>Function make_graphs(Instances)</h4>
+
+<p>Creates Instance Graphs <code>V,E,B(without κB)</code> for provided Instances.</p>
+
+<h4>Permute CTT make_ctt(Instances)</h4>
+
+<p>Populates <code>B</code> in each Instance with <code>κB</code> against other Instances, by building <code>δB</code> for each Instance Vertice leveraging Barycentric Edges.</p>
+
+<hr />
+
 <h3><strong>Glossary</strong></h3>
 
 <p><strong>Compatible Instances</strong>: Font instances or weights, that allow for variation.</p>
@@ -1856,6 +1902,8 @@ Or provide start and end number of glyphs to run:
 <h3><strong>Reference</strong></h3>
 
 <p><a href="https://github.com/volkerp/fitCurves">fitCurves</a></p>
+
+<p><a href="https://code.google.com/archive/p/graphbook/downloads">google graphbook</a></p>
 
 <hr />
 </article>

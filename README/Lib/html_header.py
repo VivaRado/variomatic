@@ -16,6 +16,9 @@ header = '''<!doctype html>
 		<script type="text/javascript" src="assets/js/sequence-diagram.js"></script>
 		<script type="text/javascript" src="assets/js/flowchart.js"></script>
 		<script type="text/javascript" src="assets/js/script.js"></script>
+
+		<script type="text/javascript" src="assets/js/tex-mml-chtml.js"></script>
+
 	</head>
 	<body class="markdown">
 		<article class="markdown-body" id="body">%%%CONTENT%%%</article>

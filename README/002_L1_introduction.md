@@ -1,9 +1,5 @@
 ```{include=partials/introduction/profile_project.md,L1}```
 
-
-```{include=partials/p_001_interactivedocumentation.md}```
-
-
 ---
 
 ```{include=partials/introduction/phase_introduction/phase_introduction.md}```
@@ -881,6 +877,15 @@ For example run:
 python3 lib/batric/sample/main.py -a "provide_ufo_a" -b "provide_ufo_b" -l "provide_directory_for_log_output" -g "A"
 ```
 
+---
+
+### **Introduction / Phase Introduction / Planning Phase / Safe Planning / Project Plan / Secondary Review**
+
+<p>
+Mathjax test:
+When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
+\[x = {-b \pm \sqrt{b^2-4ac} \over 2a}.\]
+</p>
 
 ---
 
