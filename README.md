@@ -1,5 +1,80 @@
 
 
+
+
+### **Contents**
+
+1.  **Introduction**
+    1.  **Profile**
+    1.  **Project Overview**
+        1.  **Background**
+        1.  **Need**
+        1.  **Scope**
+        1.  **Activities**
+    1.  **Organisational Documents**
+    1.  **Phase Introduction**
+        1.  **Phase Levels**
+        1.  **Initiation Phase**
+            1.  **Business Case**
+                1.  **Solution Options**
+                1.  **Strategic case**
+                    1.  **Contributions**
+                1.  **Management case**
+                    1.  **Achievements Plan**
+                    1.  **Timescales**
+            1.  **Project Charter**
+                1.  **Project Introduction**
+                    1.  **Project Name**
+                    1.  **Project Statements**
+                    1.  **Project Definition**
+                1.  **Project Goals**
+                1.  **Project Structure**
+                1.  **Deliverables**
+                1.  **Duration**
+        1.  **Planning Phase**
+            1.  **Safe Planning**
+                1.  **Project Plan**
+                    1.  **Simplification Gradient**
+                        1.  **Excessive Points Problem**
+                        1.  **Method Implementation**
+                            1.  **Simplification**
+                            1.  **Graph Search**
+                            1.  **Graph Matching**
+                            1.  **Line Matching**
+                            1.  **Naturalisation**
+                        1.  **Usage**
+                    1.  **Secondary Review**
+                1.  **Work Planning**
+                    1.  **Task Assignments**
+                    1.  **Dependencies**
+                1.  **Schedule Planning**
+            1.  **Stakeholders**
+                1.  **Personnel Plan**
+                1.  **Communication Plan**
+            1.  **Quality Plan**
+                1.  **Quality Targets**
+                1.  **Quality Management**
+        1.  **Implementation Phase**
+            1. **Solutions**
+                1. **BATRIC**
+                1. **Revisional**
+                    1. **Parts**
+                    1. **Mechanisms**
+                    1. **Complete Logic**
+                    1. **Functions**
+                        1. **Function Review**
+
+
+### Glossary
+
+1.  **Glossary**
+
+### Reference
+
+1.  **Reference**
+
+
+
 ![IMG](README/assets/media/variomatic_logo.svg)
 
 
@@ -72,73 +147,6 @@ Currently identified activities:
 
 
 ---
-
-
-
-
-### **Introduction / Organisational Documents**
-
-The documentation for this project and the project modules has been split to partial MD files for easier editing and alterations. Three options are provided (HTML,PDF,MD) Contents of generated files are stored in the ``` /README ``` folder as numbered main files and includes in the ``` /README/partials ``` as partial MD files.
-
-Documentation Types and generating them:
-
-*  HTML - Responsive preview in HTML format - At README directory:
-
-	```python3 README/gen_readme.py -f 'html' -l "L1"```
-
-*  Standard Repository README - At the root of the repository:
-	
-	```python3 README/gen_readme.py -f 'md' -l "L1"```
-
-*  PDF - At the root of the repository:
-	
-	```python3 README/gen_readme.py -f 'pdf' -l "L1"```
-
-You can pass multiple formats:
-
-```python3 README/gen_readme.py -f 'html,pdf,md' -l "L1"```
-
-You can pass documentation Level:
-
-Requirements:
-
-*  Markdown2 module for python3
-	
-	*  Linux: ```pip3 install markdown2```
-	*  Windows: ```py -m pip install markdown2```
-
-*  pygments
-
-	*  Linux: ```pip3 install pygments```
-	*  Windows: ```py -m pip install pygments```
-
-*  weasyprint
-
-	*  Linux: ```pip3 install weasyprint```
-	*  Windows: ```py -m pip install weasyprint```
-
-
-Features:
-
-*  Responsive Interface
-*  Synchronized Sidebar
-*  Hashtag Navigation
-*  PDF with TOC and Cover
-
-Drawbacks:
-
-*  Graphs and Diagrams will not work in github and bitbucket preview, but are still readable.
-*  Graphs and Diagrams will not work in PDF will be assessed.
-
-Details:
-
-*  For the PDF Contents. As we generate URL style blocks:
-	*  We override the weasyprint Document.make_bookmark_tree
-
-*  For the HTML and the Diagrams. As we load them into Codeblocks:
-	*  We override the markdown2 ```Markdown._code_block_sub```
-	*  We override the markdown2 ```Markdown._color_with_pygments```
-
 
 
 ---
@@ -1145,6 +1153,15 @@ For example run:
 python3 lib/batric/sample/main.py -a "provide_ufo_a" -b "provide_ufo_b" -l "provide_directory_for_log_output" -g "A"
 ```
 
+---
+
+### **Introduction / Phase Introduction / Planning Phase / Safe Planning / Project Plan / Secondary Review**
+
+
+Mathjax test:
+When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
+\[x = {-b \pm \sqrt{b^2-4ac} \over 2a}.\]
+
 
 ---
 
@@ -1496,6 +1513,92 @@ image: #036, 0.001, svg, letter "r" with uneven number of points but same start 
 
 
 ---
+
+### **Introduction / Phase Introduction / Implementation Phase / Solutions / Revisional**
+
+---
+
+### **Introduction / Phase Introduction / Implementation Phase / Solutions / Revisional / Parts**
+
+### Parts
+
+* V(Instance)
+	* Vertices of instace A
+* E(Instance)
+	* Edges of instace A
+* B(Instance)
+	* Barycentric Edges of instace A, Function B needs the rest of the instances for δ. Starts count from zero as Barycentric point.
+
+---
+
+### **Introduction / Phase Introduction / Implementation Phase / Solutions / Revisional / Mechanisms**
+
+#### Center Transfer Tree (κ, kappa):
+
+Works only for **B** Barycentric Edges, ```κB(Vertice Index, Other Instance)```. Returns Center Transfer Tree of the provided instance against the other instance.
+
+#### Tree (δ, delta):
+
+On the Current Vertice (cV), we get the Barycentric Vertice it corresponds, we create a perpendicular infinite line (PIL) on that B. Then in the other instances we look for Vertices that are close to that line and create further perpendicular lines extending from those points to meet the PIL. 
+
+The intersection point from the other Instances Vertice (oV) to the Current Vertice PIL is called P. The cV, P and oV create a triangle ```Δ = (cV,P,oV)``` and an area of the triangle ```A = (Δ)```, we store this for each point for each instance as AreaTriangle (ΔA) that includes ```ΔA = [ΔA, A(Δ)]```. **The ΔA best match is one from ΔA with the smallest Area**.
+
+```δB(Vertice Index, Other Instance) = sort([ΔA(v23)[A],ΔA(v24)[A],ΔA(v25)[A]]```
+
+---
+
+### **Introduction / Phase Introduction / Implementation Phase / Solutions / Revisional / Complete Logic**
+
+```
+i1 = ([x,y], ...)
+
+Instances = (i1, i2, i3)
+
+i1 = (V(i1), E(i1), B(i1, Instances))
+
+for instance i1
+
+	V(i1) = {v1, v2, ..., vn }
+	E(i1) = {e1, e2, ..., en }
+	B(i1, Instances) = {b0, b1, ..., bn}
+
+provided B(i1) and V(i1) of instance.
+
+	b0 = barycentric of Instance only no kappa.
+	b1 = { κB(v1,i2), κB(v1,i3) }
+	κB(v1,i2) = { δB(v1,i2),δB(v2,i2) }
+
+```
+
+---
+
+### **Introduction / Phase Introduction / Implementation Phase / Solutions / Revisional / Functions**
+
+#### Preparatory Functions
+
+These functions are used to create the numbers we need to run further comparison logic. We create the graphs and Center Transfer Trees for each Instance.
+
+* Prep Functions:
+	* make\_graphs
+		* make\_v
+		* make\_e
+		* make\_b
+	* make\_ctt
+		* make\_delta
+
+---
+
+### **Introduction / Phase Introduction / Implementation Phase / Solutions / Revisional / Functions / Function Review**
+
+#### Function make_graphs(Instances)
+
+Creates Instance Graphs ```V,E,B(without κB)``` for provided Instances.
+
+#### Permute CTT make_ctt(Instances)
+
+Populates ```B``` in each Instance with ```κB``` against other Instances, by building ```δB``` for each Instance Vertice leveraging Barycentric Edges.
+
+---
 ### **Glossary**
 
 **Compatible Instances**: Font instances or weights, that allow for variation.
@@ -1510,5 +1613,7 @@ image: #036, 0.001, svg, letter "r" with uneven number of points but same start 
 ### **Reference**
 
 [fitCurves](https://github.com/volkerp/fitCurves)
+
+[google graphbook](https://code.google.com/archive/p/graphbook/downloads)
 
 ---

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="dieresis.titling" format="1">
+  <advance width="360"/>
+  <unicode hex="E080"/>
+  <outline>
+    <contour>
+      <point x="103" y="705" type="curve" smooth="yes" name="hr00"/>
+      <point x="126" y="705"/>
+      <point x="143" y="723"/>
+      <point x="143" y="746" type="curve" smooth="yes"/>
+      <point x="143" y="766"/>
+      <point x="126" y="787"/>
+      <point x="103" y="787" type="curve" smooth="yes"/>
+      <point x="80" y="787"/>
+      <point x="64" y="767"/>
+      <point x="64" y="745" type="curve" smooth="yes"/>
+      <point x="65" y="719"/>
+      <point x="80" y="705"/>
+    </contour>
+    <contour>
+      <point x="258" y="705" type="curve" smooth="yes"/>
+      <point x="281" y="705"/>
+      <point x="296" y="723"/>
+      <point x="296" y="746" type="curve" smooth="yes"/>
+      <point x="296" y="766"/>
+      <point x="281" y="787"/>
+      <point x="258" y="787" type="curve" smooth="yes"/>
+      <point x="234" y="787"/>
+      <point x="217" y="767"/>
+      <point x="217" y="745" type="curve" smooth="yes"/>
+      <point x="218" y="719"/>
+      <point x="235" y="705"/>
+    </contour>
+  </outline>
+  <lib>
+  <dict>
+  <key>com.adobe.type.autohint</key>
+  <data>
+  <hintSetList>
+    <hintset pointTag="hr00">
+      <hstem pos="705" width="82" />
+      <vstem pos="64" width="79" />
+      <vstem pos="217" width="79" />
+    </hintset>
+  </hintSetList>
+  </data>
+  </dict>
+  </lib>
+</glyph>
