@@ -39,6 +39,7 @@ font_path_b = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaram
 #
 print(font_path_r)
 print(font_path_b)
+color = ["red","blue","green","cyan", "magenta", "orange", "yellow"]
 #
 g = Graph()
 g.addVertex(1,[10,100])
@@ -144,7 +145,10 @@ def make_glyph(_g_dat,_name):
 	pen = g.getPointPen()
 	glyph_result = readGlyphFromString(_g_dat, glyphObject=g, pointPen=pen)
 	#
+	#
 	f_g = f[_let]
+	#
+	#print(f_g.box)
 	#
 	return f_g
 	#
@@ -244,7 +248,8 @@ class vrmstart():
 		#
 		self.made_letters = {
 			"glyph":made_g,
-			"box": [x_mm, y_mm],
+			"box": made_g.box, # (left_x,bottom_y,y_top,x_right)
+			"box_center": [x_mm, y_mm],
 			"cont":num,
 			"inst":inst,
 			"coords":{
@@ -261,8 +266,8 @@ class vrmstart():
 		#c = c + 1
 		#
 		#
-		get_box_diff_x = self.made_letters["box"][0]# - self.made_letters[1]["box"][0]
-		#get_box_diff_y = self.made_letters[0]["box"][1] - self.made_letters[1]["box"][1]
+		get_box_center_diff_x = self.made_letters["box_center"][0]# - self.made_letters[1]["box_center"][0]
+		#get_box_center_diff_y = self.made_letters[0]["box_center"][1] - self.made_letters[1]["box_center"][1]
 		#
 		#
 		# d = 0
@@ -272,7 +277,7 @@ class vrmstart():
 		# 	#
 		# 	if d == 1:
 		# 		#
-		# 		f_g.moveBy((get_box_diff_x, get_box_diff_y))
+		# 		f_g.moveBy((get_box_center_diff_x, get_box_center_diff_y))
 		# 		#
 		# 		f_g.changed()
 		# 		#
@@ -511,7 +516,7 @@ def get_distance_sorted_contours(root):
 	return dist_conts
 	#
 #
-run_specific = ""
+run_specific = "a"
 #
 inst  = 0
 #
@@ -559,30 +564,41 @@ for u in insts:
 								#
 								_p_st = vrmstart(c_a,0,insts,y)
 								#
-								#
-								#for z in range(len(insts)):
-								#
 								conts[y] = _p_st.make_instance_contours(inst, y)
-								#
-								#print(conts[y])
 								#
 								points = np.asarray(conts[y]["coords"]["strt"])
 								#
 								conts[y]["beziers"] = fitCurve(points, 0)
 								#
-								conts[y]["graph"] = _p_st.make_topo(conts[y], 'r')
+								print(conts[y]["box_center"])
 								#
-								#draw.draw_instance_graphs_c(z, conts)
+								conts[y]["graph"] = _p_st.make_topo(conts[y], color[inst])
+								#
 									#
 								#
 						#
 						var_inst[inst] = conts
-						var_inst[inst]["name"] = u
+						#var_inst[inst]["name"] = u
 						#
+						for k,v in conts.items():
+							#
+							_a = 0
+							#
+							if v["inst"] > 0:
+								#
+								_a = 1
+								#
+							#
+							print('-------------------')
+							print(v["cont"],v["inst"])
+							print(v["cont"]+v["inst"]+_a)
+							#
+							draw.draw_instance_graphs_c(v["cont"]+_a+v["inst"], v)
+							#
 		#pprint.pprint(var_inst)
-		#plt.show()
 	
 	inst = inst + 1
 			
+plt.show()
 		#
 		#time.sleep(10)

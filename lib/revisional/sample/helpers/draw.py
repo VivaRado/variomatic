@@ -9,7 +9,7 @@ import matplotlib.patches as mpatches
 from gpathwrite import *
 from svgpath2mpl import parse_path as mpl_parse_path
 
-color = ["red","blue"]
+color = ["red","blue","green","cyan", "magenta", "orange", "yellow"]
 offset_y = 700
 offset_x = 50
 hide_labels = False
@@ -170,51 +170,42 @@ def draw_instance_graphs(_self):
 		x = x + 1
 		#
 	#
-def draw_instance_graphs_c(plt_num,m_instances):
+def draw_instance_graphs_c(plt_num, m_instances):
 	#
 	_movepos = 500
 	#
-	#plt_num = _self.plt_num
+	i = plt_num 
 	#
-	if plt_num == 0:
-		
-		plt_nums = [0,1]
-		
-	else:
-		
-		plt_nums = [2,3]
-		
+	_w = (int(m_instances["box"][2] - m_instances["box"][1]))+200
+	_h = (int(m_instances["box"][3] - m_instances["box"][0]))+200
 	#
-	x = 0 
+	print(_w,_h)
 	#
-	for i in plt_nums:
+	t_plt = plt.figure(num=plt_num)
+	#
+	x_move = _movepos + 45
+	y_move = _movepos + 150
+	#
+	if i == 0 or i == 2:
 		#
-		t_plt = plt.figure(i)
-		#
-		x_move = _movepos + 45
-		y_move = _movepos + 150
-		#
-		if i == 0 or i == 2:
-			#
-			x_move = 0
+		x_move = 0
 
-		if i == 0 or i == 1:
+	if i == 0 or i == 1:
 
-			y_move = 0
-			#
+		y_move = 0
 		#
-		glyph_path = writeGlyphPath(m_instances[x]["glyph"], True)
-		parse_mpl = mpl_parse_path(glyph_path)
-		#
-		move_figure(t_plt, _movepos, _movepos+100,x_move,y_move)
-		#
-		draw_topo(m_instances[x], t_plt, x, parse_mpl)
-		#
-		x = x + 1
-		#
+	#
+	glyph_path = writeGlyphPath(m_instances["glyph"], True)
+	parse_mpl = mpl_parse_path(glyph_path)
+	#
+	move_figure(t_plt, _w, _h,x_move,y_move)
+	#
+	draw_topo(m_instances, t_plt, m_instances["inst"], parse_mpl, False)
+	#
 	#
 
-def draw_topo(instance, _plt, i, glyph_path):
+
+def draw_topo(instance, _plt, i, glyph_path, move = True):
 	#
 	_color = color[i]
 	#
@@ -237,9 +228,14 @@ def draw_topo(instance, _plt, i, glyph_path):
 	
 	
 	patch = mpatches.PathPatch(glyph_path, facecolor="none", edgecolor=_color, fill=False, lw=0.4)
-	t = mpl.transforms.Affine2D().translate(offset_x,-offset_y) + ax.transData
 	#
-	patch.set_transform(t)
+	if move:
+		#
+		t = mpl.transforms.Affine2D().translate(offset_x,-offset_y) + ax.transData
+		#
+		patch.set_transform(t)
+		#
+	#
 	ax.add_patch(patch)
 	#
 	simp_xPts,simp_yPts=zip(*g_coord_flip_simp)
