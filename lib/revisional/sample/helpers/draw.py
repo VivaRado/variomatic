@@ -176,8 +176,13 @@ def draw_instance_graphs_c(plt_num, m_instances):
 	#
 	i = plt_num 
 	#
-	_w = (int(m_instances["box"][2] - m_instances["box"][1]))+200
-	_h = (int(m_instances["box"][3] - m_instances["box"][0]))+200
+	print(m_instances["parent_box"])
+	print(m_instances["box"])
+	#
+	_w = m_instances["box"].width+200
+	_h = m_instances["box"].height+200
+	#
+	
 	#
 	print(_w,_h)
 	#

@@ -32,28 +32,51 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 #
 sys.path.insert(0, os.path.join(dir_path,'helpers'))
 #
-from graph import Graph
-#
 font_path_r = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Regular.ufo', 'glyphs') )
 font_path_b = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
 #
-print(font_path_r)
-print(font_path_b)
 color = ["red","blue","green","cyan", "magenta", "orange", "yellow"]
 #
-g = Graph()
-g.addVertex(1,[10,100])
-#
-print(g)
-#
-for x in g.getVertices():
+# --------------------------------------- GLIF CONTOUR FUNCTIONS
+def make_glyph(_g_dat,_name):
 	#
-	#t = tuple(v.id for v in g.getVertex(x).connectedTo.keys())
+	_let = _name
+	f = NewFont()
+	g = f.newGlyph(_let)
+	pen = g.getPointPen()
+	glyph_result = readGlyphFromString(_g_dat, glyphObject=g, pointPen=pen)
 	#
-	print(x)
-	v = g.getVertex(x).crd
-	print(v)
-
+	f_g = f[_let]
+	#
+	return f_g
+	#
+#
+def get_glif_coord(f_g, _type):
+	#
+	#
+	p_arr = []
+	#
+	for contour in f_g:
+		#
+		for point in contour.points:
+			#
+			if _type == 'corner':
+				#	
+				if point.type != 'offcurve':
+					#
+					p_arr.append([round(float(point.x+offset_x),1), round(float(point.y-offset_y),1)])
+					#
+				#
+			else:
+				#
+				p_arr.append([round(float(point.x+offset_x),1), round(float(point.y-offset_y),1)])
+				#
+			#
+		#
+	#
+	return p_arr
+	#
+#
 #
 def split_contours_to_glifs(root):
 	#
@@ -136,49 +159,8 @@ def split_contours_to_glifs(root):
 		#
 	return cont_glif
 	#
-#
-def make_glyph(_g_dat,_name):
-	#
-	_let = _name
-	f = NewFont()
-	g = f.newGlyph(_let)
-	pen = g.getPointPen()
-	glyph_result = readGlyphFromString(_g_dat, glyphObject=g, pointPen=pen)
-	#
-	#
-	f_g = f[_let]
-	#
-	#print(f_g.box)
-	#
-	return f_g
-	#
-#
-def get_glif_coord(f_g, _type):
-	#
-	#
-	p_arr = []
-	#
-	for contour in f_g:
-		#
-		for point in contour.points:
-			#
-			if _type == 'corner':
-					
-				if point.type != 'offcurve':
-					#
-					p_arr.append([round(float(point.x+offset_x),1), round(float(point.y-offset_y),1)])
-					#
-			#
-			else:
-				#
-				p_arr.append([round(float(point.x+offset_x),1), round(float(point.y-offset_y),1)])
-				#
 
-		#
-	#
-	return p_arr
-	#
-#
+
 def bez_to_list(coords=False):
 	#
 	do_coords = coords
@@ -202,15 +184,139 @@ def bez_to_list(coords=False):
 	return list_of_tuples
 	#
 #
+def orient_contour_direction(g):
+	#
+	for contour in g:
+		#
+		if contour.clockwise == False:
+			#
+			contour.reverse()
+			#
+		#
+	#
+	g.update()
+	#
+	return g
+	#
 #
-class vrmstart():
+class get_distance_sorted_contours(object):
+	"""
+	Get contours ordered and unidirectional from path string
+	"""
+	def __init__(self, path):
+		#
+		root = ET.parse( path ).getroot()
+		#
+		split_conts = split_contours_to_glifs(root)
+		#
+		if debug:
+			#
+			print("ALL CONTOURS ARE SPLIT TO GLIFS")
+			print(split_conts)
+			#
+		#
+		g_name = root.attrib['name']
+		#
+		dist_sorted = []
+		#
+		for s_c in split_conts:
+			#
+			str_g = ET.tostring(s_c).decode()
+			#
+			made_g = make_glyph(str_g,g_name)
+			#
+			made_g = orient_contour_direction(made_g)
+			#
+			g_strt_coord = get_glif_coord(made_g, 'corner')
+			#
+			dist = 0
+			#
+			i = 0
+			#
+			for y in g_strt_coord:
+				#
+				if i != len(g_strt_coord)-1:
+					#
+					dist = dist + (distance(y,g_strt_coord[i+1]))
+					#
+				#
+				i = i + 1
+				#
+			#
+			#self.string = str_g
+			#self.glyph = made_g
+			#
+			dist_sorted.append([dist, str_g, made_g])
+			#
+		#
+		dist_sorted_sort = sorted(dist_sorted, key = lambda x: x[0], reverse=True) # largest first
+		#
+		self.sorted = dist_sorted_sort
+		#
+		if debug:
+			#
+			print("SORT BY DISTANCE")
+			print(dist_sorted_sort)
+			#
+		#
+	def get(self, inx, _type):
+		#
+		if _type == "string":
+			#
+			to_get = 1
+			#
+		elif _type == "glyph":
+			#
+			to_get = 2
+			#
+		#
+		print(to_get, inx)
+		#
+		return [item[to_get] for item in self.sorted][inx]
+
+	@property
+	def len(self):
+		return len(self.sorted)
+
+#
+class BoundingBox(object):
+	"""
+	A 2D bounding box
+	"""
+	def __init__(self, points):
+		if len(points) == 0:
+			raise ValueError("Can't compute bounding box of empty list")
+		self.minx, self.miny = float("inf"), float("inf")
+		self.maxx, self.maxy = float("-inf"), float("-inf")
+		for x, y in points:
+			# Set min coords
+			if x < self.minx:
+				self.minx = x
+			if y < self.miny:
+				self.miny = y
+			# Set max coords
+			if x > self.maxx:
+				self.maxx = x
+			elif y > self.maxy:
+				self.maxy = y
+	@property
+	def width(self):
+		return self.maxx - self.minx
+	@property
+	def height(self):
+		return self.maxy - self.miny
+	def __repr__(self):
+		return "BoundingBox({}, {}, {}, {})".format(
+			self.minx, self.maxx, self.miny, self.maxy)
+
+
+class vrm_format_instance():
 
 	def __init__(self, g_data_a, plt_num, inst_num, cont_num):
-		super(vrmstart, self).__init__()
+		super(vrm_format_instance, self).__init__()
 		self.made_letters = {}
 		self.m_instances = {}
 		self.g_data_a = g_data_a
-		#self.g_data_b = g_data_b
 		self.plt_num = plt_num
 		self.agreed_matches = collections.OrderedDict()
 		self.sgrad = collections.OrderedDict()
@@ -219,36 +325,22 @@ class vrmstart():
 		
 	#
 	#
-	def make_instance_contours(self, inst, num):
+	def make_instance_contours(self, inst, num, glyph):
 		#
-		#c = num
-		x = self.g_data_a
-		#for x in [self.g_data_a, self.g_data_b]:
-		#
-		root = ET.fromstring(x)
-		#
-		g_name = root.attrib['name']
-		#
-		made_g = make_glyph(x,g_name)
-		#
-		for contour in made_g:
-			#
-			if contour.clockwise == False:
-				#
-				contour.reverse()
-				#
-			#
-		#
-		made_g.update()
-		#
-		g_strt_coord = get_glif_coord(made_g, 'corner')
+		g_strt_coord = get_glif_coord(glyph, 'corner')
 		g_coord_flip = flipCoordPath(g_strt_coord,False,True)
 		x_mm = value_mid(g_coord_flip, 0)
 		y_mm = value_mid(g_coord_flip, 1)
 		#
+		g_orig_coord = get_glif_coord(glyph, 'original')
+		g_strt_coord = get_glif_coord(glyph, 'corner')
+		g_orig = flipCoordPath(g_orig_coord,False,True)
+		g_strt = flipCoordPath(g_strt_coord,False,True)
+		#
 		self.made_letters = {
-			"glyph":made_g,
-			"box": made_g.box, # (left_x,bottom_y,y_top,x_right)
+			"glyph":glyph,
+			"parent_box": BoundingBox(g_orig_coord), # (left_x,bottom_y,y_top,x_right)
+			"box": BoundingBox(g_orig_coord), # (left_x,bottom_y,y_top,x_right)
 			"box_center": [x_mm, y_mm],
 			"cont":num,
 			"inst":inst,
@@ -263,60 +355,16 @@ class vrmstart():
 			"surfaced":{}
 		}
 		#
-		#c = c + 1
-		#
-		#
 		get_box_center_diff_x = self.made_letters["box_center"][0]# - self.made_letters[1]["box_center"][0]
-		#get_box_center_diff_y = self.made_letters[0]["box_center"][1] - self.made_letters[1]["box_center"][1]
 		#
 		#
-		# d = 0
-		# for let, val in self.made_letters.items():
-		# 	#
-		# 	f_g = self.made_letters[d]["glyph"]
-		# 	#
-		# 	if d == 1:
-		# 		#
-		# 		f_g.moveBy((get_box_center_diff_x, get_box_center_diff_y))
-		# 		#
-		# 		f_g.changed()
-		# 		#
-		# 	#
-		# 	d = d + 1
-		# 	#
-		# # #
-		#i = num
-		#
-		#for x in [self.g_data_a, self.g_data_b]:
-		#
-		root = ET.fromstring(x)
-		#
-		g_name = root.attrib['name']
-		#
-		made_g = self.made_letters["glyph"]
-		#
-		g_strt_coord = get_glif_coord(made_g, 'corner')
-		g_coord_flip = flipCoordPath(g_strt_coord,False,True)
-		x_mm = value_mid(g_coord_flip, 0)
-		y_mm = value_mid(g_coord_flip, 1)
-		#
-		g_orig_coord = get_glif_coord(made_g, 'original')
-		g_strt_coord = get_glif_coord(made_g, 'corner')
-		#
-		g_orig = flipCoordPath(g_orig_coord,False,True)
-		g_strt = flipCoordPath(g_strt_coord,False,True)
 		#
 		self.made_letters["coords"]["orig"] = g_orig
 		self.made_letters["coords"]["graph"] = g_strt_coord
 		self.made_letters["coords"]["strt"] = g_strt
 		#
-		#i = i + 1
-		#
-		#
 		return self.made_letters
 		#
-	#
-
 	#
 	def get_edge_lengths(self,_g, pos):
 		#
@@ -333,8 +381,7 @@ class vrmstart():
 		return lengths
 		#
 	#
-	def make_topo(self, f_g, _color):
-		#
+	def make_instance_topo(self, f_g, _color):
 		#
 		l_tp = bez_to_list(f_g["beziers"])
 		#
@@ -347,7 +394,7 @@ class vrmstart():
 			_g.clear()
 			#
 		else:
-			#if hasattr(self,'G'):
+			#
 			if f_g["graph"] != None:
 				#
 				_g = f_g["graph"]#self.G
@@ -359,13 +406,6 @@ class vrmstart():
 				_g = f_g["graph"]
 				#
 			#
-			x_mm = value_mid(g_coord_flip, 0)
-			y_mm = value_mid(g_coord_flip, 1)
-			#
-			g_coord_flip_simp = g_coord_flip.copy()
-			#
-			g_coord_flip.insert(0,[x_mm,y_mm])
-			#
 			node_color_map = []
 			edge_width_map = []
 			node_width_map = []
@@ -373,6 +413,14 @@ class vrmstart():
 			edge_label_map = {}
 			node_label_map = {}
 			node_order_map = OrderedDict()
+			#
+			x_mm = value_mid(g_coord_flip, 0)
+			y_mm = value_mid(g_coord_flip, 1)
+			#
+			g_coord_flip_simp = g_coord_flip.copy()
+			#
+			g_coord_flip.insert(0,[x_mm,y_mm])
+			#
 			#
 			for x in range(len(g_coord_flip)):
 				#
@@ -389,7 +437,7 @@ class vrmstart():
 				node_width_map.append(140)
 				#
 			#
-			pos=nx.get_node_attributes(_g,'pos')
+			pos = nx.get_node_attributes(_g,'pos')
 			#
 			edge_lengths = self.get_edge_lengths(_g, pos)
 			#
@@ -459,64 +507,7 @@ class vrmstart():
 		#
 	#
 #
-
-def get_distance_sorted_contours(root):
-	#
-	split_conts = split_contours_to_glifs(root)
-	#
-	if debug:
-		#
-		print("ALL CONTOURS ARE SPLIT TO GLIFS")
-		print(split_conts)
-		#
-	#
-	g_name = root.attrib['name']
-	#
-	dist_sorted = []
-	#
-	for s_c in split_conts:
-		#
-		str_g = ET.tostring(s_c).decode()
-		#
-		made_g = make_glyph(str_g,g_name)
-		#
-		g_strt_coord = get_glif_coord(made_g, 'corner')
-		#
-		dist = 0
-		#
-		i = 0
-		#
-		for y in g_strt_coord:
-			#
-			if i != len(g_strt_coord)-1:
-				#
-				dist = dist + (distance(y,g_strt_coord[i+1]))
-				#
-			#
-			i = i + 1
-			#
-		#
-		dist_sorted.append([dist, str_g])
-		#
-	#
-	dist_sorted_sort = sorted(dist_sorted, key = lambda x: x[0], reverse=True) # largest first
-	#
-	if debug:
-		#
-		print("SORT BY DISTANCE")
-		print(dist_sorted_sort)
-		#
-	#
-	dist_conts = [item[1] for item in dist_sorted_sort]
-	#
-	if debug:
-		print("GET CONTOURS FROM DISTANCE SORTED")
-		print(dist_conts)
-	#
-	return dist_conts
-	#
-#
-run_specific = "a"
+run_specific = "i"
 #
 inst  = 0
 #
@@ -536,49 +527,34 @@ for u in insts:
 				#
 				if run_specific == x[1].split(".glif")[0]:
 					#
-					#print ('\n'+tcolor.WARNING + "RUNNING: " + run_specific + tcolor.ENDC)
-					#
-					print(x)
 					is_file_a = os.path.isfile(os.path.join(u,x[1]))
-					#is_file_b = os.path.isfile(os.path.join(font_path_b,x[1]))
 					#
-					if is_file_a:# and is_file_b:
+					if is_file_a:
 						#
-						root_a = ET.parse( os.path.join(u,x[1]) ).getroot()
-						#root_b = ET.parse( os.path.join(font_path_b,x[1]) ).getroot()
+						dist_sort_cont = get_distance_sorted_contours(os.path.join(u,x[1]))
 						#
 						conts = {}
 						#
-						dist_sorted_a = get_distance_sorted_contours(root_a)
-						#dist_sorted_b = get_distance_sorted_contours(root_b)
-						#
-						#
-						for y in range(len(dist_sorted_a)):
+						for y in range(dist_sort_cont.len):
 							#
-							c_a = dist_sorted_a[y]
-							#c_b = dist_sorted_b[y]
+							dsc_str = dist_sort_cont.get(y,"string")
+							dsc_glf = dist_sort_cont.get(y,"glyph")
 							#
-							if c_a:# and c_b:
+							if dsc_str:
 								#
-								input_contours = [c_a]
+								input_contours = [dsc_str]
 								#
-								_p_st = vrmstart(c_a,0,insts,y)
+								vrm_format = vrm_format_instance(dsc_str,0,insts,y)
 								#
-								conts[y] = _p_st.make_instance_contours(inst, y)
+								conts[y] = vrm_format.make_instance_contours(inst, y, dsc_glf)
 								#
 								points = np.asarray(conts[y]["coords"]["strt"])
-								#
 								conts[y]["beziers"] = fitCurve(points, 0)
 								#
-								print(conts[y]["box_center"])
-								#
-								conts[y]["graph"] = _p_st.make_topo(conts[y], color[inst])
-								#
-									#
+								conts[y]["graph"] = vrm_format.make_instance_topo(conts[y], color[inst])
 								#
 						#
 						var_inst[inst] = conts
-						#var_inst[inst]["name"] = u
 						#
 						for k,v in conts.items():
 							#
@@ -589,16 +565,17 @@ for u in insts:
 								_a = 1
 								#
 							#
-							print('-------------------')
-							print(v["cont"],v["inst"])
-							print(v["cont"]+v["inst"]+_a)
+							plot_window_number = v["cont"]+v["inst"]+_a
 							#
-							draw.draw_instance_graphs_c(v["cont"]+_a+v["inst"], v)
+							draw.draw_instance_graphs_c(plot_window_number, v)
 							#
-		#pprint.pprint(var_inst)
+						#
+					#
+				#
+			#
+		#
+	#
 	
 	inst = inst + 1
 			
 plt.show()
-		#
-		#time.sleep(10)
