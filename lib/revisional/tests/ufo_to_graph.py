@@ -38,168 +38,10 @@ font_path_b = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaram
 color = ["red","blue","green","cyan", "magenta", "orange", "yellow"]
 #
 # --------------------------------------- GLIF CONTOUR FUNCTIONS
-def make_glyph(_g_dat,_name):
-	#
-	_let = _name
-	f = NewFont()
-	g = f.newGlyph(_let)
-	pen = g.getPointPen()
-	glyph_result = readGlyphFromString(_g_dat, glyphObject=g, pointPen=pen)
-	#
-	f_g = f[_let]
-	#
-	return f_g
-	#
-#
-def get_glif_coord(f_g, _type):
-	#
-	#
-	p_arr = []
-	#
-	for contour in f_g:
-		#
-		for point in contour.points:
-			#
-			if _type == 'corner':
-				#	
-				if point.type != 'offcurve':
-					#
-					p_arr.append([round(float(point.x+offset_x),1), round(float(point.y-offset_y),1)])
-					#
-				#
-			else:
-				#
-				p_arr.append([round(float(point.x+offset_x),1), round(float(point.y-offset_y),1)])
-				#
-			#
-		#
-	#
-	return p_arr
-	#
-#
-#
-def split_contours_to_glifs(root):
-	#
-	'''
-	iterate over the glif, remove everything but advance, unicode and outline
-	bypass notdef, space .. probably other too
-	get standalone glif letters with each contour one by one, 
-	the whole data of the letter but with only one of the contours in it at a time
-	'''
-	#
-	got = False
-	#
-	cont_glif = []
-	got_contours = []
-	#
-	for item in root.iter():
-		#
-		contours = []
-		contours_str = []
-		#
-		if item.tag == 'glyph':
-			#
-			if item.attrib['name'] in ['.notdef', 'space']:
-				pass
-			else:
-				#
-				for outline in item.findall('outline'):
-					#
-					for contour in outline.findall('contour'):
-						#
-						contour_str = contour#
-						#
-						contours.append(contour)
-						contours_str.append(ET.tostring(contour).decode())
-						#
-					#
-				#
-				if len(contours):
-					#
-					for x in contours_str:
-						#	
-						root_ = deepcopy(root)
-						#
-						for _item in root_.iter():
-							#
-							for _tag in _item.iter():
-								#
-								if _tag.tag == 'lib':
-									#
-									_item.remove(_tag)
-									#
-								#
-							#
-							for outline in _item.findall('outline'):
-								#
-								for contour in outline.findall('contour'):
-									#
-									if ET.tostring(contour).decode() != x:
-										#
-										outline.remove(contour)
-										#
-									#
-							#
-						if root_ not in cont_glif:
-							#
-							cont_glif.append(root_)
-								#
-							#
-					got = True
-					#
-				else:
-					#
-					largest_contour = None
-					#
-			#
-		#
-		else:
-			pass
-		
-		#
-	return cont_glif
-	#
 
 
-def bez_to_list(coords=False):
-	#
-	do_coords = coords
-	#
-	myPath = []
-	for x in do_coords:
-		#
-		for y in x:
-			#
-			y_l = y.tolist()
-			#
-			if y_l not in myPath:
-				#
-				myPath.append(y_l)
-				#
-			#
-		#
 
-	list_of_tuples = list(tuple(x) for x in myPath)
-	#
-	return list_of_tuples
-	#
-#
-def orient_contour_direction(g):
-	#
-	for contour in g:
-		#
-		if contour.clockwise == False:
-			#
-			contour.reverse()
-			#
-		#
-	#
-	g.update()
-	#
-	return g
-	#
-#
-class get_distance_sorted_contours(object):
+class ContourNormalizer(object):
 	"""
 	Get contours ordered and unidirectional from path string
 	"""
@@ -207,7 +49,7 @@ class get_distance_sorted_contours(object):
 		#
 		root = ET.parse( path ).getroot()
 		#
-		split_conts = split_contours_to_glifs(root)
+		split_conts = self.split_contours_to_glifs(root)
 		#
 		if debug:
 			#
@@ -223,11 +65,15 @@ class get_distance_sorted_contours(object):
 			#
 			str_g = ET.tostring(s_c).decode()
 			#
-			made_g = make_glyph(str_g,g_name)
+			made_g = self.make_glyph(str_g,g_name)
 			#
-			made_g = orient_contour_direction(made_g)
+			made_g = self.orient_contour_direction(made_g)
 			#
-			g_strt_coord = get_glif_coord(made_g, 'corner')
+			self.made_g = made_g
+			#
+			print(made_g)
+			#
+			g_strt_coord = self.get_glif_coord(made_g,'corner')
 			#
 			dist = 0
 			#
@@ -259,6 +105,143 @@ class get_distance_sorted_contours(object):
 			print(dist_sorted_sort)
 			#
 		#
+	#
+	def get_glif_coord(self, made_g, _type):
+		#
+		#
+		p_arr = []
+		#
+		for contour in made_g:
+			#
+			for point in contour.points:
+				#
+				if _type == 'corner':
+					#	
+					if point.type != 'offcurve':
+						#
+						p_arr.append([round(float(point.x+offset_x),1), round(float(point.y-offset_y),1)])
+						#
+					#
+				else:
+					#
+					p_arr.append([round(float(point.x+offset_x),1), round(float(point.y-offset_y),1)])
+					#
+				#
+			#
+		#
+		return p_arr
+		#
+	#
+	#
+	def orient_contour_direction(self, g):
+		#
+		for contour in g:
+			#
+			if contour.clockwise == False:
+				#
+				contour.reverse()
+				#
+			#
+		#
+		g.update()
+		#
+		return g
+		#
+	#
+	def split_contours_to_glifs(self, root):
+		#
+		'''
+		iterate over the glif, remove everything but advance, unicode and outline
+		bypass notdef, space .. probably other too
+		get standalone glif letters with each contour one by one, 
+		the whole data of the letter but with only one of the contours in it at a time
+		'''
+		#
+		got = False
+		#
+		cont_glif = []
+		got_contours = []
+		#
+		for item in root.iter():
+			#
+			contours = []
+			contours_str = []
+			#
+			if item.tag == 'glyph':
+				#
+				if item.attrib['name'] in ['.notdef', 'space']:
+					pass
+				else:
+					#
+					for outline in item.findall('outline'):
+						#
+						for contour in outline.findall('contour'):
+							#
+							contour_str = contour#
+							#
+							contours.append(contour)
+							contours_str.append(ET.tostring(contour).decode())
+							#
+						#
+					#
+					if len(contours):
+						#
+						for x in contours_str:
+							#	
+							root_ = deepcopy(root)
+							#
+							for _item in root_.iter():
+								#
+								for _tag in _item.iter():
+									#
+									if _tag.tag == 'lib':
+										#
+										_item.remove(_tag)
+										#
+									#
+								#
+								for outline in _item.findall('outline'):
+									#
+									for contour in outline.findall('contour'):
+										#
+										if ET.tostring(contour).decode() != x:
+											#
+											outline.remove(contour)
+											#
+										#
+								#
+							if root_ not in cont_glif:
+								#
+								cont_glif.append(root_)
+									#
+								#
+						got = True
+						#
+					else:
+						#
+						largest_contour = None
+						#
+				#
+			#
+			else:
+				pass
+			
+			#
+		return cont_glif
+		#
+	def make_glyph(self, _g_dat,_name):
+		#
+		_let = _name
+		f = NewFont()
+		g = f.newGlyph(_let)
+		pen = g.getPointPen()
+		glyph_result = readGlyphFromString(_g_dat, glyphObject=g, pointPen=pen)
+		#
+		f_g = f[_let]
+		#
+		return f_g
+		#
+	#
 	def get(self, inx, _type):
 		#
 		if _type == "string":
@@ -305,18 +288,32 @@ class BoundingBox(object):
 	@property
 	def height(self):
 		return self.maxy - self.miny
+	@property
+	def value_mid(self):
+		#
+		_mx_x = self.maxx
+		_mn_x = self.minx
+		_mx_y = self.maxy
+		_mn_y = self.miny
+		#
+		mid_x = (_mx_x + _mn_x) / 2
+		mid_y = (_mx_y + _mn_y) / 2
+		#
+		return [mid_x,mid_y]
+		#
 	def __repr__(self):
 		return "BoundingBox({}, {}, {}, {})".format(
 			self.minx, self.maxx, self.miny, self.maxy)
 
 
-class vrm_format_instance():
+class GraphConstructor():
 
-	def __init__(self, g_data_a, plt_num, inst_num, cont_num):
-		super(vrm_format_instance, self).__init__()
+	def __init__(self, dist_sort_cont, plt_num, inst_num, cont_num):
+		super(GraphConstructor, self).__init__()
 		self.made_letters = {}
 		self.m_instances = {}
-		self.g_data_a = g_data_a
+		self.dist_sort_cont = dist_sort_cont
+		self.g_data_a = self.dist_sort_cont.get(cont_num,"string")
 		self.plt_num = plt_num
 		self.agreed_matches = collections.OrderedDict()
 		self.sgrad = collections.OrderedDict()
@@ -325,22 +322,24 @@ class vrm_format_instance():
 		
 	#
 	#
-	def make_instance_contours(self, inst, num, glyph):
+	def initiate_instance(self, inst, num, glyph, g_ ):
 		#
-		g_strt_coord = get_glif_coord(glyph, 'corner')
-		g_coord_flip = flipCoordPath(g_strt_coord,False,True)
-		x_mm = value_mid(g_coord_flip, 0)
-		y_mm = value_mid(g_coord_flip, 1)
+		glyph = g_.get(y,"glyph")
 		#
-		g_orig_coord = get_glif_coord(glyph, 'original')
-		g_strt_coord = get_glif_coord(glyph, 'corner')
+		g_strt_coord = g_.get_glif_coord(glyph,'corner')
+		g_orig_coord = g_.get_glif_coord(glyph,'original')
+		#
+		bbox = BoundingBox(g_orig_coord)
+		#
+		x_mm = bbox.value_mid[0]
+		y_mm = bbox.value_mid[1]
+		#
 		g_orig = flipCoordPath(g_orig_coord,False,True)
 		g_strt = flipCoordPath(g_strt_coord,False,True)
 		#
 		self.made_letters = {
 			"glyph":glyph,
-			"parent_box": BoundingBox(g_orig_coord), # (left_x,bottom_y,y_top,x_right)
-			"box": BoundingBox(g_orig_coord), # (left_x,bottom_y,y_top,x_right)
+			"box": bbox,
 			"box_center": [x_mm, y_mm],
 			"cont":num,
 			"inst":inst,
@@ -356,8 +355,6 @@ class vrm_format_instance():
 		}
 		#
 		get_box_center_diff_x = self.made_letters["box_center"][0]# - self.made_letters[1]["box_center"][0]
-		#
-		#
 		#
 		self.made_letters["coords"]["orig"] = g_orig
 		self.made_letters["coords"]["graph"] = g_strt_coord
@@ -381,9 +378,33 @@ class vrm_format_instance():
 		return lengths
 		#
 	#
+	def bez_to_list(self, coords=False):
+		#
+		do_coords = coords
+		#
+		myPath = []
+		for x in do_coords:
+			#
+			for y in x:
+				#
+				y_l = y.tolist()
+				#
+				if y_l not in myPath:
+					#
+					myPath.append(y_l)
+					#
+				#
+			#
+
+		list_of_tuples = list(tuple(x) for x in myPath)
+		#
+		return list_of_tuples
+		#
+	#
+	#
 	def make_instance_topo(self, f_g, _color):
 		#
-		l_tp = bez_to_list(f_g["beziers"])
+		l_tp = self.bez_to_list(f_g["beziers"])
 		#
 		g_coord_flip = flipCoordPath(l_tp,False,True)
 		#
@@ -531,7 +552,7 @@ for u in insts:
 					#
 					if is_file_a:
 						#
-						dist_sort_cont = get_distance_sorted_contours(os.path.join(u,x[1]))
+						dist_sort_cont = ContourNormalizer(os.path.join(u,x[1]))
 						#
 						conts = {}
 						#
@@ -542,16 +563,14 @@ for u in insts:
 							#
 							if dsc_str:
 								#
-								input_contours = [dsc_str]
+								GC = GraphConstructor(dist_sort_cont,0,insts,y)
 								#
-								vrm_format = vrm_format_instance(dsc_str,0,insts,y)
-								#
-								conts[y] = vrm_format.make_instance_contours(inst, y, dsc_glf)
+								conts[y] = GC.initiate_instance(inst, y, dsc_glf, dist_sort_cont)
 								#
 								points = np.asarray(conts[y]["coords"]["strt"])
 								conts[y]["beziers"] = fitCurve(points, 0)
 								#
-								conts[y]["graph"] = vrm_format.make_instance_topo(conts[y], color[inst])
+								conts[y]["graph"] = GC.make_instance_topo(conts[y], color[inst])
 								#
 						#
 						var_inst[inst] = conts
