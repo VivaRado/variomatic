@@ -13,17 +13,15 @@ from matplotlib import pyplot as plt
 from networkx import *
 from networkx.readwrite import json_graph
 from networkx.algorithms import isomorphism
-
+#
 from fontParts.world import *
 from fontTools.ufoLib.glifLib import GlifLibError, readGlyphFromString
 #
 from context import sample
 from pnt import *
 from geom import *
-#
 import draw
-#
-from fitCurves import *
+from fitCurves_b import *
 #
 debug = False
 offset_y = 0
@@ -32,15 +30,8 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 #
 sys.path.insert(0, os.path.join(dir_path,'helpers'))
 #
-font_path_r = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Regular.ufo', 'glyphs') )
-font_path_b = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
-#
 color = ["red","blue","green","cyan", "magenta", "orange", "yellow"]
 #
-# --------------------------------------- GLIF CONTOUR FUNCTIONS
-
-
-
 class ContourNormalizer(object):
 	"""
 	Get contours ordered and unidirectional from path string
@@ -71,8 +62,6 @@ class ContourNormalizer(object):
 			#
 			self.made_g = made_g
 			#
-			print(made_g)
-			#
 			g_strt_coord = self.get_glif_coord(made_g,'corner')
 			#
 			dist = 0
@@ -89,9 +78,6 @@ class ContourNormalizer(object):
 				i = i + 1
 				#
 			#
-			#self.string = str_g
-			#self.glyph = made_g
-			#
 			dist_sorted.append([dist, str_g, made_g])
 			#
 		#
@@ -107,7 +93,6 @@ class ContourNormalizer(object):
 		#
 	#
 	def get_glif_coord(self, made_g, _type):
-		#
 		#
 		p_arr = []
 		#
@@ -131,7 +116,6 @@ class ContourNormalizer(object):
 		#
 		return p_arr
 		#
-	#
 	#
 	def orient_contour_direction(self, g):
 		#
@@ -170,7 +154,9 @@ class ContourNormalizer(object):
 			if item.tag == 'glyph':
 				#
 				if item.attrib['name'] in ['.notdef', 'space']:
+					#
 					pass
+					#
 				else:
 					#
 					for outline in item.findall('outline'):
@@ -221,14 +207,16 @@ class ContourNormalizer(object):
 						#
 						largest_contour = None
 						#
+					#
 				#
 			#
 			else:
 				pass
-			
 			#
+		#
 		return cont_glif
 		#
+	#
 	def make_glyph(self, _g_dat,_name):
 		#
 		_let = _name
@@ -252,8 +240,6 @@ class ContourNormalizer(object):
 			#
 			to_get = 2
 			#
-		#
-		print(to_get, inx)
 		#
 		return [item[to_get] for item in self.sorted][inx]
 
@@ -302,32 +288,32 @@ class BoundingBox(object):
 		return [mid_x,mid_y]
 		#
 	def __repr__(self):
+		#
 		return "BoundingBox({}, {}, {}, {})".format(
 			self.minx, self.maxx, self.miny, self.maxy)
 
 
 class GraphConstructor():
 
-	def __init__(self, dist_sort_cont, plt_num, inst_num, cont_num):
+	def __init__(self, dist_sort_cont, inst_num, cont_num):
 		super(GraphConstructor, self).__init__()
 		self.made_letters = {}
 		self.m_instances = {}
 		self.dist_sort_cont = dist_sort_cont
 		self.g_data_a = self.dist_sort_cont.get(cont_num,"string")
-		self.plt_num = plt_num
+		#self.plt_num = plt_num
 		self.agreed_matches = collections.OrderedDict()
 		self.sgrad = collections.OrderedDict()
 		self.inst_num = inst_num
 		self.cont_num = cont_num
-		
-	#
-	#
-	def initiate_instance(self, inst, num, glyph, g_ ):
 		#
-		glyph = g_.get(y,"glyph")
+	#
+	def initiate_instance(self, inst, num, CN ):
 		#
-		g_strt_coord = g_.get_glif_coord(glyph,'corner')
-		g_orig_coord = g_.get_glif_coord(glyph,'original')
+		glyph = CN.get(num,"glyph")
+		#
+		g_strt_coord = CN.get_glif_coord(glyph,'corner')
+		g_orig_coord = CN.get_glif_coord(glyph,'original')
 		#
 		bbox = BoundingBox(g_orig_coord)
 		#
@@ -337,16 +323,16 @@ class GraphConstructor():
 		g_orig = flipCoordPath(g_orig_coord,False,True)
 		g_strt = flipCoordPath(g_strt_coord,False,True)
 		#
-		self.made_letters = {
+		self.instance = {
 			"glyph":glyph,
 			"box": bbox,
 			"box_center": [x_mm, y_mm],
 			"cont":num,
 			"inst":inst,
 			"coords":{
-				"orig": None,
-				"strt": None,
-				"graph": None
+				"orig": g_orig,
+				"strt": g_strt,
+				"graph": g_strt_coord
 				},
 			"graph":None,
 			"graph_json":{},
@@ -354,13 +340,7 @@ class GraphConstructor():
 			"surfaced":{}
 		}
 		#
-		get_box_center_diff_x = self.made_letters["box_center"][0]# - self.made_letters[1]["box_center"][0]
-		#
-		self.made_letters["coords"]["orig"] = g_orig
-		self.made_letters["coords"]["graph"] = g_strt_coord
-		self.made_letters["coords"]["strt"] = g_strt
-		#
-		return self.made_letters
+		return self.instance
 		#
 	#
 	def get_edge_lengths(self,_g, pos):
@@ -395,12 +375,11 @@ class GraphConstructor():
 					#
 				#
 			#
-
+		#
 		list_of_tuples = list(tuple(x) for x in myPath)
 		#
 		return list_of_tuples
 		#
-	#
 	#
 	def make_instance_topo(self, f_g, _color):
 		#
@@ -416,17 +395,6 @@ class GraphConstructor():
 			#
 		else:
 			#
-			if f_g["graph"] != None:
-				#
-				_g = f_g["graph"]#self.G
-				_g.clear()
-				#
-			else:
-				#
-				f_g["graph"] = nx.Graph()
-				_g = f_g["graph"]
-				#
-			#
 			node_color_map = []
 			edge_width_map = []
 			node_width_map = []
@@ -435,18 +403,26 @@ class GraphConstructor():
 			node_label_map = {}
 			node_order_map = OrderedDict()
 			#
-			x_mm = value_mid(g_coord_flip, 0)
-			y_mm = value_mid(g_coord_flip, 1)
+			if f_g["graph"] != None:
+				#
+				_g = f_g["graph"]
+				_g.clear()
+				#
+			else:
+				#
+				f_g["graph"] = nx.Graph()
+				_g = f_g["graph"]
+				#
+			#
+			x_mm = f_g["box"].value_mid[0]
+			y_mm = f_g["box"].value_mid[1]
 			#
 			g_coord_flip_simp = g_coord_flip.copy()
-			#
 			g_coord_flip.insert(0,[x_mm,y_mm])
-			#
 			#
 			for x in range(len(g_coord_flip)):
 				#
 				_g.add_edge(0,x)
-				#
 				_g.add_node(x,pos=g_coord_flip[x])
 				#
 			#
@@ -461,14 +437,8 @@ class GraphConstructor():
 			pos = nx.get_node_attributes(_g,'pos')
 			#
 			edge_lengths = self.get_edge_lengths(_g, pos)
-			#
 			sorted_length = sorted(edge_lengths.items(), key=lambda k: k[1]['len'], reverse=True)
-			#
 			sort_by_length = OrderedDict(sorted_length)
-			#
-			#
-			i = 0
-			d = 0
 			#
 			sorted_nodes = []
 			#
@@ -509,7 +479,6 @@ class GraphConstructor():
 				#
 			#
 			f_g["graph_data"] = {
-				#"pos":pos,
 				"node_color_map":node_color_map,
 				"edge_width_map":edge_width_map,
 				"node_width_map":node_width_map,
@@ -528,54 +497,56 @@ class GraphConstructor():
 		#
 	#
 #
-run_specific = "i"
+font_instance_a = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Regular.ufo', 'glyphs') )
+font_instance_b = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
 #
-inst  = 0
+run_specific = "a"
+instance_list = [font_instance_a, font_instance_b]
+simplification = 0
 #
-insts = [font_path_r, font_path_b]
+inst_counter = 0
+instance_dict = {}
 #
-var_inst = {}
-#
-for u in insts:
+for font_inst in instance_list:
 	#
-	with open(os.path.join(u,'contents.plist'), 'rb') as f:
+	with open(os.path.join(font_inst,'contents.plist'), 'rb') as f:
 		#
 		pl = plistlib.load(f)
 		#
-		for x in pl.items():
+		for pl_itm in pl.items():
+			#
+			t_pl = pl_itm[1]
 			#
 			if run_specific != "":
 				#
-				if run_specific == x[1].split(".glif")[0]:
+				if run_specific == t_pl.split(".glif")[0]:
 					#
-					is_file_a = os.path.isfile(os.path.join(u,x[1]))
+					file_exists = os.path.isfile(os.path.join(font_inst, t_pl))
 					#
-					if is_file_a:
+					if file_exists:
 						#
-						dist_sort_cont = ContourNormalizer(os.path.join(u,x[1]))
+						CN = ContourNormalizer(os.path.join(font_inst, t_pl))
 						#
-						conts = {}
+						contours = {}
 						#
-						for y in range(dist_sort_cont.len):
+						for cnt in range(CN.len):
 							#
-							dsc_str = dist_sort_cont.get(y,"string")
-							dsc_glf = dist_sort_cont.get(y,"glyph")
+							GC = GraphConstructor(CN,instance_list,cnt)
 							#
-							if dsc_str:
-								#
-								GC = GraphConstructor(dist_sort_cont,0,insts,y)
-								#
-								conts[y] = GC.initiate_instance(inst, y, dsc_glf, dist_sort_cont)
-								#
-								points = np.asarray(conts[y]["coords"]["strt"])
-								conts[y]["beziers"] = fitCurve(points, 0)
-								#
-								conts[y]["graph"] = GC.make_instance_topo(conts[y], color[inst])
-								#
+							contours[cnt] = GC.initiate_instance(inst_counter, cnt, CN)
+							#
+
+							points = np.asarray(contours[cnt]["coords"]["strt"])
+							#
+							#
+							contours[cnt]["beziers"] = fitCurve(points, float(simplification)**2)
+							#
+							contours[cnt]["graph"] = GC.make_instance_topo(contours[cnt], color[inst_counter])
+							#
 						#
-						var_inst[inst] = conts
+						instance_dict[inst_counter] = contours
 						#
-						for k,v in conts.items():
+						for k,v in contours.items():
 							#
 							_a = 0
 							#
@@ -594,7 +565,7 @@ for u in insts:
 			#
 		#
 	#
-	
-	inst = inst + 1
+	inst_counter = inst_counter + 1
+	#
 			
 plt.show()
