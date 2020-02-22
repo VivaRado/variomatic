@@ -170,16 +170,16 @@ def draw_instance_graphs(_self):
 		x = x + 1
 		#
 	#
-def draw_instance_graphs_c(plt_num, m_instances):
+def draw_instance_graphs_c(m_instances):
 	#
 	_movepos = 500
 	#
-	i = plt_num 
+	i = m_instances["plot_num"] 
 	#
 	_w = m_instances["box"].width+200
 	_h = m_instances["box"].height+200
 	#
-	t_plt = plt.figure(num=plt_num)
+	t_plt = plt.figure(num=i)
 	#
 	x_move = _movepos + 45
 	y_move = _movepos + 150

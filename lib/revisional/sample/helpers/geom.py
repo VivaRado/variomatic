@@ -208,3 +208,47 @@ def move_coord_by(coord, move_by):
 	#
 	return moved
 	#
+#
+class BoundingBox(object):
+	"""
+	A 2D bounding box
+	"""
+	def __init__(self, points):
+		if len(points) == 0:
+			raise ValueError("Can't compute bounding box of empty list")
+		self.minx, self.miny = float("inf"), float("inf")
+		self.maxx, self.maxy = float("-inf"), float("-inf")
+		for x, y in points:
+			# Set min coords
+			if x < self.minx:
+				self.minx = x
+			if y < self.miny:
+				self.miny = y
+			# Set max coords
+			if x > self.maxx:
+				self.maxx = x
+			elif y > self.maxy:
+				self.maxy = y
+	@property
+	def width(self):
+		return self.maxx - self.minx
+	@property
+	def height(self):
+		return self.maxy - self.miny
+	@property
+	def value_mid(self):
+		#
+		_mx_x = self.maxx
+		_mn_x = self.minx
+		_mx_y = self.maxy
+		_mn_y = self.miny
+		#
+		mid_x = (_mx_x + _mn_x) / 2
+		mid_y = (_mx_y + _mn_y) / 2
+		#
+		return [mid_x,mid_y]
+		#
+	def __repr__(self):
+		#
+		return "BoundingBox({}, {}, {}, {})".format(
+			self.minx, self.maxx, self.miny, self.maxy)
