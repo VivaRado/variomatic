@@ -3,10 +3,11 @@ from context import sample
 
 from numpy import array
 from bezier import *
-from fitCurves_c import *
-#from fitCurves_d import *
-from tkinter import *
 
+from fitCurves_d import *
+from shapely_simp import *
+from tkinter import *
+import pprint
 
 import time
 
@@ -424,7 +425,7 @@ class simp():
 		SGrad is a list of coodinate evaluation on their persistance across the simplification
 		'''
 		#
-		l_tp = self.bez_to_list()
+		l_tp = self.coordinates#bez_to_list()
 		#
 		for c in l_tp:
 			#
@@ -445,7 +446,8 @@ class simp():
 	
 	def draw_plot(self, f_g):
 		#
-		l_tp = self.bez_to_list()
+		l_tp = self.coordinates
+		#l_tp = self.bez_to_list()
 		#
 		g_coord_flip = self.flipCoordPath(l_tp,False,True)
 		#
@@ -511,10 +513,8 @@ class MainObject:
 		#
 		points = np.asarray(g_coord_corner_flip)
 		#
-		simplified_points = fitCurve(points, float(self.spinbox.get())**2)
-		#
-		print(simplified_points)
-		print('-----<')
+		# shapely simplify with preserve_topology
+		simplified_points = simplif(points, float(self.spinbox.get()))
 		#
 		self.simp.coordinates = simplified_points
 		self.simp.shape = g_coord_reg_flip

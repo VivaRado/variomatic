@@ -49,6 +49,7 @@ from pnt import *
 from gpathwrite import *
 import draw
 from geom import *
+from shapely_simp import *
 from fitCurves import *
 from simple_path import *
 from svgPathPen import SVGPathPen
@@ -3838,7 +3839,7 @@ class variom:
 		#
 		self.draggingPoint = None
 		#
-		self.m_instances = self.vrmstart.make_instances()
+		self.m_instances = self.vrmstart.initiate_instance()
 		#
 		#
 		for x in range(len(self.m_instances.items())):
@@ -5878,9 +5879,15 @@ if __name__ == '__main__':
 			for simp in simplification:
 				#
 				print(simp)
-				contours[cnt]["beziers"][simp] = fitCurve(points, float(simp)**2)
 				#
-				contours[cnt]["graph"][simp] = GC.make_instance_topo(contours[cnt], color[inst_counter], simp)
+				# shapely simplify with preserve_topology
+				simplified_points = simplif(points, float(simp))
+				#
+				#
+				#contours[cnt]["beziers"][simp] = fitCurve(points, float(simp)**2)
+				contours[cnt]["beziers"] = simplified_points#simplified_points(points, float(simp))
+				#
+				contours[cnt]["graph"] = GC.make_instance_topo(contours[cnt], color[inst_counter], simp)
 				#
 
 			#

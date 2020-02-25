@@ -116,14 +116,22 @@ class GraphConstructor():
 	#
 	def make_instance_topo(self, f_g, _color, simp):
 		#
-		l_tp = self.bez_to_list(f_g["beziers"])
+		#l_tp = self.bez_to_list(f_g["beziers"])
+		#
+		l_tp = f_g["simplified"][simp]#list(f_g["simplified"].values())[simp]
+		print('---??', l_tp)
+		
+		# list()[simp]#self.bez_to_list(f_g["beziers"])
 		#
 		g_coord_flip = flipCoordPath(l_tp,False,True)
 		#
-		if len(f_g["graph_json"]):
+		print("=============================== has graph")
+		print(f_g["graph"])
+		#
+		if f_g["graph"] != None:
 			#
 			_g = json_graph.node_link_graph(f_g["graph_json"])
-			f_g["graph"]
+			#f_g["graph"]
 			_g.clear()
 			#
 		else:
@@ -136,6 +144,7 @@ class GraphConstructor():
 			node_label_map = {}
 			node_order_map = OrderedDict()
 			#
+			#
 			if f_g["graph"] != None:
 				#
 				_g = f_g["graph"]
@@ -146,6 +155,9 @@ class GraphConstructor():
 				f_g["graph"] = nx.Graph()
 				_g = f_g["graph"]
 				#
+			#
+			print("MAKING G")
+			print(_g)
 			#
 			x_mm = f_g["box"].value_mid[0]
 			y_mm = f_g["box"].value_mid[1]

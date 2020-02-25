@@ -181,6 +181,11 @@ def draw_instance_graphs_c(m_instances):
 	#
 	t_plt = plt.figure(num=i)
 	#
+	
+	#
+	print("PLOT FIGURE")
+	print(t_plt)
+	#
 	x_move = _movepos + 45
 	y_move = _movepos + 150
 	#

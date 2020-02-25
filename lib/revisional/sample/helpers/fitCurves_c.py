@@ -19,7 +19,7 @@ def fitCubic(points, error):
     # Parameterize points, and attempt to fit curve
     u = chordLengthParameterize(points)
     #
-    bezCurve = [points[0], points[0], points[-1], points[-1]]
+    bezCurve = [[0,0], points[0], points[-1], [0,0]]
     # Find max deviation of points to fitted curve
     maxError, splitPoint = computeMaxError(points, bezCurve, u)
     #
@@ -48,9 +48,6 @@ def computeMaxError(points, bez, parameters):
     maxDist = 0.0
     splitPoint = len(points)/2
     for i, (point, u) in enumerate(zip(points, parameters)):
-        #
-        print("----")
-        print(bezier.q(bez, u))
         #
         dist = linalg.norm(bezier.q(bez, u)-point)**1.4
         if dist > maxDist:
