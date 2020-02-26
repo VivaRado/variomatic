@@ -16,9 +16,6 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 #
 sys.path.insert(0, os.path.join(dir_path,'helpers'))
 #
-from tkinter import *
-#
-#
 from context import sample
 from pnt import *
 from geom import *
@@ -27,172 +24,29 @@ import draw
 from shapely_simp import *
 from fitCurves_b import *
 from colors import tcolor
+from colors import color
 #
 from contour_holder import ContourHolder
 from graph_constructor import GraphConstructor
-#
-color = ["red","blue","green","cyan", "magenta", "orange", "yellow"]
-#
-
-#
-
-
-
+from iter_draw import IterDraw
 #
 font_instance_a = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Regular.ufo', 'glyphs') )
 font_instance_b = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
+font_instance_c = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
 #
-run_specific = "a"
-instance_list = [font_instance_a, font_instance_b]
+run_specific = "e"
+instance_list = [font_instance_a, font_instance_b, font_instance_c]
 simplification = list(range(0,50))#[0,1,2,3,4,5,6,7,8,9,10]
 #
 inst_counter = 0
 instance_dict = {}
 #
-'''
-ContourHolder
-	ContourNormalizer
-GraphConstructor
-GraphEvaluator
-InstanceMatcher
-	PointNormalizer
-'''
-#
-class IterDraw(object):
-	"""docstring for IterDraw"""
-	def __init__(self, instances):
-		super(IterDraw, self).__init__()
-		self.instances = instances
-		self.run_sp = 'a'
-
-		#
-	#
-	def run(self):
-		#
-		root = Tk()
-		#
-		# if self.plt_num == 0:
-		# 	#
-		root.geometry("100x100+1600+0")
-		# 	#
-		# else:
-		# 	#
-		# 	root.geometry("100x100+1700+0")
-		# 	#
-		#
-		frame = Frame(root, relief=SUNKEN, borderwidth=1)
-		frame.pack(side=LEFT, fill=Y)
-		label = Label(frame, text='Max Error')
-		label.pack()
-		self.spinbox = Spinbox(frame, width=8, from_=0.0, to=1000000.0, command=self.on_matching_value_change)
-		self.spinbox.delete(0,"end")
-		self.spinbox.insert(0,0)
-		self.spinbox.pack()
-		label_iter = Label(frame, text='Iteration')
-		label_iter.pack()
-		self.rad_search_box = Spinbox(frame, width=8, from_=0, to=1000000, command=self.on_matching_value_change)
-		self.rad_search_box.delete(0,"end")
-		self.rad_search_box.insert(0,0)
-		self.rad_search_box.pack()
-		#
-		#
-		self._simp = 0
-		self._iter = 0
-	
-		#
-		if self.run_sp != "":
-			#
-			self.spinbox.delete(0,"end")
-			self.spinbox.insert(0,0)
-			self.rad_search_box.delete(0,"end")
-			self.rad_search_box.insert(0,0)
-			#
-		self.redraw()
-		#
-		#
-	#
-	def on_matching_value_change(self):
-		#
-		#self.init_instances() # repeat in case of simplification
-		#
-		self.redraw()
-		#
-	#
-	def make_iter(self, val_simplification = False, val_iteration = False, _plt = False):
-		#
-		if _plt:
-			#
-			if self.run_sp != "":
-				#
-				print ('\n'+tcolor.WARNING + "MANUAL MATCH REVIEW:" + "\n\tSIMPLIFICATION: " + str(self.spinbox.get())+ "\n\tPOINT: " + str(self.rad_search_box.get()) + tcolor.ENDC)
-				#
-			else:
-				#
-				print ('\n'+tcolor.WARNING + "MATCH REVIEW:" + "\n\tSIMPLIFICATION: " + str(self._simp)+ "\n\tPOINT: " + str(self._iter) + tcolor.ENDC)
-				#
-		#
-			
-		if val_simplification == False and val_iteration == False:
-			#
-			if self.run_sp != "":
-				#
-				val_simplification = self.spinbox.get()
-				val_iteration = self.rad_search_box.get()
-				#
-			#
-			else:
-				#
-				val_simplification = self._simp
-				val_iteration = self._iter
-				#
-		#
-
-		for x in self.instances: # instance
-			#
-			for y in self.instances[x]: # letter
-				#
-				for z in self.instances[x][y]: # contour
-					#
-					inst_inx = self.instances[x][y][z]["inst"]
-					cont_inx = self.instances[x][y][z]["cont"]
-					#
-					#print("INST INX", inst_inx)
-					#print("CNT INX", cont_inx)
-					#print("SIMP VALUE", val_simplification)
-					#
-					if int(val_simplification) in self.instances[x][y][z]["simplified"].keys():
-						#
-
-						#
-						print("---")
-						print(val_simplification, self.instances[x][y][z]["simplified"][int(val_simplification)])
-						#
-						#self.instances[x][y][z] = GC.make_instance_topo(self.instances[x][y][z], color[inst_inx],0)
-						self.instances[x][y][z]["graph"] = None
-						self.instances[x][y][z] = GC.make_instance_topo(self.instances[x][y][z], color[inst_inx],int(val_simplification))
-						#
-						print("GRAPH", self.instances[x][y][z]["graph"])
-						#
-						draw.draw_instance_graphs_c(self.instances[x][y][z])
-
-	def redraw(self):
-		#
-		self.make_iter(0,0,plt)
-		#
-		plt.show(block = False)
-		#
+CH = {}
+GC = {}
 #
 total_list = {}
 #
-'''
-total_list = {
-	instance_int:{
-		"glyph_name":{
-			contours
-		}
-	}
-}
-'''
+plt_num = 0
 #
 for font_inst in instance_list:
 	#
@@ -219,19 +73,19 @@ for font_inst in instance_list:
 						#
 						CH = ContourHolder(os.path.join(font_inst, t_pl), debug)
 						#
-						glyph = CH.get(inst_counter,"glyph")
-						#
-						total_list[inst_counter][glyph] = {}
-						#
-						g_orig_coord = CH.get_glif_coord(glyph,'get_type')
-						#
-						#print(g_orig_coord)
-						#
-						contours = total_list[inst_counter][glyph]
+						cont_counter = CH.len
 						#
 						for cnt in range(CH.len):
 							#
-							GC = GraphConstructor(CH,instance_list,cnt, inst_counter, simplification, debug)
+							glyph = CH.get(cnt,"glyph")
+							#
+							total_list[inst_counter][glyph] = {}
+							#
+							g_orig_coord = CH.get_glif_coord(glyph,'get_type')
+							#
+							contours = total_list[inst_counter][glyph]
+							#
+							GC = GraphConstructor(CH,instance_list,cnt, inst_counter, simplification, plt_num, debug)
 							#
 							contours[cnt] = GC.initiate_instance(inst_counter, cnt, CH)
 							#
@@ -243,8 +97,10 @@ for font_inst in instance_list:
 								#
 								simplified_points = simplif(points, simp)
 								#
-								contours[cnt]["simplified"][simp] = simplified_points#fitCurve(points, float(simp)**2)
+								contours[cnt]["simplified"][simp] = simplified_points
 								#
+							#
+							plt_num = plt_num + 1
 							#
 						#
 					#
@@ -254,14 +110,23 @@ for font_inst in instance_list:
 	#
 	inst_counter = inst_counter + 1
 	#
+	#plt_num = plt_num + 1
+	#
 #
-#pprint.pprint(total_list)
-initiate_drawing = IterDraw(total_list)
+initiate_drawing = IterDraw(total_list, GC, plt)
 #
 initiate_drawing.run()
 #
 plt.show()
 #
+'''
+ContourHolder
+	ContourNormalizer
+GraphConstructor
+GraphEvaluator
+InstanceMatcher
+	PointNormalizer
+'''
 # corner, asym-smooth-point, sym-smooth-point
 '''
 Vertice Types:
@@ -284,3 +149,21 @@ Connection Types:
 		At a smooth connection, the direction of the straight segment and the control vector of a curve or the control vectors of two sequential curves are kept collinear (lie on the same straight line), i.e. the angle between the two segments at the node is fixed at 180 degrees.
 '''
 #
+'''
+total_list = {
+	instance_int:{
+		"glyph_name":{
+			contours:{
+				"simplified":{
+					"simplification_integer":{
+						[x,y],[x,y]...
+					},
+					"simplification_integer":{},
+					...
+				},
+				"glyph":{}
+			}
+		}
+	}
+}
+'''

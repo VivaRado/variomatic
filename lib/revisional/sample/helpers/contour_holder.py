@@ -4,6 +4,7 @@ from fontParts.world import *
 from fontTools.ufoLib.glifLib import GlifLibError, readGlyphFromString
 from pnt import *
 
+
 class ContourHolder(object):
 	"""
 	Get contours ordered and unidirectional from path string
@@ -72,23 +73,11 @@ class ContourHolder(object):
 		#
 		for contour in made_g:
 			#
-			print("CNT POINTS")
-			#
 			oncurvep = [item for item in contour.points if item.type != 'offcurve']
-			#
-			print(len(oncurvep))
-			print(len(contour.bPoints))
 			#
 			for bpoint in contour.bPoints:
 				#
-				#print("BPOINT")
-				#print(bpoint)
-				#
 				psmooth = oncurvep[contour.bPoints.index(bpoint)].smooth
-				#
-				print("-----")
-				#
-				print( bpoint.bcpIn, bpoint.anchor, bpoint.bcpOut, bpoint.type, psmooth)
 				#
 				
 			#

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="tilde.cap" format="1">
+  <advance width="360"/>
+  <outline>
+    <contour>
+      <point x="147" y="798" type="line" smooth="yes" name="hr00"/>
+      <point x="124" y="798"/>
+      <point x="110" y="793"/>
+      <point x="94" y="775" type="curve"/>
+      <point x="77" y="760"/>
+      <point x="58" y="708"/>
+      <point x="55" y="691" type="curve"/>
+      <point x="58" y="684"/>
+      <point x="69" y="683"/>
+      <point x="75" y="687" type="curve"/>
+      <point x="95" y="724"/>
+      <point x="112" y="740"/>
+      <point x="159" y="740" type="curve" smooth="yes"/>
+      <point x="215" y="740" type="line" smooth="yes"/>
+      <point x="237" y="740"/>
+      <point x="251" y="742"/>
+      <point x="266" y="756" type="curve" smooth="yes"/>
+      <point x="281" y="770"/>
+      <point x="299" y="807"/>
+      <point x="305" y="834" type="curve"/>
+      <point x="302" y="842"/>
+      <point x="294" y="843"/>
+      <point x="288" y="839" type="curve"/>
+      <point x="263" y="804"/>
+      <point x="251" y="798"/>
+      <point x="208" y="798" type="curve" smooth="yes"/>
+    </contour>
+  </outline>
+  <lib>
+  <dict>
+  <key>com.adobe.type.autohint</key>
+  <data>
+  <hintSetList>
+    <hintset pointTag="hr00">
+      <hstem pos="740" width="58" />
+      <vstem pos="55" width="250" />
+    </hintset>
+  </hintSetList>
+  </data>
+  </dict>
+  </lib>
+</glyph>

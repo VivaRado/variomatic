@@ -172,7 +172,12 @@ def draw_instance_graphs(_self):
 	#
 def draw_instance_graphs_c(m_instances):
 	#
-	_movepos = 500
+	_movepos = 0
+	#
+	if m_instances["inst"] > 0:
+		#
+		_movepos = 600 * m_instances["inst"]
+		#
 	#
 	i = m_instances["plot_num"] 
 	#
@@ -181,22 +186,9 @@ def draw_instance_graphs_c(m_instances):
 	#
 	t_plt = plt.figure(num=i)
 	#
-	
+	x_move = _movepos
 	#
-	print("PLOT FIGURE")
-	print(t_plt)
-	#
-	x_move = _movepos + 45
-	y_move = _movepos + 150
-	#
-	if i == 0 or i == 2:
-		#
-		x_move = 0
-
-	if i == 0 or i == 1:
-
-		y_move = 0
-		#
+	y_move = 700 * m_instances["cont"]
 	#
 	glyph_path = writeGlyphPath(m_instances["glyph"], True)
 	parse_mpl = mpl_parse_path(glyph_path)

@@ -7,28 +7,18 @@ from geom import *
 
 class GraphConstructor():
 
-	def __init__(self, dist_sort_cont, inst_num, cont_num,inst_counter, simps, debug):
+	def __init__(self, dist_sort_cont, inst_num, cont_num,inst_counter, simps, plt_num, debug):
 		super(GraphConstructor, self).__init__()
 		self.made_letters = {}
 		self.m_instances = {}
 		self.dist_sort_cont = dist_sort_cont
 		self.g_data_a = self.dist_sort_cont.get(cont_num,"string")
-		# plt_num
 		self.agreed_matches = collections.OrderedDict()
 		self.sgrad = collections.OrderedDict()
 		self.inst_num = inst_num
 		self.cont_num = cont_num
 		self.simps = simps
-		#
-		_a = 0
-		#
-		if inst_counter > 0:
-			#
-			_a = 1
-			#
-		#
-		#
-		self.plt_num = cont_num+inst_counter+_a
+		self.plt_num = plt_num
 		#
 	#
 	def initiate_instance(self, inst, num, CN ):
@@ -46,15 +36,6 @@ class GraphConstructor():
 		g_orig = flipCoordPath(g_orig_coord,False,True)
 		g_strt = flipCoordPath(g_strt_coord,False,True)
 		#
-		_a = 0
-		#
-		if inst > 0:
-			#
-			_a = 1
-			#
-		#
-		plot_window_number = num+inst+_a
-		#
 		self.instance = {
 			"glyph":glyph,
 			"box": bbox,
@@ -67,7 +48,7 @@ class GraphConstructor():
 				"graph": g_strt_coord
 				},
 			"graph":None,
-			"plot_num":plot_window_number,
+			"plot_num":self.plt_num,
 			"graph_json":{},
 			"agreed":{},
 			"surfaced":{}
@@ -119,14 +100,9 @@ class GraphConstructor():
 		#l_tp = self.bez_to_list(f_g["beziers"])
 		#
 		l_tp = f_g["simplified"][simp]#list(f_g["simplified"].values())[simp]
-		print('---??', l_tp)
-		
 		# list()[simp]#self.bez_to_list(f_g["beziers"])
 		#
 		g_coord_flip = flipCoordPath(l_tp,False,True)
-		#
-		print("=============================== has graph")
-		print(f_g["graph"])
 		#
 		if f_g["graph"] != None:
 			#
@@ -155,9 +131,6 @@ class GraphConstructor():
 				f_g["graph"] = nx.Graph()
 				_g = f_g["graph"]
 				#
-			#
-			print("MAKING G")
-			print(_g)
 			#
 			x_mm = f_g["box"].value_mid[0]
 			y_mm = f_g["box"].value_mid[1]
