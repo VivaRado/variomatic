@@ -71,8 +71,11 @@ class ContourHolder(object):
 		#
 		p_arr = []
 		#
+		print(made_g)
+		#
 		for contour in made_g:
 			#
+
 			oncurvep = [item for item in contour.points if item.type != 'offcurve']
 			#
 			for bpoint in contour.bPoints:
@@ -104,6 +107,25 @@ class ContourHolder(object):
 		return p_arr
 		#
 	#
+	def autoStartSegment():
+
+		startIndex = 0
+		startSegment = self.segments[0]
+		for i in range(len(self.segments)):
+			segment = self.segments[i]
+			startOn = startSegment.onCurve
+			on = segment.onCurve
+			if on.y <= startOn.y:
+				if on.y == startOn.y:
+					if on.x < startOn.x:
+						startSegment = segment
+						startIndex = i
+				else:
+					startSegment = segment
+					startIndex = i
+		if startIndex != 0:
+			self.setStartSegment(startIndex)
+	#
 	def orient_contour_direction(self, g):
 		#
 		for contour in g:
@@ -111,6 +133,8 @@ class ContourHolder(object):
 			if contour.clockwise == False:
 				#
 				contour.reverse()
+				#
+				contour.autoStartSegment()
 				#
 			#
 		#
@@ -213,6 +237,13 @@ class ContourHolder(object):
 		glyph_result = readGlyphFromString(_g_dat, glyphObject=g, pointPen=pen)
 		#
 		f_g = f[_let]
+		#
+		#print(f_g)
+		#
+		#for contour in f_g:
+			#
+		#	print(cont)
+			#contour.autoStartSegment()
 		#
 		return f_g
 		#

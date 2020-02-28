@@ -247,3 +247,9 @@ def draw_topo(instance, _plt, i, glyph_path, move = True):
 		#
 	nx.draw_networkx_labels(_g,pos,node_label_map,font_size=5.5, font_color='white', font_family='monospace', font_weight='bold')
 	#
+
+def get_gca(plot_num, plt):
+	#
+	t_plt = plt.figure(num=plot_num)
+	return t_plt.gca()
+	#

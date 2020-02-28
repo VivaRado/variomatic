@@ -1,5 +1,6 @@
 #
 import draw
+import geom
 from tkinter import *
 from colors import color
 #
@@ -23,42 +24,47 @@ class IterDraw(object):
 		frame.pack(side=LEFT, fill=Y)
 		label = Label(frame, text='Max Error')
 		label.pack()
-		self.spinbox = Spinbox(frame, width=8, from_=0.0, to=1000000.0, command=self.on_matching_value_change)
-		self.spinbox.delete(0,"end")
-		self.spinbox.insert(0,0)
-		self.spinbox.pack()
+		self.val_smp = Spinbox(frame, width=8, from_=0, to=1000000, command=self.on_simplification_value_change)
+		self.val_smp.delete(0,"end")
+		self.val_smp.insert(0,0)
+		self.val_smp.pack()
 		label_iter = Label(frame, text='Iteration')
 		label_iter.pack()
-		self.rad_search_box = Spinbox(frame, width=8, from_=0, to=1000000, command=self.on_matching_value_change)
-		self.rad_search_box.delete(0,"end")
-		self.rad_search_box.insert(0,0)
-		self.rad_search_box.pack()
+		self.val_pnt = Spinbox(frame, width=8, from_=1, to=1000000, command=self.on_point_value_change)
+		self.val_pnt.delete(0,"end")
+		self.val_pnt.insert(0,1)
+		self.val_pnt.pack()
 		#
-		self._simp = 0
-		self._iter = 0
+		self._smp = 0
+		self._pnt = 1
 		#
 		# if self.run_sp != "":
 		# 	#
-		# 	self.spinbox.delete(0,"end")
-		# 	self.spinbox.insert(0,0)
-		# 	self.rad_search_box.delete(0,"end")
-		# 	self.rad_search_box.insert(0,0)
+		# 	self.val_smp.delete(0,"end")
+		# 	self.val_smp.insert(0,0)
+		# 	self.val_pnt.delete(0,"end")
+		# 	self.val_pnt.insert(0,0)
 			#
 		self.redraw(True, True)
 		#
 	#
-	def on_matching_value_change(self):
+	def on_simplification_value_change(self):
 		#
 		self.redraw(True, True)
 		#
 	#
-	def make_iter(self, val_simplification, val_iteration, draw_graph, draw_ctt, _plt=False):
+	def on_point_value_change(self):
+		#
+		self.redraw(False, True)
+		#
+	#
+	def make_iter(self, _val_smp, _val_pnt, redraw_smp, redraw_pnt, _plt=False):
 		#
 		# if _plt:
 		# 	#
 		# 	if self.run_sp != "":
 		# 		#
-		# 		print ('\n'+tcolor.WARNING + "MANUAL MATCH REVIEW:" + "\n\tSIMPLIFICATION: " + str(self.spinbox.get())+ "\n\tPOINT: " + str(self.rad_search_box.get()) + tcolor.ENDC)
+		# 		print ('\n'+tcolor.WARNING + "MANUAL MATCH REVIEW:" + "\n\tSIMPLIFICATION: " + str(self.val_smp.get())+ "\n\tPOINT: " + str(self.val_pnt.get()) + tcolor.ENDC)
 		# 		#
 		# 	else:
 		# 		#
@@ -66,39 +72,76 @@ class IterDraw(object):
 		# 		#
 		# #
 			
-		if val_simplification == False and val_iteration == False:
+		if _val_smp == False and _val_pnt == False:
 			#
 			#if self.run_sp != "":
 				#
-			val_simplification = self.spinbox.get()
-			val_iteration = self.rad_search_box.get()
+			_val_smp = int(self.val_smp.get())
+			_val_pnt = int(self.val_pnt.get())
 				#
 			#
 			#else:
 				#
-			#	val_simplification = self._simp
-			#	val_iteration = self._iter
+			#	val_smp = self._simp
+			#	val_pnt = self._iter
 				#
 		#
-		for x in self.instances: # instance
+		for instance in self.instances:
 			#
-			for y in self.instances[x]: # letter
+			for letter in self.instances[instance]:
 				#
-				for z in self.instances[x][y]: # contour
+				for contour in self.instances[instance][letter]:
 					#
-					inst_inx = self.instances[x][y][z]["inst"]
-					cont_inx = self.instances[x][y][z]["cont"]
+					t_contour = self.instances[instance][letter][contour] # this
+					inst_inx = t_contour["inst"]
+					cont_inx = t_contour["cont"]
 					#
-					if int(val_simplification) in self.instances[x][y][z]["simplified"].keys():
+					t_color = color[inst_inx]
+					#
+					# Draw Graphs
+					#
+					if int(_val_smp) in t_contour["simplified"].keys():
 						#
-						if draw_graph:
+						# Recalculate Graph according to simplified match index if _val_smp is changed shown by redraw_smp = True
+						#
+						if redraw_smp:
 							#
-							self.instances[x][y][z]["graph"] = None
-							self.instances[x][y][z] = self.GC.make_instance_topo(self.instances[x][y][z], color[inst_inx],int(val_simplification))
+							t_contour["graph"] = None
+							t_contour = self.GC.make_instance_topo(t_contour, t_color,_val_smp)
 							#
 						#
-						draw.draw_instance_graphs_c(self.instances[x][y][z])
+						draw.draw_instance_graphs_c(t_contour)
 						#
+					#
+					# Draw Start Point (After Graph because erase plot)
+					#
+					contour_start_point = t_contour["coords"]["graph"][0]
+					#
+					t_plot = draw.get_gca(t_contour["plot_num"], self.plt)
+					#
+					draw.draw_circle_on_coord(contour_start_point, t_plot, 20, t_color, False)
+					#
+					if redraw_pnt:
+						#
+						t_simp = t_contour["simplified"][_val_smp]
+						contour_t_pnt = t_simp[_val_pnt-1]
+						#
+						if len(t_simp) >= _val_pnt-1:
+							#
+							g_coord_flip = geom.flipCoordPath([contour_t_pnt],False,True)
+							print(g_coord_flip)
+							#
+							draw.draw_circle_on_coord(g_coord_flip[0], t_plot, 15, t_color, False)
+							#
+						#
+					#
+					# if redraw_pnt:
+					# 	#
+					# 	contour_t_pnt = t_contour["coords"]["strt"][_val_pnt-1]
+					# 	g_coord_flip = geom.flipCoordPath([contour_t_pnt],False,True)
+					# 	#
+					# 	draw.draw_circle_on_coord(g_coord_flip[0], t_plot, 15, t_color, False)
+					# 	#
 
 	def redraw(self, graph, ctt):
 		#

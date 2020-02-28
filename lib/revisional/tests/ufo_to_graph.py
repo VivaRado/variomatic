@@ -48,6 +48,8 @@ total_list = {}
 #
 plt_num = 0
 #
+
+#
 for font_inst in instance_list:
 	#
 	total_list[inst_counter] = {}

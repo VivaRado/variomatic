@@ -35,7 +35,6 @@ from networkx.algorithms import isomorphism
 from svgpathtools import parse_path as pt_parse_path
 from fontTools.ufoLib.glifLib import GlifLibError, readGlyphFromString
 #
-#
 dir_path = os.path.dirname(os.path.realpath(__file__))
 # for standalone (python3 ../main.py)
 sys.path.insert(0, os.path.join(dir_path,'helpers'))
@@ -55,9 +54,6 @@ from svgPathPen import SVGPathPen
 from svgpath2mpl import parse_path as mpl_parse_path
 #
 from glyph_strings import *
-#
-from contour_holder import ContourHolder
-from graph_constructor import GraphConstructor
 #
 from argparse import ArgumentParser
 #
@@ -142,7 +138,7 @@ Known issues:
 
 '''
 #
-_simplification_seed = [0,1]#list(range(0,7))+list(range(10,15))# or [0,1,4,5,6,7,8,20,21]
+_simplification_seed = list(range(0,7))+list(range(10,15))# or [0,1,4,5,6,7,8,20,21]
 #
 #
 start_simpl = 0
@@ -3849,7 +3845,7 @@ class variom:
 			#
 			self.m_instances[x]["beziers"] = fitCurve(points, float(val_simplification)**2)
 			#
-			self.m_instances[x]["graph"] = self.vrmstart.make_topo(self.m_instances[x], color[x])
+			#self.m_instances[x]["graph"] = self.vrmstart.make_topo(self.m_instances[x], color[x])
 			#
 
 		#
@@ -3894,28 +3890,28 @@ class variom:
 		#val_iteration = self.rad_search_box.get()
 		#
 		_a_instance = self.m_instances[0]
-		points = _a_instance["graph_data"]["sort_by_length"]
+		#points = _a_instance["graph_data"]["sort_by_length"]
 		#
-		self.initial_coords_a = self.m_instances[0]["coords"]["graph"]
-		self.initial_coords_b = self.m_instances[1]["coords"]["graph"]
-		self.initial_coords_strt_a = self.m_instances[0]["graph_data"]["g_coord_flip_simp"]
-		self.initial_coords_strt_b = self.m_instances[1]["graph_data"]["g_coord_flip_simp"]
+		#self.initial_coords_a = self.m_instances[0]["coords"]["graph"]
+		#self.initial_coords_b = self.m_instances[1]["coords"]["graph"]
+		#self.initial_coords_strt_a = self.m_instances[0]["graph_data"]["g_coord_flip_simp"]
+		#self.initial_coords_strt_b = self.m_instances[1]["graph_data"]["g_coord_flip_simp"]
 		#
-		if debug:
+		#if debug:
 			#
-			print("================================================")
-			pprint.pprint(self.m_instances[1]["coords"]["graph"])
-			pprint.pprint(len(self.m_instances[1]["coords"]["graph"]))
+		#	print("================================================")
+		#	pprint.pprint(self.m_instances[1]["coords"]["graph"])
+		#	pprint.pprint(len(self.m_instances[1]["coords"]["graph"]))
 			#
 		#
 		coords = []
 		#
-		for k in list(points.values()):
-			#
-			coords.append([k["coord"],k["node"]])
-			#
-		#
-		# 
+		# for k in list(points.values()):
+		# 	#
+		# 	coords.append([k["coord"],k["node"]])
+		# 	#
+		# #
+		# # 
 		#self._simp = start_simpl
 		#self._iter = start_point
 		#
@@ -3926,7 +3922,7 @@ class variom:
 			for x in coords:
 				#
 				_a_instance = self.m_instances[0]
-				points = _a_instance["graph_data"]["sort_by_length"]
+				#points = _a_instance["graph_data"]["sort_by_length"]
 				#
 				for k in list(points.values()):
 					#
@@ -3939,7 +3935,7 @@ class variom:
 							self.make_iter(y,k["node"], False)
 							#
 							self._simp = y
-							self._iter = k["node"]
+							#self._iter = k["node"]
 							#
 							print ('                                                                    ', end='\r')
 							print (tcolor.WARNING + "SIMPLIFICATION: " + str(y) + ", POINT:" +str(k["node"])+ tcolor.ENDC, end='\r')
@@ -5401,10 +5397,10 @@ class vrmcomb:
 			#
 			bsc_clean = self.basic_cleanup(s_unc_line, t_unc_line, unc_lines_s, s_mc_line, t_mc_line, get_cert_line_to_plot, cax, t_plt)
 			#
-			#save_dir = os.path.join(self.log_output, name.split('.glif')[0]+'.json')
+			save_dir = os.path.join(self.log_output, name.split('.glif')[0]+'.json')
 			#
-			#with open(save_dir, 'w') as f:
-			#	json.dump(comb_plot, f)
+			with open(save_dir, 'w') as f:
+				json.dump(comb_plot, f)
 			#
 			if show_low_uncertainty_lines:
 				#
@@ -5592,13 +5588,13 @@ class vrmcomb:
 			# HIGH UNCERTAINTY LINE SOLUTIONS END
 			# 
 			#
-			#save_dir = os.path.join(self.log_output, name.split('.glif')[0]+'.svg')
+			save_dir = os.path.join(self.log_output, name.split('.glif')[0]+'.svg')
 			# 
 			print ('\n'+tcolor.WARNING + "SAVING SVG MATCHING RESULT: " + tcolor.ENDC)
-			#print('\n'+save_dir)
+			print('\n'+save_dir)
 			#
 		#
-		#plt.figure(4).savefig(save_dir)
+		plt.figure(4).savefig(save_dir)
 
 		if self.run_sp != "":
 			#
@@ -5825,164 +5821,10 @@ if __name__ == '__main__':
 				#
 			else:
 				#
-				print("CANNOT GET CONTOURS FOR INSTANCES GLIFS")
+				print("GLIFS OF UNEQUAL CONTOUR LENGTH")
 				#
 			#
-	#
-	def run_vmatic_b(font_inst, t_pl, inst_counter, run_sp):
 		#
-		CH = ContourHolder(os.path.join(font_inst, t_pl), debug)
-		#
-		glyph = CH.get(inst_counter,"glyph")
-		#
-		# corner, asym-smooth-point, sym-smooth-point
-		'''
-		Vertice Types:
-
-			Smooth Vertice (or Curve Vertice) 
-				represented by a green, round Vertice symbol 
-				indicates a smooth connection between two curve segments.
-			Tangent Vertice 
-				represented by a violet, triangular Vertice symbol 
-				indicates a smooth connection between a curve segment and a straight segment.
-			Sharp Vertice (or Corner Vertice) 
-				represented by a red, square Vertice symbol 
-				indicates a sharp connection between any segment types.
-			
-		Connection Types:
-			Sharp connection
-				At a sharp connection, the two connected segments (curve and curve or straight segment and curve) are absolutely free in their angle relative to each other at the connecting node.
-
-			Smooth connection
-				At a smooth connection, the direction of the straight segment and the control vector of a curve or the control vectors of two sequential curves are kept collinear (lie on the same straight line), i.e. the angle between the two segments at the node is fixed at 180 degrees.
-		'''
-		#
-		g_orig_coord = CH.get_glif_coord(glyph,'get_type')
-		#
-		print(g_orig_coord)
-		#
-		contours = {}
-		#
-		for cnt in range(CH.len):
-			#
-			GC = GraphConstructor(CH,instance_list,cnt,inst_counter, simplification, debug)
-			#
-			contours[cnt] = GC.initiate_instance(inst_counter, cnt, CH)
-			#
-			points = np.asarray(contours[cnt]["coords"]["strt"])
-			#
-			#print(contours[cnt]["beziers"])
-			# store simplification presense matrix
-			contours[cnt]["beziers"] = OrderedDict()
-			#
-			for simp in simplification:
-				#
-				print(simp)
-				contours[cnt]["beziers"][simp] = fitCurve(points, float(simp)**2)
-				#
-				contours[cnt]["graph"][simp] = GC.make_instance_topo(contours[cnt], color[inst_counter], simp)
-				#
-
-			#
-			o_ts = variom(GC, run_sp)
-			o_ts.run()
-			#
-		#
-		instance_dict[inst_counter] = contours
-		#
-		# var_glifs = []
-		# #
-		# for y in range(len(dist_sorted_a)):
-		# 	#
-		# 	c_a = dist_sorted_a[y]
-		# 	c_b = dist_sorted_b[y]
-		# 	#
-		# 	if c_a and c_b:
-		# 		#
-		# 		input_contours = [c_a, c_b]
-		# 		#
-		# 		# _p_st = vrmstart(c_a, c_b,0,y)
-		# 		# o_st = variom(_p_st, run_sp)
-		# 		# o_st.run()
-		# 		#
-		# 		#_p_ts = vrmstart(c_b, c_a,1,y)
-		# 		#
-		# 		var_glifs.append([[c_a, c_b],[o_st,o_ts]])
-		# 		#
-		# #
-		# if debug:
-		# 	#
-		# 	pprint.pprint(var_glifs)
-		# 	#
-		#
-		#vrm_comb = vrmcomb(var_glifs, x[1], run_sp, log_output)
-		#
-		#
-		for k,v in contours.items():
-			#
-			_a = 0
-			#
-			if v["inst"] > 0:
-				#
-				_a = 1
-				#
-			#
-			plot_window_number = v["cont"]+v["inst"]+_a
-			#
-			draw.draw_instance_graphs_c(plot_window_number, v)
-			#
-		#
-		#
-		# input_contours = []
-		# #
-		# is_file_a = os.path.isfile(os.path.join(font_path_r,x[1]))
-		# is_file_b = os.path.isfile(os.path.join(font_path_b,x[1]))
-		# #
-		# if is_file_a and is_file_b:
-		# 	#
-		# 	root_a = ET.parse( os.path.join(font_path_r,x[1]) ).getroot()
-		# 	root_b = ET.parse( os.path.join(font_path_b,x[1]) ).getroot()
-		# 	#
-		# 	dist_sorted_a = get_distance_sorted_contours(root_a)
-		# 	dist_sorted_b = get_distance_sorted_contours(root_b)
-		# 	#
-		# 	if len(dist_sorted_a) == len(dist_sorted_b):
-		# 		#
-		# 		var_glifs = []
-		# 		#
-		# 		for y in range(len(dist_sorted_a)):
-		# 			#
-		# 			c_a = dist_sorted_a[y]
-		# 			c_b = dist_sorted_b[y]
-		# 			#
-		# 			if c_a and c_b:
-		# 				#
-		# 				input_contours = [c_a, c_b]
-		# 				#
-		# 				_p_st = vrmstart(c_a, c_b,0,y)
-		# 				o_st = variom(_p_st, run_sp)
-		# 				o_st.run()
-		# 				#
-		# 				_p_ts = vrmstart(c_b, c_a,1,y)
-		# 				o_ts = variom(_p_ts, run_sp)
-		# 				o_ts.run()
-		# 				#
-		# 				var_glifs.append([[c_a, c_b],[o_st,o_ts]])
-		# 				#
-		# 		#
-		# 		if debug:
-		# 			#
-		# 			pprint.pprint(var_glifs)
-		# 			#
-		# 		#
-		# 		vrm_comb = vrmcomb(var_glifs, x[1], run_sp, log_output)
-		# 		#
-		# 	else:
-		# 		#
-		# 		print("CANNOT GET CONTOURS FOR INSTANCES GLIFS")
-		# 		#
-		# 	#
-	#
 	#
 	#
 	'''
@@ -6003,33 +5845,29 @@ if __name__ == '__main__':
 	#
 	faults = False
 	#
-	# if  args.instance_a is None or args.instance_b is None:
-	# 	#
-	# 	faults = True
-	# 	#
-	# 	print('=\n=> Please Provide Source UFO Instance Files (a and b): -a "/font_regular.ufo -b "/font_bold.ufo"\n=')	
-	# 	#
-	# if args.log_output is None:
-	# 	#
-	# 	faults = True
-	# 	#
-	# 	print('=\n=> Please Provide Log Directory for Output: -l "/log_output"\n=')	
+	if  args.instance_a is None or args.instance_b is None:
+		#
+		faults = True
+		#
+		print('=\n=> Please Provide Source UFO Instance Files (a and b): -a "/font_regular.ufo -b "/font_bold.ufo"\n=')	
+		#
+	if args.log_output is None:
+		#
+		faults = True
+		#
+		print('=\n=> Please Provide Log Directory for Output: -l "/log_output"\n=')	
 		#
 	if faults == False:
 		#
-		#font_path_r = os.path.abspath(os.path.join(args.instance_a, 'glyphs') )#os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Regular.ufo', 'glyphs') )
-		#font_path_b = os.path.abspath(os.path.join(args.instance_b, 'glyphs') )#os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
-		font_path_r = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Regular.ufo', 'glyphs') )
-		font_path_b = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
+		font_path_r = os.path.abspath(os.path.join(args.instance_a, 'glyphs') )#os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Regular.ufo', 'glyphs') )
+		font_path_b = os.path.abspath(os.path.join(args.instance_b, 'glyphs') )#os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
 		#
 		
 		i = 0
 		#
-		#print(args.specific_glyph)
+		print(args.specific_glyph)
 		#
-		'''
 		if args.specific_glyph is None:
-
 			#
 			run_specific = ""
 			#
@@ -6052,55 +5890,15 @@ if __name__ == '__main__':
 				#
 			#
 		else:
-		'''
-		#
-		#run_specific = 'a' # run a specific glyph by glif file name "H_", "a" ...
-		#
-		#
-		#
-		font_instance_a = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Regular.ufo', 'glyphs') )
-		font_instance_b = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
-		#
-		run_specific = "a"
-		instance_list = [font_instance_a, font_instance_b]
-		simplification = [0]
-		#
-		inst_counter = 0
-		instance_dict = {}
+			#
+			run_specific = args.specific_glyph # run a specific glyph by glif file name "H_", "a" ...
+			#
+			print('\n'+tcolor.WARNING + "Running Specific Glyph: "+ str(run_specific)  + tcolor.ENDC)	
+			#
+			#
 		#
 		run_specific_contour = 0 # Not Implemented, runs all contours sorted by distance traveled - total line length between points
 		#
-		print('\n'+tcolor.WARNING + "Running Specific Glyph: "+ str(run_specific)  + tcolor.ENDC)	
-		#
-		for font_inst in instance_list:
-			#
-			with open(os.path.join(font_inst,'contents.plist'), 'rb') as f:
-				#
-				pl = plistlib.load(f)
-				#
-				for pl_itm in pl.items():
-					#
-					t_pl = pl_itm[1]
-					#
-					if run_specific != "":
-						#
-						if run_specific == t_pl.split(".glif")[0]:
-							#
-							file_exists = os.path.isfile(os.path.join(font_inst, t_pl))
-							#
-							if file_exists:
-								#
-								run_vmatic_b(font_inst, t_pl, inst_counter, run_specific)
-								#
-								
-						#
-					#
-				#
-			#
-			inst_counter = inst_counter + 1
-			#
-					
-		'''
 		with open(os.path.join(font_path_r,'contents.plist'), 'rb') as f:
 			pl = plistlib.load(f)
 			#
@@ -6114,7 +5912,7 @@ if __name__ == '__main__':
 						#
 						run_vmatic(font_path_r, font_path_b, x, run_specific, args.log_output)
 						#
-						#combine_log(args.log_output)
+						combine_log(args.log_output)
 						#
 						plt.show()
 						#
@@ -6156,12 +5954,11 @@ if __name__ == '__main__':
 				#
 			#
 		#
-		'''
 		if run_specific == "":
 			#
 			plt.close('all')
 			#
 		#
-		#combine_log(args.log_output)
+		combine_log(args.log_output)
 		#
 	#
