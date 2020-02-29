@@ -9,6 +9,7 @@ import pprint
 import numpy as np
 from collections import OrderedDict
 from matplotlib import pyplot as plt
+import matplotlib.patches as mpatches
 #
 debug = False
 #
@@ -35,7 +36,7 @@ font_instance_b = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AG
 font_instance_c = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
 #
 run_specific = "x"
-instance_list = [font_instance_a, font_instance_b, font_instance_c]
+instance_list = [font_instance_a, font_instance_b]
 simplification = list(range(0,50))#[0,1,2,3,4,5,6,7,8,9,10]
 #
 inst_num = 0
@@ -402,6 +403,42 @@ def do_rad_search(_f, _a_instance, _b_instance, iter_point, _plt=False, _color=F
 	#
 #
 #
+def make_ct(to_ct, cen_c, ax, _plt):
+	#
+	perps = []
+	#
+	for coords in to_ct:
+		#
+		x = coords[0]
+		y = coords[1]
+		#
+		_perp = getPerpCoord(cen_c[0], cen_c[1], x, y, 10000)
+		#
+		_perp_virtual = getPerpCoord(cen_c[0], cen_c[1], x, y, 50)
+		#
+		if _plt:
+			
+			pp1 = mpatches.ConnectionPatch(cen_c,[x,y],"data", lw=0.5, color="g")
+			ax.add_patch(pp1)
+			#
+			prp1 = mpatches.ConnectionPatch([_perp_virtual[0],_perp_virtual[1]],[_perp_virtual[2],_perp_virtual[3]],"data",arrowstyle='<->,head_width=.15,head_length=.15', lw=0.5, color="g")
+			prp1.set_linestyle((0, (8,2)))
+			ax.add_patch(prp1)
+			#
+
+		#
+		_perp_b = getPerpCoord(_perp[0],_perp[1],x,y, 10000)
+		_perp_b_virtual = getPerpCoord(_perp[0],_perp[1],x,y, 50)
+		#
+		perps.append([[_perp[0],_perp[1]],[_perp[2],_perp[3]],[_perp_b[0],_perp_b[1]],[_perp_b[2],_perp_b[3]]])
+		#
+	#
+	return perps
+	#
+#
+
+#
+#
 # Pre-Processor
 #
 for font_inst in instance_list:
@@ -444,6 +481,7 @@ for font_inst in instance_list:
 							#
 							contours[cnt] = GC.initiate_instance(inst_num, cnt, CH)
 							#
+							#t_contour = contours[cnt]
 							points = np.asarray(contours[cnt]["coords"]["strt"])
 							#
 							contours[cnt]["simplified"] = OrderedDict()
@@ -454,6 +492,14 @@ for font_inst in instance_list:
 								#
 								contours[cnt]["simplified"][simp] = simplified_points
 								#
+							#
+							inst_inx = contours[cnt]["inst"]
+							cont_inx = contours[cnt]["cont"]
+							#
+							t_color = color[inst_inx]
+							#
+							GC.make_instance_topo(contours[cnt], t_color,0)
+							#draw.draw_instance_graphs_c(contours[cnt])
 							#
 							plt_num = plt_num + 1
 							#
@@ -466,15 +512,152 @@ for font_inst in instance_list:
 	inst_num = inst_num + 1
 	#
 #
-# Solver
+def get_point_inx_line(numpoints, num, loc):
+	#
+	#
+	if loc == "p":
+		#
+		if num == 1:
+			#
+			return numpoints - 1
+			#
+		#
+		else:
+			#
+			return num - 1
+			#
+	elif loc == "a":
+		#
+		if num - 1 == numpoints:
+			#
+			#
+			return 1
+			#
+		#
+		else:
+			#
+			#
+			if num != numpoints - 1:
+				#
+				return num + 1
+				#
+			else:
+				#
+				return 1
+				#
+			#
+		#
+	#
+#
+#pprint.pprint(total_list)
 #
 
+#
+# Solver
+#
+'''
+
+'''
 #
 # Post-Processor
 #
 initiate_drawing = IterDraw(total_list, GC, plt)
-#
+
 initiate_drawing.run()
+#
+
+#
+for instance in total_list:
+	#
+	for letter in total_list[instance]:
+		#
+		for contour in total_list[instance][letter]:
+			#
+			t_contour = total_list[instance][letter][contour] # this
+			points_len = t_contour["graph_data"]["sort_by_length"]
+			#
+			a_items = []
+			#
+			for k,v in points_len.items():
+				#
+				a_items.append(k)
+				#
+			#
+			matched_source = []
+			#
+			__point = list(points_len.values())[0]["coord"]
+			#
+			f_p_x = __point[0]
+			f_p_y = __point[1]
+			#
+			t_fnl_d = 300#math.hypot(f_p_x-l_p_x, f_p_y-l_p_y) + 50 # target_first_and_last_distance
+			#
+			p_d = 0
+			for k,v in points_len.items():
+				#
+				if k!=(0,0):
+					#
+					t_a_coord = points_len.get(a_items[p_d])["coord"]
+					t_a_order = points_len.get(a_items[p_d])["order"]
+					#
+					t_circle = [t_a_coord,t_fnl_d]
+					#
+					#
+					contains = in_circle(__point,t_circle)
+					#
+					if contains:
+						#
+						t_a_dist = math.hypot(t_a_coord[0]-__point[0], t_a_coord[1]-__point[1])
+						#
+						matched_source.append([t_a_dist,t_a_coord,p_d, t_a_order])
+						#
+					p_d = p_d + 1
+				#
+			#
+			ignore_num = set()
+			#rule_check_exists_better = set()
+			rule_check_line_match = set()
+			#
+			scp_s = [[],set()]
+			scp_t = [[],set()]
+			#
+			#
+			# sorted by length number
+			ms_pn_s = sorted(matched_source, key = lambda x: x[3])
+			#
+			f_s = next(c for c in ms_pn_s if c[1] == __point)
+			f_pre = next(c for c in ms_pn_s if c[3] == get_point_inx_line(len(points_len), f_s[3], "p"))
+			f_ant = next(c for c in ms_pn_s if c[3] == get_point_inx_line(len(points_len), f_s[3], "a"))
+			l_s = [f_pre,f_s,f_ant]
+			#
+			_SC = l_s[1]
+			_P = l_s[0]
+			_A = l_s[2]
+			#
+			cen_a = list(points_len.items())[-1]
+			cen_c = cen_a[1]["coord"]
+			#
+			sc_c = _SC[1]
+			#
+			to_ct = [
+				_P[1],
+				_SC[1],
+				_A[1]
+			]
+			#
+			t_plot = draw.get_gca(t_contour["plot_num"], plt)
+			#
+			draw.draw_circle_on_coord(__point, t_plot, 15, "g", False)
+			#
+			perps_plot = make_ct(to_ct, cen_c, t_plot, True)
+			#
+			#print(perps_plot)
+			#
+			#do_ct_sort(_f,__point, to_ct,perps_plot, l_t,t_plot,t_plot, _plt, True)
+			#t_contour[instance][letter][contour]["graph_data"]
+			#sl = t_contour["graph_data"]#["sort_by_length"]
+			#print(sl)
+			#
 #
 plt.show()
 #

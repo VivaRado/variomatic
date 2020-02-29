@@ -71,8 +71,6 @@ class ContourHolder(object):
 		#
 		p_arr = []
 		#
-		print(made_g)
-		#
 		for contour in made_g:
 			#
 

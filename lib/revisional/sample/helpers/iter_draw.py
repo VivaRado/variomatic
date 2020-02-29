@@ -30,13 +30,13 @@ class IterDraw(object):
 		self.val_smp.pack()
 		label_iter = Label(frame, text='Iteration')
 		label_iter.pack()
-		self.val_pnt = Spinbox(frame, width=8, from_=1, to=1000000, command=self.on_point_value_change)
+		self.val_pnt = Spinbox(frame, width=8, from_=0, to=1000000, command=self.on_point_value_change)
 		self.val_pnt.delete(0,"end")
-		self.val_pnt.insert(0,1)
+		self.val_pnt.insert(0,0)
 		self.val_pnt.pack()
 		#
 		self._smp = 0
-		self._pnt = 1
+		self._pnt = 0
 		#
 		# if self.run_sp != "":
 		# 	#
@@ -60,31 +60,11 @@ class IterDraw(object):
 	#
 	def make_iter(self, _val_smp, _val_pnt, redraw_smp, redraw_pnt, _plt=False):
 		#
-		# if _plt:
-		# 	#
-		# 	if self.run_sp != "":
-		# 		#
-		# 		print ('\n'+tcolor.WARNING + "MANUAL MATCH REVIEW:" + "\n\tSIMPLIFICATION: " + str(self.val_smp.get())+ "\n\tPOINT: " + str(self.val_pnt.get()) + tcolor.ENDC)
-		# 		#
-		# 	else:
-		# 		#
-		# 		print ('\n'+tcolor.WARNING + "MATCH REVIEW:" + "\n\tSIMPLIFICATION: " + str(self._simp)+ "\n\tPOINT: " + str(self._iter) + tcolor.ENDC)
-		# 		#
-		# #
-			
 		if _val_smp == False and _val_pnt == False:
 			#
-			#if self.run_sp != "":
-				#
 			_val_smp = int(self.val_smp.get())
 			_val_pnt = int(self.val_pnt.get())
-				#
 			#
-			#else:
-				#
-			#	val_smp = self._simp
-			#	val_pnt = self._iter
-				#
 		#
 		for instance in self.instances:
 			#
@@ -93,9 +73,11 @@ class IterDraw(object):
 				for contour in self.instances[instance][letter]:
 					#
 					t_contour = self.instances[instance][letter][contour] # this
+					points_lenwise = list(t_contour["graph_data"]["sort_by_length"].values())
 					inst_inx = t_contour["inst"]
 					cont_inx = t_contour["cont"]
 					#
+					t_plot = draw.get_gca(t_contour["plot_num"], self.plt)
 					t_color = color[inst_inx]
 					#
 					# Draw Graphs
@@ -116,23 +98,28 @@ class IterDraw(object):
 					# Draw Start Point (After Graph because erase plot)
 					#
 					contour_start_point = t_contour["coords"]["graph"][0]
-					#
-					t_plot = draw.get_gca(t_contour["plot_num"], self.plt)
-					#
 					draw.draw_circle_on_coord(contour_start_point, t_plot, 20, t_color, False)
 					#
 					if redraw_pnt:
 						#
-						t_simp = t_contour["simplified"][_val_smp]
-						contour_t_pnt = t_simp[_val_pnt-1]
+						contour_t_pnt = points_lenwise[_val_pnt]["coord"]
+						draw.draw_circle_on_coord(contour_t_pnt, t_plot, 12, t_color, False)
 						#
-						if len(t_simp) >= _val_pnt-1:
-							#
-							g_coord_flip = geom.flipCoordPath([contour_t_pnt],False,True)
-							print(g_coord_flip)
-							#
-							draw.draw_circle_on_coord(g_coord_flip[0], t_plot, 15, t_color, False)
-							#
+						#t_simp = t_contour["simplified"][_val_smp]
+						#contour_t_pnt = t_simp[_val_pnt-1]
+						#
+						#if len(t_simp) >= _val_pnt-1:
+						#
+						#print(self.instances[instance][letter][contour]["graph_data"])
+						#
+						#__point = list(t_contour["graph_data"]["sort_by_length"].values())[_val_pnt]["coord"]
+						#
+						#print(__point)
+						#
+						#g_coord_flip = geom.flipCoordPath([contour_t_pnt],False,True)
+						#print(g_coord_flip)
+						#
+						#
 						#
 					#
 					# if redraw_pnt:
