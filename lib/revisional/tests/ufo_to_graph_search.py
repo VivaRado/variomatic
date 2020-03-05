@@ -412,12 +412,9 @@ def make_ct(to_ct, cen_c, ax, _plt):
 		x = coords[0]
 		y = coords[1]
 		#
-		_perp = getPerpCoord(cen_c[0], cen_c[1], x, y, 10000)
-		#
-		_perp_virtual = getPerpCoord(cen_c[0], cen_c[1], x, y, 50)
-		#
 		if _plt:
 			
+			_perp_virtual = getPerpCoord(cen_c[0], cen_c[1], x, y, 50)
 			pp1 = mpatches.ConnectionPatch(cen_c,[x,y],"data", lw=0.5, color="g")
 			ax.add_patch(pp1)
 			#
@@ -425,12 +422,12 @@ def make_ct(to_ct, cen_c, ax, _plt):
 			prp1.set_linestyle((0, (8,2)))
 			ax.add_patch(prp1)
 			#
-
-		#
-		_perp_b = getPerpCoord(_perp[0],_perp[1],x,y, 10000)
-		_perp_b_virtual = getPerpCoord(_perp[0],_perp[1],x,y, 50)
-		#
-		perps.append([[_perp[0],_perp[1]],[_perp[2],_perp[3]],[_perp_b[0],_perp_b[1]],[_perp_b[2],_perp_b[3]]])
+		else:
+			#	
+			_perp = getPerpCoord(cen_c[0], cen_c[1], x, y, 10000)
+			_perp_b = getPerpCoord(_perp[0],_perp[1],x,y, 10000)
+			#
+			perps.append([[_perp[0],_perp[1]],[_perp[2],_perp[3]],[_perp_b[0],_perp_b[1]],[_perp_b[2],_perp_b[3]]])
 		#
 	#
 	return perps
@@ -562,9 +559,109 @@ def get_point_inx_line(numpoints, num, loc):
 # Post-Processor
 #
 initiate_drawing = IterDraw(total_list, GC, plt)
-
+#
 initiate_drawing.run()
 #
+class CenterTransfer(object):
+	"""
+	A 2D bounding box
+	"""
+	def __init__(self, __point, inst_items, points_len):
+
+		self.__point = __point
+		self.inst_items = inst_items
+		self.points_len = points_len
+		self.matched_source = []
+		# if len(points) == 0:
+		# 	raise ValueError("Can't compute bounding box of empty list")
+		# self.minx, self.miny = float("inf"), float("inf")
+		# self.maxx, self.maxy = float("-inf"), float("-inf")
+		# for x, y in points:
+		# 	# Set min coords
+		# 	if x < self.minx:
+		# 		self.minx = x
+		# 	if y < self.miny:
+		# 		self.miny = y
+		# 	# Set max coords
+		# 	if x > self.maxx:
+		# 		self.maxx = x
+		# 	elif y > self.maxy:
+		# 		self.maxy = y
+	#
+	def set_confines(self):
+		#
+		t_fnl_d = 300#math.hypot(f_p_x-l_p_x, f_p_y-l_p_y) + 50 # target_first_and_last_distance
+		p_d = 0
+		#
+		for k,v in self.points_len.items():
+			#
+			if k!=(0,0):
+				#
+				t_a_coord = self.points_len.get(self.inst_items[p_d])["coord"]
+				t_a_order = self.points_len.get(self.inst_items[p_d])["order"]
+				#
+				t_circle = [t_a_coord,t_fnl_d]
+				#
+				contains = in_circle(self.__point,t_circle)
+				#
+				if contains:
+					#
+					t_a_dist = math.hypot(t_a_coord[0]-self.__point[0], t_a_coord[1]-self.__point[1])
+					#
+					self.matched_source.append([t_a_dist,t_a_coord,p_d, t_a_order])
+					#
+				p_d = p_d + 1
+			#
+		#
+		self.ms_pn_s = sorted(self.matched_source, key = lambda x: x[3])
+		self.search_center = next(c for c in self.ms_pn_s if c[1] == self.__point)
+		#
+		return self.ms_pn_s
+		#
+	def get_confine(self, toget):
+		#
+		if toget == "c":
+			#
+			return self.search_center
+			#
+		elif toget == "p":
+			#
+			return next(c for c in self.ms_pn_s if c[3] == get_point_inx_line(len(self.points_len), self.search_center[3], "p"))
+			#
+		elif toget == "a":
+			#
+			return next(c for c in self.ms_pn_s if c[3] == get_point_inx_line(len(self.points_len), self.search_center[3], "a"))
+			#
+
+	def get_confines(self):
+		#
+		return [self.get_confine("p"), self.get_confine("c"), self.get_confine("a")]
+		#
+	# @property
+	# def width(self):
+	# 	return self.maxx - self.minx
+	# @property
+	# def height(self):
+	# 	return self.maxy - self.miny
+	# @property
+	# def value_mid(self):
+	# 	#
+	# 	_mx_x = self.maxx
+	# 	_mn_x = self.minx
+	# 	_mx_y = self.maxy
+	# 	_mn_y = self.miny
+	# 	#
+	# 	mid_x = (_mx_x + _mn_x) / 2
+	# 	mid_y = (_mx_y + _mn_y) / 2
+	# 	#
+	# 	return [mid_x,mid_y]
+	# 	#
+	# def __repr__(self):
+	# 	#
+	# 	return "CenterTransfer({}, {}, {}, {})".format(
+	# 		self.minx, self.maxx, self.miny, self.maxy)
+
+
 
 #
 for instance in total_list:
@@ -576,68 +673,24 @@ for instance in total_list:
 			t_contour = total_list[instance][letter][contour] # this
 			points_len = t_contour["graph_data"]["sort_by_length"]
 			#
-			a_items = []
+			inst_items = []
 			#
 			for k,v in points_len.items():
 				#
-				a_items.append(k)
+				inst_items.append(k)
 				#
-			#
-			matched_source = []
 			#
 			__point = list(points_len.values())[0]["coord"]
 			#
-			f_p_x = __point[0]
-			f_p_y = __point[1]
+			CT = CenterTransfer(__point,inst_items,points_len)
 			#
-			t_fnl_d = 300#math.hypot(f_p_x-l_p_x, f_p_y-l_p_y) + 50 # target_first_and_last_distance
+			CT.set_confines()
 			#
-			p_d = 0
-			for k,v in points_len.items():
-				#
-				if k!=(0,0):
-					#
-					t_a_coord = points_len.get(a_items[p_d])["coord"]
-					t_a_order = points_len.get(a_items[p_d])["order"]
-					#
-					t_circle = [t_a_coord,t_fnl_d]
-					#
-					#
-					contains = in_circle(__point,t_circle)
-					#
-					if contains:
-						#
-						t_a_dist = math.hypot(t_a_coord[0]-__point[0], t_a_coord[1]-__point[1])
-						#
-						matched_source.append([t_a_dist,t_a_coord,p_d, t_a_order])
-						#
-					p_d = p_d + 1
-				#
+			cfn = CT.get_confines()
 			#
-			ignore_num = set()
-			#rule_check_exists_better = set()
-			rule_check_line_match = set()
-			#
-			scp_s = [[],set()]
-			scp_t = [[],set()]
-			#
-			#
-			# sorted by length number
-			ms_pn_s = sorted(matched_source, key = lambda x: x[3])
-			#
-			f_s = next(c for c in ms_pn_s if c[1] == __point)
-			f_pre = next(c for c in ms_pn_s if c[3] == get_point_inx_line(len(points_len), f_s[3], "p"))
-			f_ant = next(c for c in ms_pn_s if c[3] == get_point_inx_line(len(points_len), f_s[3], "a"))
-			l_s = [f_pre,f_s,f_ant]
-			#
-			_SC = l_s[1]
-			_P = l_s[0]
-			_A = l_s[2]
-			#
-			cen_a = list(points_len.items())[-1]
-			cen_c = cen_a[1]["coord"]
-			#
-			sc_c = _SC[1]
+			_SC = cfn[1]
+			_P = cfn[0]
+			_A = cfn[2]
 			#
 			to_ct = [
 				_P[1],
@@ -645,11 +698,17 @@ for instance in total_list:
 				_A[1]
 			]
 			#
+			cen_a = list(points_len.items())[-1]
+			cen_c = cen_a[1]["coord"]
+			#
+			#
 			t_plot = draw.get_gca(t_contour["plot_num"], plt)
 			#
 			draw.draw_circle_on_coord(__point, t_plot, 15, "g", False)
 			#
 			perps_plot = make_ct(to_ct, cen_c, t_plot, True)
+			#
+			#perps_data = make_ct(to_ct, cen_c, t_plot, False)
 			#
 			#print(perps_plot)
 			#
