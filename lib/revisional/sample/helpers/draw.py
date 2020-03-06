@@ -5,6 +5,7 @@ import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import matplotlib.path as mpath
 import matplotlib.patches as mpatches
+import geom
 
 from gpathwrite import *
 from svgpath2mpl import parse_path as mpl_parse_path
@@ -184,7 +185,7 @@ def draw_instance_graphs_c(m_instances):
 	_w = m_instances["box"].width+200
 	_h = m_instances["box"].height+200
 	#
-	t_plt = plt.figure(num=i)
+	t_plt = plt.figure(i)
 	#
 	x_move = _movepos
 	#
@@ -208,7 +209,7 @@ def draw_topo(instance, _plt, i, glyph_path, move = True):
 	_g_d = instance["graph_data"]
 	#
 	#
-	_plt.clf()
+	#
 	ax = _plt.gca()
 	#
 	node_width_map = _g_d["node_width_map"]
@@ -253,3 +254,22 @@ def get_gca(plot_num, plt):
 	t_plt = plt.figure(num=plot_num)
 	return t_plt.gca()
 	#
+
+
+def draw_perp_virt(coord_ct,ax):
+	#
+	print(coord_ct)
+	#
+	for prp in coord_ct:
+
+		_perp_virtual = geom.getPerpCoord(prp[0][0], prp[0][1], prp[1][0], prp[1][1], 50)
+		pp1 = mpatches.ConnectionPatch(prp[0],[prp[1][0],prp[1][1]],"data", lw=0.5, color="g")
+		ax.add_patch(pp1)
+		#
+		prp1 = mpatches.ConnectionPatch([_perp_virtual[0],_perp_virtual[1]],[_perp_virtual[2],_perp_virtual[3]],"data",arrowstyle='<->,head_width=.15,head_length=.15', lw=0.5, color="g")
+		prp1.set_linestyle((0, (8,2)))
+		ax.add_patch(prp1)
+		#
+	#
+	#
+	

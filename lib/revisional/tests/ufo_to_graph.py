@@ -34,9 +34,9 @@ font_instance_a = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AG
 font_instance_b = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
 font_instance_c = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
 #
-run_specific = "e"
-instance_list = [font_instance_a, font_instance_b, font_instance_c]
-simplification = list(range(0,50))#[0,1,2,3,4,5,6,7,8,9,10]
+run_specific = "x"
+instance_list = [font_instance_a, font_instance_b]
+simplification = list(range(0,10))#[0,1,2,3,4,5,6,7,8,9,10]
 #
 inst_counter = 0
 instance_dict = {}
@@ -91,6 +91,8 @@ for font_inst in instance_list:
 							#
 							contours[cnt] = GC.initiate_instance(inst_counter, cnt, CH)
 							#
+							t_contour = contours[cnt]
+							#
 							points = np.asarray(contours[cnt]["coords"]["strt"])
 							#
 							contours[cnt]["simplified"] = OrderedDict()
@@ -102,6 +104,12 @@ for font_inst in instance_list:
 								contours[cnt]["simplified"][simp] = simplified_points
 								#
 							#
+							inst_inx = contours[cnt]["inst"]
+							cont_inx = contours[cnt]["cont"]
+							#
+							t_color = color[inst_inx]
+							#
+							GC.make_instance_topo(contours[cnt], t_color,0)
 							plt_num = plt_num + 1
 							#
 						#

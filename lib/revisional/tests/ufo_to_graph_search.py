@@ -402,111 +402,207 @@ def do_rad_search(_f, _a_instance, _b_instance, iter_point, _plt=False, _color=F
 	new_dict = [a for a, b in points_a.items() if __point == b["coord"]][0]
 	#
 #
-#
-def make_ct(to_ct, cen_c, ax, _plt):
+def do_ct_sort(_f, __point,to_ct,perps_plot, lt_p,ax,bax, _plt, travel_sort = False):
 	#
-	perps = []
 	#
-	for coords in to_ct:
+	_b_instance = _f.m_instances[1]
+	#
+	__cent_b = list(_b_instance["graph_data"]["sort_by_length"].values())[-1]["coord"]
+	#
+	per_ct = []
+	#
+	c = 0
+	#
+	for cts in to_ct:
 		#
-		x = coords[0]
-		y = coords[1]
+		sta_a = perps_plot[c][0]
+		end_a = perps_plot[c][1]
+		sta_b = perps_plot[c][2]
+		end_b = perps_plot[c][3]
 		#
-		if _plt:
+		all_match = []
+		all_match_len = []
+		#
+		#
+		for lt in lt_p:
+			#
+			lt_x = lt[1][0]
+			lt_y = lt[1][1]
+			#
+			pnt_dist_a = pnt2line([lt_x,lt_y], sta_a, end_a) # point, sta_a, end
+			pnt_dist_b = pnt2line([lt_x,lt_y], sta_b, end_b) # point, sta_a, end
+			#
+			if _plt:
+			#
+				# lines met on line from center to current point
+				_p_g = getPerpCoord(cts[0], cts[1],pnt_dist_b[1][0], pnt_dist_b[1][1], 5)
+				prp1 = mpatches.ConnectionPatch([_p_g[0],_p_g[1]],[_p_g[2],_p_g[3]],"data", lw=0.5, color="g")
+				ax.add_patch(prp1)
+			# distance of those positions from current point
+			t_b_dist = int(math.hypot(cts[0]-pnt_dist_b[1][0], cts[1]-pnt_dist_b[1][1]))
+			#
+			#
+			t_a_dist = math.hypot(cts[0]-lt_x, cts[1]-lt_y)
+			t_b_c_dist = math.hypot(__cent_b[0]-lt_x, __cent_b[1]-lt_y)
+			t_a_c_dist = math.hypot(__cent_b[0]-cts[0], __cent_b[1]-cts[1])
+			#
+			pnt_dist_a = list(pnt_dist_a)
+			#
+			pnt_dist_a.insert(1, t_a_dist)
+			#
+			pnt_dist_a = tuple(pnt_dist_a)
+			#
+			_area = area([[cts[0],cts[1]],pnt_dist_a[2],[lt_x,lt_y]])
+			#
+			center_m_point = distance([__cent_b[0], __cent_b[1]],[lt_x,lt_y])
+			center_s_point = distance([__cent_b[0], __cent_b[1]],__point)
+			sm_point = distance([lt_x,lt_y],__point)
+			#
+			m_angle = get_angle_b([__cent_b[0], __cent_b[1]],[lt_x,lt_y])
+			s_angle = get_angle_b([__cent_b[0], __cent_b[1]],__point)
+			#
 			
-			_perp_virtual = getPerpCoord(cen_c[0], cen_c[1], x, y, 50)
-			pp1 = mpatches.ConnectionPatch(cen_c,[x,y],"data", lw=0.5, color="g")
-			ax.add_patch(pp1)
 			#
-			prp1 = mpatches.ConnectionPatch([_perp_virtual[0],_perp_virtual[1]],[_perp_virtual[2],_perp_virtual[3]],"data",arrowstyle='<->,head_width=.15,head_length=.15', lw=0.5, color="g")
-			prp1.set_linestyle((0, (8,2)))
-			ax.add_patch(prp1)
+			new_match = [
+				(lt[2],lt[3]), 
+				pnt_dist_a, #
+				_area,
+				_area,
+				[cts[0],cts[1]], 
+				[lt_x,lt_y], #
+				t_b_dist,
+				abs(abs(t_b_c_dist) - abs(t_a_c_dist)),
+				abs(center_m_point - center_s_point),
+				abs(m_angle-s_angle),
+				sm_point,
+				_area+pnt_dist_a[0]+abs(center_m_point - center_s_point)+abs(m_angle-s_angle)+sm_point
+				]
 			#
-		else:
-			#	
-			_perp = getPerpCoord(cen_c[0], cen_c[1], x, y, 10000)
-			_perp_b = getPerpCoord(_perp[0],_perp[1],x,y, 10000)
 			#
-			perps.append([[_perp[0],_perp[1]],[_perp[2],_perp[3]],[_perp_b[0],_perp_b[1]],[_perp_b[2],_perp_b[3]]])
-		#
-	#
-	return perps
-	#
-#
-
-#
-#
-# Pre-Processor
-#
-for font_inst in instance_list:
-	#
-	total_list[inst_num] = {}
-	#
-	with open(os.path.join(font_inst,'contents.plist'), 'rb') as f:
-		#
-		pl = plistlib.load(f)
-		#
-		for pl_itm in pl.items():
-			#
-			t_pl = pl_itm[1]
-			#
-			if run_specific != "":
+			if new_match not in all_match:
 				#
-				glyph_name = t_pl.split(".glif")[0]
-				#
-				if run_specific == glyph_name:
-					#
-					file_exists = os.path.isfile(os.path.join(font_inst, t_pl))
-					#
-					if file_exists:
-						#
-						CH = ContourHolder(os.path.join(font_inst, t_pl), debug)
-						#
-						cont_counter = CH.len
-						#
-						for cnt in range(CH.len):
-							#
-							glyph = CH.get(cnt,"glyph")
-							#
-							total_list[inst_num][glyph] = {}
-							#
-							g_orig_coord = CH.get_glif_coord(glyph,'get_type')
-							#
-							contours = total_list[inst_num][glyph]
-							#
-							GC = GraphConstructor(CH,instance_list,cnt, inst_num, simplification, plt_num, debug)
-							#
-							contours[cnt] = GC.initiate_instance(inst_num, cnt, CH)
-							#
-							#t_contour = contours[cnt]
-							points = np.asarray(contours[cnt]["coords"]["strt"])
-							#
-							contours[cnt]["simplified"] = OrderedDict()
-							#
-							for simp in simplification:
-								#
-								simplified_points = simplif(points, simp)
-								#
-								contours[cnt]["simplified"][simp] = simplified_points
-								#
-							#
-							inst_inx = contours[cnt]["inst"]
-							cont_inx = contours[cnt]["cont"]
-							#
-							t_color = color[inst_inx]
-							#
-							GC.make_instance_topo(contours[cnt], t_color,0)
-							#draw.draw_instance_graphs_c(contours[cnt])
-							#
-							plt_num = plt_num + 1
-							#
-						#
-					#
+				all_match.append(new_match)
 				#
 			#
+			if _plt:
+				#
+				if show_center_transfer_b == True:
+						
+					prp1 = mpatches.ConnectionPatch([lt_x, lt_y],[pnt_dist_a[2][0],pnt_dist_a[2][1]],"data", lw=0.2, color="r")
+					#
+					ax.add_patch(prp1)	
+					#
+					prp1 = mpatches.ConnectionPatch([lt_x,lt_y],__point,"data", lw=1, color="k")
+					#
+					ax.add_patch(prp1)	
+			#
 		#
-	#
-	inst_num = inst_num + 1
+		sorted_all_match = sorted(all_match, key=lambda x: x[3]+x[1][0]+x[8]+x[9]+x[10])[:3]
+		#
+		#
+		for x in sorted_all_match:
+			#
+			#
+			l1 = x[4]
+			l2 = x[1][2]
+			l3 = x[5]
+			#
+			if _plt:
+				#
+				poly = plt.Polygon([l1,l2,l3], color='g',alpha=0.1)
+				ax.add_patch(poly)
+				#
+				dst1 = mpatches.ConnectionPatch([cts[0], cts[1]],[x[1][0],x[1][1]],"data", lw=0.4, color="g")
+				#
+				ax.add_patch(dst1)
+			#
+		#
+		per_ct.append(sorted_all_match)
+		#
+		c = c + 1
+		#
+	if travel_sort == True:
+		#
+		if debug:
+			#
+			print("===")
+			pprint.pprint(per_ct)
+			#
+		closest_travel_p = []
+		closest_travel_sc = []
+		closest_travel_a = []
+		#
+		for x in per_ct[0]:
+			#
+			dist_trace = get_distance_from_trace(_f,__point, x[0], __cent_b,bax,_plt )
+			#
+			closest_travel_p.extend(dist_trace)
+			#
+			if debug:
+				#
+				print("TRAVEL T DISTANCE TRACE", dist_trace)
+		#
+		for x in per_ct[1]:
+			#
+			dist_trace = get_distance_from_trace(_f,__point, x[0], __cent_b,bax,_plt )
+			#
+			closest_travel_sc.extend(dist_trace)
+			#
+			if debug:
+				#
+				print("TRAVEL SC DISTANCE TRACE", dist_trace)
+			#
+		#
+		for x in per_ct[2]:
+			#
+			dist_trace = get_distance_from_trace(_f,__point, x[0], __cent_b,bax,_plt )
+			#
+			closest_travel_a.extend(dist_trace)
+			#
+			if debug:
+				#
+				print("TRAVEL A DISTANCE TRACE", dist_trace)
+		#
+		sorted_travel_dist_p = sorted(closest_travel_p, key=lambda x: x[2])
+		sorted_travel_dist_sc = sorted(closest_travel_sc, key=lambda x: x[2])
+		sorted_travel_dist_a = sorted(closest_travel_a, key=lambda x: x[2])
+		#
+		if debug:
+			#
+			print("COSTST")
+			print(closest_travel_sc)
+			#
+			print("SORT")
+			pprint.pprint(sorted_travel_dist_sc)
+			#
+		#
+		sord_p = [item[0] for item in sorted_travel_dist_p]
+		sord_sc = [item[0] for item in sorted_travel_dist_sc]
+		sord_a = [item[0] for item in sorted_travel_dist_a]
+		#
+		if debug:
+			#
+			print("SORT ITEMS")
+			pprint.pprint(sord_sc)
+		#
+		sord_p_unq = list(OrderedDict.fromkeys(sord_p))[:3]
+		sord_sc_unq = list(OrderedDict.fromkeys(sord_sc))[:3]
+		sord_a_unq = list(OrderedDict.fromkeys(sord_a))[:3]
+		#
+		if debug:
+			#
+			print("UNQ")
+			pprint.pprint(sord_sc_unq)
+		#
+		
+		#
+		return [per_ct, [sord_p_unq,sord_sc_unq, sord_a_unq]]
+		#
+	else:
+		#
+		return per_ct
+		#
+		
 	#
 #
 def get_point_inx_line(numpoints, num, loc):
@@ -546,21 +642,25 @@ def get_point_inx_line(numpoints, num, loc):
 		#
 	#
 #
-#pprint.pprint(total_list)
-#
-
-#
-# Solver
-#
-'''
-
-'''
-#
-# Post-Processor
-#
-initiate_drawing = IterDraw(total_list, GC, plt)
-#
-initiate_drawing.run()
+def make_ct_perp(coord_ct, cen_c):
+	#
+	perps = []
+	perps_virt = []
+	#
+	for coords in coord_ct:
+		#
+		x = coords[0]
+		y = coords[1]
+		#	
+		_perp = getPerpCoord(cen_c[0], cen_c[1], x, y, 10000)
+		_perp_b = getPerpCoord(_perp[0],_perp[1],x,y, 10000)
+		#
+		perps_virt.append([cen_c, [x,y]])
+		perps.append([[_perp[0],_perp[1]],[_perp[2],_perp[3]],[_perp_b[0],_perp_b[1]],[_perp_b[2],_perp_b[3]]])
+		#
+	#
+	return [perps,perps_virt]
+	#
 #
 class CenterTransfer(object):
 	"""
@@ -661,8 +761,150 @@ class CenterTransfer(object):
 	# 	return "CenterTransfer({}, {}, {}, {})".format(
 	# 		self.minx, self.maxx, self.miny, self.maxy)
 
+#
+#
+#
+# Pre-Processor
+#
+for font_inst in instance_list:
+	#
+	total_list[inst_num] = {}
+	#
+	with open(os.path.join(font_inst,'contents.plist'), 'rb') as f:
+		#
+		pl = plistlib.load(f)
+		#
+		for pl_itm in pl.items():
+			#
+			t_pl = pl_itm[1]
+			#
+			if run_specific != "":
+				#
+				glyph_name = t_pl.split(".glif")[0]
+				#
+				if run_specific == glyph_name:
+					#
+					file_exists = os.path.isfile(os.path.join(font_inst, t_pl))
+					#
+					if file_exists:
+						#
+						CH = ContourHolder(os.path.join(font_inst, t_pl), debug)
+						#
+						cont_counter = CH.len
+						#
+						for cnt in range(CH.len):
+							#
+							glyph = CH.get(cnt,"glyph")
+							#
+							total_list[inst_num][glyph] = {}
+							#
+							g_orig_coord = CH.get_glif_coord(glyph,'get_type')
+							#
+							contours = total_list[inst_num][glyph]
+							#
+							GC = GraphConstructor(CH,instance_list,cnt, inst_num, simplification, plt_num, debug)
+							#
+							contours[cnt] = GC.initiate_instance(inst_num, cnt, CH)
+							#
+							t_contour = contours[cnt]
+							#
+							points = np.asarray(contours[cnt]["coords"]["strt"])
+							#
+							contours[cnt]["simplified"] = OrderedDict()
+							#
+							for simp in simplification:
+								#
+								simplified_points = simplif(points, simp)
+								#
+								contours[cnt]["simplified"][simp] = simplified_points
+								#
+							#
+							inst_inx = contours[cnt]["inst"]
+							cont_inx = contours[cnt]["cont"]
+							#
+							t_color = color[inst_inx]
+							#
+							GC.make_instance_topo(contours[cnt], t_color,0)
+							#draw.draw_instance_graphs_c(contours[cnt])
+							#
+							points_len = contours[cnt]["graph_data"]["sort_by_length"]
+							t_point = list(points_len.values())[0]["coord"]
+							#
+							inst_items = []
+							#
+							for k,v in points_len.items():
+								#
+								inst_items.append(k)
+								#
+							#
+							contours[cnt]["confines"] = []
+							contours[cnt]["perps"] = []
+							contours[cnt]["perps_virt"] = []
+							#
+							for t_point_itm in list(points_len.values()):
+								#
+								print(t_point_itm)
+								#
+								if t_point_itm['node'] > 0:
+										
+									#
+									CT = CenterTransfer(t_point_itm["coord"],inst_items,points_len)
+									CT.set_confines()
+									cfn = CT.get_confines()
+									#
+									contours[cnt]["confines"].append(cfn)
+									#
+									coord_ct = [item[1] for item in cfn] # to_ct
+									#
+									cen_a = list(points_len.items())[-1]
+									cen_c = cen_a[1]["coord"]
+									perps_plot = make_ct_perp(coord_ct, cen_c)
+									#
+									
+									#
+									contours[cnt]["perps"].append(perps_plot[0])
+									contours[cnt]["perps_virt"].append(perps_plot[1])
+								#
+							#
+							#print(contours[cnt]["perps"])
+							#perps_data = make_ct_perp(to_ct, cen_c, t_plot, False)
+							#
+							#print(perps_plot)
+							#
+							#do_ct_sort(_f,__point, to_ct,perps_plot, l_t,t_plot,t_plot, _plt, True)
+							#t_contour[instance][letter][contour]["graph_data"]
+							#sl = t_contour["graph_data"]#["sort_by_length"]
+							#print(sl)
+							#
+							plt_num = plt_num + 1
+							#
+						#
+					#
+				#
+			#
+		#
+	#
+	inst_num = inst_num + 1
+	#
+#
 
+#pprint.pprint(total_list)
+#
 
+#
+# Solver
+#
+'''
+
+'''
+#
+# Post-Processor
+#
+initiate_drawing = IterDraw(total_list, GC, plt)
+#
+initiate_drawing.run()
+#
+'''
 #
 for instance in total_list:
 	#
@@ -671,6 +913,7 @@ for instance in total_list:
 		for contour in total_list[instance][letter]:
 			#
 			t_contour = total_list[instance][letter][contour] # this
+			t_plot = draw.get_gca(t_contour["plot_num"], plt)
 			points_len = t_contour["graph_data"]["sort_by_length"]
 			#
 			inst_items = []
@@ -680,35 +923,27 @@ for instance in total_list:
 				inst_items.append(k)
 				#
 			#
-			__point = list(points_len.values())[0]["coord"]
+			t_point = list(points_len.values())[0]["coord"]
+			draw.draw_circle_on_coord(t_point, t_plot, 15, "g", False)
 			#
-			CT = CenterTransfer(__point,inst_items,points_len)
-			#
+			CT = CenterTransfer(t_point,inst_items,points_len)
 			CT.set_confines()
-			#
 			cfn = CT.get_confines()
+			t_contour["confines"] = cfn
 			#
-			_SC = cfn[1]
-			_P = cfn[0]
-			_A = cfn[2]
-			#
-			to_ct = [
-				_P[1],
-				_SC[1],
-				_A[1]
-			]
+			coord_ct = [item[1] for item in cfn] # to_ct
 			#
 			cen_a = list(points_len.items())[-1]
 			cen_c = cen_a[1]["coord"]
+			perps_plot = make_ct_perp(coord_ct, cen_c, t_plot)
 			#
+			#draw_perp_virt(perps_plot[1], t_plot)
 			#
-			t_plot = draw.get_gca(t_contour["plot_num"], plt)
+			t_contour["perps"] = perps_plot[0]
+			t_contour["perps_virt"] = perps_plot[1]
 			#
-			draw.draw_circle_on_coord(__point, t_plot, 15, "g", False)
-			#
-			perps_plot = make_ct(to_ct, cen_c, t_plot, True)
-			#
-			#perps_data = make_ct(to_ct, cen_c, t_plot, False)
+			print(t_contour["perps"])
+			#perps_data = make_ct_perp(to_ct, cen_c, t_plot, False)
 			#
 			#print(perps_plot)
 			#
@@ -718,6 +953,7 @@ for instance in total_list:
 			#print(sl)
 			#
 #
+'''
 plt.show()
 #
 '''
