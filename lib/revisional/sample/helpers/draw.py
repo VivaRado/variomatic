@@ -273,3 +273,32 @@ def draw_perp_virt(coord_ct,ax):
 	#
 	#
 	
+def plot_region_line(tx, coords, _c, _plt):
+	#
+	i = 0
+	first_ploted = False
+	#
+	coord_line = []
+	#
+	for x in coords:
+		#
+		if i == len(coords)-1:
+			pass
+		else:
+			#
+			if _plt:
+				#
+				_p = mpatches.ConnectionPatch(x,coords[i+1],"data", lw=1, arrowstyle='->,head_width=.15,head_length=.15', shrinkB=7, color=_c,label='Label')
+				tx.add_patch(_p)
+				#
+			#
+		#
+		coord_line.append(x)
+		#
+		i = i + 1
+		#
+	#
+	#
+	return coord_line
+	#
+#

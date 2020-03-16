@@ -76,7 +76,10 @@ class IterDraw(object):
 					#
 					t_contour = self.instances[instance][letter][contour] # this
 					#pprint.pprint(self.instances[instance][letter][contour])
-					points_lenwise = list(t_contour["graph_data"]["sort_by_length"].values())
+					#
+					print(_val_smp)
+					#
+					points_lenwise = list(t_contour["graphs"][_val_smp].values())
 					inst_inx = t_contour["inst"]
 					cont_inx = t_contour["cont"]
 					#
@@ -113,7 +116,13 @@ class IterDraw(object):
 					#
 					draw.draw_circle_on_coord(contour_start_point, t_gca, 20, t_color, False)
 					#
+					coord_ct = [item[1] for item in t_contour["confines_simp"][_val_smp][_val_pnt]]
+					#
+					draw.plot_region_line(t_gca, coord_ct, t_color, _plt)
+					#
 					if redraw_pnt:
+						#
+						print("REDRAW PNT")
 						#
 						draw.draw_circle_on_coord(contour_start_point, t_gca, 20, t_color, False)
 						#
@@ -130,7 +139,17 @@ class IterDraw(object):
 						g_coord_flip = geom.flipCoordPath([contour_t_pnt],False,True)
 						print(g_coord_flip)
 						#
-						draw.draw_perp_virt(t_contour["perps_virt"][_val_pnt], t_gca)
+						draw.draw_perp_virt(t_contour["perps_virt_simp"][_val_smp][_val_pnt], t_gca)
+						#
+						#print("SIMP CONFINES")
+						#print(t_contour["confines_simp"][_val_smp][_val_pnt])
+						print("SIMP CONFINES SING")
+						print(t_contour["confines"][_val_pnt])
+						#
+						#coord_ct = [item[1] for item in t_contour["confines"][_val_pnt]]
+						coord_ct = [item[1] for item in t_contour["confines_simp"][_val_smp][_val_pnt]]
+						#
+						#draw.plot_region_line(t_gca, coord_ct, t_color, _plt)
 						#
 
 	def redraw(self, graph, ctt):

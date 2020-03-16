@@ -714,6 +714,9 @@ class CenterTransfer(object):
 			#
 		#
 		self.ms_pn_s = sorted(self.matched_source, key = lambda x: x[3])
+		#print(self.ms_pn_s)
+		#print('------ is ')
+		#print(self.__point)
 		self.search_center = next(c for c in self.ms_pn_s if c[1] == self.__point)
 		#
 		return self.ms_pn_s
@@ -726,9 +729,17 @@ class CenterTransfer(object):
 			#
 		elif toget == "p":
 			#
+			#print("GETTING PRE")
+			#print(self.search_center)
+			#print(get_point_inx_line(len(self.points_len), self.search_center[3], "p"))
+			#
 			return next(c for c in self.ms_pn_s if c[3] == get_point_inx_line(len(self.points_len), self.search_center[3], "p"))
 			#
 		elif toget == "a":
+			#
+			#print("GETTING PRE")
+			#print(self.search_center)
+			#print(get_point_inx_line(len(self.points_len), self.search_center[3], "p"))
 			#
 			return next(c for c in self.ms_pn_s if c[3] == get_point_inx_line(len(self.points_len), self.search_center[3], "a"))
 			#
@@ -811,47 +822,148 @@ for font_inst in instance_list:
 							points = np.asarray(contours[cnt]["coords"]["strt"])
 							#
 							contours[cnt]["simplified"] = OrderedDict()
-							#
-							for simp in simplification:
-								#
-								simplified_points = simplif(points, simp)
-								#
-								contours[cnt]["simplified"][simp] = simplified_points
-								#
+							contours[cnt]["graphs"] = OrderedDict()
 							#
 							inst_inx = contours[cnt]["inst"]
 							cont_inx = contours[cnt]["cont"]
 							#
 							t_color = color[inst_inx]
 							#
-							GC.make_instance_topo(contours[cnt], t_color,0)
+							for simp in simplification:
+								#
+								simplified_points = simplif(points, simp)
+								#
+								contours[cnt]["simplified"][simp] = simplified_points
+								contours[cnt]["graphs"][simp] = GC.make_instance_topo_b(contours[cnt], t_color,simp)
+								#
+								print("IS SIMP LEN")
+								print(len(contours[cnt]["graphs"][simp]))
+								#
+							#
+							#
+							#GC.make_instance_topo(contours[cnt], t_color,0)
 							#draw.draw_instance_graphs_c(contours[cnt])
 							#
-							points_len = contours[cnt]["graph_data"]["sort_by_length"]
-							t_point = list(points_len.values())[0]["coord"]
-							#
-							inst_items = []
-							#
-							for k,v in points_len.items():
-								#
-								inst_items.append(k)
-								#
-							#
 							contours[cnt]["confines"] = []
+							contours[cnt]["confines_simp"] = OrderedDict()
 							contours[cnt]["perps"] = []
+							contours[cnt]["perps_simp"] = OrderedDict()
 							contours[cnt]["perps_virt"] = []
+							contours[cnt]["perps_virt_simp"] = OrderedDict()
+							
 							#
-							for t_point_itm in list(points_len.values()):
+							for simp in simplification:
+								points_len = contours[cnt]["graphs"][simp]#contours[cnt]["graphs"][simp]["graph_data"]["sort_by_length"]#contours[cnt]["graph_data"]["sort_by_length"]
+								#t_point = list(points_len.values())[0]["coord"]
+								#print("---")
+								#print(points_len)
 								#
-								print(t_point_itm)
+
+								inst_items = []
 								#
-								if t_point_itm['node'] > 0:
-										
+								re_points_len = OrderedDict()
+								#
+								for k,v in points_len.items():
 									#
-									CT = CenterTransfer(t_point_itm["coord"],inst_items,points_len)
+									#
+									inst_items.append(k)
+									#
+								#
+								temp_conf = []
+								temp_perp = []
+								temp_perpvirt = []
+								#
+								for t_point_itm in list(points_len.values()):
+									#
+									if t_point_itm['node'] > 0:
+										#
+										#print("CT FUNCTION")
+										#print(inst_items)
+										#
+										try:
+											CT = CenterTransfer(t_point_itm["coord"],inst_items,points_len)
+											CT.set_confines()
+											cfn = CT.get_confines()
+											#
+											contours[cnt]["confines"].append(cfn)
+											temp_conf.append(cfn)
+											#
+											coord_ct = [item[1] for item in cfn] # to_ct
+											#
+											cen_a = list(points_len.items())[-1]
+											cen_c = cen_a[1]["coord"]
+											#
+											perps_plot = make_ct_perp(coord_ct, cen_c)
+											#
+											contours[cnt]["perps"].append(perps_plot[0])
+											temp_perp.append(perps_plot[0])
+											contours[cnt]["perps_virt"].append(perps_plot[1])
+											temp_perpvirt.append(perps_plot[1])
+										except Exception as e:
+											pass
+											
+										#
+										#
+								#
+								print(simp, len(temp_conf))
+								#
+								contours[cnt]["confines_simp"][simp] = temp_conf#contours[cnt]["confines"]
+								contours[cnt]["perps_simp"][simp] = temp_perp#contours[cnt]["perps"]
+								contours[cnt]["perps_virt_simp"][simp] = temp_perpvirt#contours[cnt]["perps_virt"]
+								#
+
+							#
+							
+							#
+							
+
+							'''
+							for simp in simplification:
+								
+								iter_t_simp = contours[cnt]["simplified"][simp]
+								#
+								contours[cnt]["confines_simp"][simp] = []
+								#
+								inst_items = []
+								#
+								re_points_len = OrderedDict()
+								#
+								for k,v in points_len.items():
+									#
+									print(v)
+									print("++++")
+									print(iter_t_simp)
+									t_rot = flipCoordPath([v["coord"]],False,True)[0]
+
+									print(tuple(t_rot),iter_t_simp)
+
+									if tuple(t_rot) in iter_t_simp:
+										
+										#
+										re_points_len[k] = v
+										#
+										inst_items.append(k)
+										#
+								#
+								print("-----------------")
+								print(inst_items)
+								#
+								for t_point_itm in iter_t_simp:#list(points_len.values()):
+									#
+									#print(t_point_itm)
+									#
+									t_rot = flipCoordPath([t_point_itm],False,True)[0]
+									#
+									#if t_point_itm['node'] > 0:
+									#
+									#print("CT FUNCTION")
+									#print(t_point_itm["coord"],inst_items,points_len)
+									#
+									CT = CenterTransfer(t_rot,inst_items,points_len)
 									CT.set_confines()
 									cfn = CT.get_confines()
 									#
+									contours[cnt]["confines_simp"][simp].append(cfn)
 									contours[cnt]["confines"].append(cfn)
 									#
 									coord_ct = [item[1] for item in cfn] # to_ct
@@ -860,11 +972,13 @@ for font_inst in instance_list:
 									cen_c = cen_a[1]["coord"]
 									perps_plot = make_ct_perp(coord_ct, cen_c)
 									#
-									
-									#
 									contours[cnt]["perps"].append(perps_plot[0])
 									contours[cnt]["perps_virt"].append(perps_plot[1])
-								#
+									#
+								#contours[cnt]["confines_simp"][simp] = contours[cnt]["confines"]
+
+							#
+							'''
 							#
 							#print(contours[cnt]["perps"])
 							#perps_data = make_ct_perp(to_ct, cen_c, t_plot, False)
