@@ -315,6 +315,18 @@ class GraphConstructor():
 			sort_by_length[k]["order"] = node_order_map[k[1]]
 			#
 		#
+		graph_data = {
+			"node_color_map":node_color_map,
+			"edge_width_map":edge_width_map,
+			"node_width_map":node_width_map,
+			"edge_color_map":edge_color_map,
+			"edge_label_map":edge_label_map,
+			"node_label_map":node_label_map,
+			"node_order_map":node_order_map,
+			"g_coord_flip_simp":g_coord_flip_simp,
+			"sort_by_length":sort_by_length,
+			"graph_json":json_graph.node_link_data(_g)
+		}
 		# f_g["graph_data"] = {
 		# 	"node_color_map":node_color_map,
 		# 	"edge_width_map":edge_width_map,
@@ -327,7 +339,7 @@ class GraphConstructor():
 		# 	"sort_by_length":sort_by_length
 		# }
 		#
-		return sort_by_length
+		return [sort_by_length, graph_data]
 		#f_g["graph_json"] = json_graph.node_link_data(_g)
 			#
 		#

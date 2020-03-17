@@ -95,15 +95,14 @@ class IterDraw(object):
 					#
 					if _val_smp in t_contour["simplified"].keys():
 						#
-						# Recalculate Graph according to simplified match index if _val_smp is changed shown by redraw_smp = True
+						# Show Graph according to simplified match index if _val_smp is changed shown by redraw_smp = True
 						#
 						if redraw_smp:
 							#
-							t_contour["graph"] = None
-							t_contour = self.GC.make_instance_topo(t_contour, t_color,_val_smp)
+							c_graph = t_contour["graphs_data"][_val_smp]#self.GC.make_instance_topo(t_contour, t_color,_val_smp)
 							#
 						#
-						draw.draw_instance_graphs_c(t_contour)
+						draw.draw_instance_graphs_c(t_contour,c_graph)
 						#
 					#
 					# Draw Start Point (After Graph because erase plot)
@@ -132,7 +131,8 @@ class IterDraw(object):
 						t_simp = t_contour["simplified"][_val_smp]
 						contour_t_pnt = t_simp[_val_pnt-1]
 						#
-						__point = list(t_contour["graph_data"]["sort_by_length"].values())[_val_pnt]["coord"]
+						#__point = list(t_contour["graph_data"]["sort_by_length"].values())[_val_pnt]["coord"]
+						__point = list(t_contour["graphs"][_val_smp].values())[_val_pnt]["coord"]
 						#
 						print(__point)
 						#

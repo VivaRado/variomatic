@@ -171,7 +171,7 @@ def draw_instance_graphs(_self):
 		x = x + 1
 		#
 	#
-def draw_instance_graphs_c(m_instances):
+def draw_instance_graphs_c(m_instances, m_graph):
 	#
 	_movepos = 0
 	#
@@ -196,17 +196,17 @@ def draw_instance_graphs_c(m_instances):
 	#
 	move_figure(t_plt, _w, _h,x_move,y_move)
 	#
-	draw_topo(m_instances, t_plt, m_instances["inst"], parse_mpl, False)
+	draw_topo(m_graph, t_plt, m_instances["inst"], parse_mpl, False)
 	#
 	#
 
 
-def draw_topo(instance, _plt, i, glyph_path, move = True):
+def draw_topo(m_graph, _plt, i, glyph_path, move = True):
 	#
 	_color = color[i]
 	#
-	_g = json_graph.node_link_graph( instance["graph_json"] )
-	_g_d = instance["graph_data"]
+	_g = json_graph.node_link_graph( m_graph["graph_json"] )
+	_g_d = m_graph#["graphs_data"]
 	#
 	#
 	#
