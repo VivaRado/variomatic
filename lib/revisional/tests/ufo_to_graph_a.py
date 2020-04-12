@@ -596,16 +596,50 @@ total_list = {
 	instance_int:{
 		"glyph_name":{
 			contours:{
-				"simplified":{
-					"simplification_integer":{
-						[x,y],[x,y]...
+				contour_int:{
+					"simplified":{
+						"simplification_integer":{
+							[x,y],[x,y]...
+						},
+						...
 					},
-					"simplification_integer":{},
-					...
+					"graphs":{
+						"simplification_integer":{
+							NXgraph...
+						},
+						...
+					},
+					"graphs_data":{
+						"simplification_integer":{
+							NXgraph...
+						},
+						...
+					},					
+					"confines_simp":{
+						"simplification_integer":{
+							[pre,cnt,ant]...
+						},
+						...
+					},
+					"perp_simp":{
+						"simplification_integer":{
+							[pre,cnt,ant]...
+						},
+						...
+					},
+					"recu_simp":{
+						"simplification_integer":{
+							[pre,cnt,ant]...
+						},
+						...
+					}
 				},
-				"glyph":{}
-			}
-		}
-	}
+				...
+			},
+			...
+		},
+		...
+	},
+	...
 }
 '''
