@@ -97,9 +97,9 @@ class IterDraw(object):
 						#
 						# Show Graph according to simplified match index if _val_smp is changed shown by redraw_smp = True
 						#
-						if redraw_smp:
+						#if redraw_smp:
 							#
-							c_graph = t_contour["graphs_data"][_val_smp]#self.GC.make_instance_topo(t_contour, t_color,_val_smp)
+						c_graph = t_contour["graphs_data"][_val_smp]#self.GC.make_instance_topo(t_contour, t_color,_val_smp)
 							#
 						#
 						draw.draw_instance_graphs_c(t_contour,c_graph)
@@ -139,7 +139,7 @@ class IterDraw(object):
 						g_coord_flip = geom.flipCoordPath([contour_t_pnt],False,True)
 						print(g_coord_flip)
 						#
-						draw.draw_perp_virt(t_contour["perps_virt_simp"][_val_smp][_val_pnt], t_gca)
+						draw.draw_perp_recum(t_contour["recu_simp"][_val_smp][_val_pnt], t_gca)
 						#
 						#print("SIMP CONFINES")
 						#print(t_contour["confines_simp"][_val_smp][_val_pnt])
@@ -151,6 +151,9 @@ class IterDraw(object):
 						#
 						#draw.plot_region_line(t_gca, coord_ct, t_color, _plt)
 						#
+						#_perp_actual = geom.getPerpCoord(prp[0][0], prp[0][1], prp[1][0], prp[1][1], 1000)
+						
+
 
 	def redraw(self, graph, ctt):
 		#

@@ -10,6 +10,7 @@ import numpy as np
 from collections import OrderedDict
 from matplotlib import pyplot as plt
 import matplotlib.patches as mpatches
+import matplotlib.lines as lines
 #
 debug = False
 #
@@ -37,7 +38,7 @@ font_instance_c = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AG
 #
 run_specific = "x"
 instance_list = [font_instance_a, font_instance_b]
-simplification = list(range(0,50))#[0,1,2,3,4,5,6,7,8,9,10]
+simplification = list(range(0,3))#[0,1,2,3,4,5,6,7,8,9,10]
 #
 inst_num = 0
 plt_num = 0
@@ -45,6 +46,133 @@ instance_dict = {}
 total_list = {}
 CH = {}
 GC = {}
+#
+def do_ct_sort_a(_f, __point,to_ct,perps_plot, lt_p,ax,bax, _plt, travel_sort = False):
+	#
+	#
+	_b_instance = _f.m_instances[1]
+	#
+	#__cent_b = list(_b_instance["graph_data"]["sort_by_length"].values())[-1]["coord"]
+	#
+	per_ct = []
+	#
+	c = 0
+	#
+	for cts in to_ct:
+		#
+		sta_a = perps_plot[c][0]
+		end_a = perps_plot[c][1]
+		sta_b = perps_plot[c][2]
+		end_b = perps_plot[c][3]
+		#
+		all_match = []
+		all_match_len = []
+		#
+		#
+		for lt in lt_p:
+			#
+			lt_x = lt[1][0]
+			lt_y = lt[1][1]
+			#
+			pnt_dist_a = pnt2line([lt_x,lt_y], sta_a, end_a) # point, sta_a, end
+			pnt_dist_b = pnt2line([lt_x,lt_y], sta_b, end_b) # point, sta_a, end
+			#
+			if _plt:
+			#
+				# lines met on line from center to current point
+				_p_g = getPerpCoord(cts[0], cts[1],pnt_dist_b[1][0], pnt_dist_b[1][1], 5)
+				prp1 = mpatches.ConnectionPatch([_p_g[0],_p_g[1]],[_p_g[2],_p_g[3]],"data", lw=0.5, color="g")
+				ax.add_patch(prp1)
+			# distance of those positions from current point
+			#t_b_dist = int(math.hypot(cts[0]-pnt_dist_b[1][0], cts[1]-pnt_dist_b[1][1]))
+			#
+			#
+			# t_a_dist = math.hypot(cts[0]-lt_x, cts[1]-lt_y)
+			# t_b_c_dist = math.hypot(__cent_b[0]-lt_x, __cent_b[1]-lt_y)
+			# t_a_c_dist = math.hypot(__cent_b[0]-cts[0], __cent_b[1]-cts[1])
+			# #
+			# pnt_dist_a = list(pnt_dist_a)
+			# #
+			# pnt_dist_a.insert(1, t_a_dist)
+			# #
+			# pnt_dist_a = tuple(pnt_dist_a)
+			# #
+			# _area = area([[cts[0],cts[1]],pnt_dist_a[2],[lt_x,lt_y]])
+			# #
+			# center_m_point = distance([__cent_b[0], __cent_b[1]],[lt_x,lt_y])
+			# center_s_point = distance([__cent_b[0], __cent_b[1]],__point)
+			# sm_point = distance([lt_x,lt_y],__point)
+			# #
+			# m_angle = get_angle_b([__cent_b[0], __cent_b[1]],[lt_x,lt_y])
+			# s_angle = get_angle_b([__cent_b[0], __cent_b[1]],__point)
+			# #
+			
+			#
+			# new_match = [
+			# 	(lt[2],lt[3]), 
+			# 	pnt_dist_a, #
+			# 	_area,
+			# 	_area,
+			# 	[cts[0],cts[1]], 
+			# 	[lt_x,lt_y], #
+			# 	t_b_dist,
+			# 	abs(abs(t_b_c_dist) - abs(t_a_c_dist)),
+			# 	abs(center_m_point - center_s_point),
+			# 	abs(m_angle-s_angle),
+			# 	sm_point,
+			# 	_area+pnt_dist_a[0]+abs(center_m_point - center_s_point)+abs(m_angle-s_angle)+sm_point
+			# 	]
+			# #
+			# #
+			# if new_match not in all_match:
+			# 	#
+			# 	all_match.append(new_match)
+			# 	#
+			# #
+			# if _plt:
+			# 	#
+			# 	if show_center_transfer_b == True:
+						
+			# 		prp1 = mpatches.ConnectionPatch([lt_x, lt_y],[pnt_dist_a[2][0],pnt_dist_a[2][1]],"data", lw=0.2, color="r")
+			# 		#
+			# 		ax.add_patch(prp1)	
+			# 		#
+			# 		prp1 = mpatches.ConnectionPatch([lt_x,lt_y],__point,"data", lw=1, color="k")
+			# 		#
+			# 		ax.add_patch(prp1)	
+			#
+		#
+		# sorted_all_match = sorted(all_match, key=lambda x: x[3]+x[1][0]+x[8]+x[9]+x[10])[:3]
+		# #
+		# #
+		# for x in sorted_all_match:
+		# 	#
+		# 	#
+		# 	l1 = x[4]
+		# 	l2 = x[1][2]
+		# 	l3 = x[5]
+		# 	#
+		# 	if _plt:
+		# 		#
+		# 		poly = plt.Polygon([l1,l2,l3], color='g',alpha=0.1)
+		# 		ax.add_patch(poly)
+		# 		#
+		# 		dst1 = mpatches.ConnectionPatch([cts[0], cts[1]],[x[1][0],x[1][1]],"data", lw=0.4, color="g")
+		# 		#
+		# 		ax.add_patch(dst1)
+		# 	#
+		#
+		#per_ct.append(sorted_all_match)
+		#
+		c = c + 1
+		#
+	
+	#
+	return per_ct
+	#
+		
+	#
+
 #
 def get_point_inx_line(numpoints, num, loc):
 	#
@@ -85,22 +213,25 @@ def get_point_inx_line(numpoints, num, loc):
 #
 def make_ct_perp(coord_ct, cen_c):
 	#
-	perps = []
-	perps_virt = []
+	perpendic = []
+	recumbent = []
 	#
 	for coords in coord_ct:
 		#
 		x = coords[0]
 		y = coords[1]
 		#	
-		_perp = getPerpCoord(cen_c[0], cen_c[1], x, y, 10000)
-		_perp_b = getPerpCoord(_perp[0],_perp[1],x,y, 10000)
+		_perp_virtual= getPerpCoord(cen_c[0],  cen_c[1], x, y, 100) # perpendicular center to coordinate
+		_perp_actual = getPerpCoord(cen_c[0],  cen_c[1], x, y, 10000) # perpendicular to center to coordinate
 		#
-		perps_virt.append([cen_c, [x,y]])
-		perps.append([[_perp[0],_perp[1]],[_perp[2],_perp[3]],[_perp_b[0],_perp_b[1]],[_perp_b[2],_perp_b[3]]])
+		recumbent.append([cen_c, [x,y]]) # center to coordinate
+		perpendic.append([
+			[_perp_virtual[0],_perp_virtual[1]],[_perp_virtual[2],_perp_virtual[3]],
+			[_perp_actual[0], _perp_actual[1]], [_perp_actual[2], _perp_actual[3]]
+		])
 		#
 	#
-	return [perps,perps_virt]
+	return [perpendic,recumbent]
 	#
 #
 class CenterTransfer(object):
@@ -165,6 +296,7 @@ class CenterTransfer(object):
 		#
 		return [self.get_confine("p"), self.get_confine("c"), self.get_confine("a")]
 		#
+
 
 #
 #
@@ -235,34 +367,37 @@ for font_inst in instance_list:
 							#
 							contours[cnt]["confines"] = []
 							contours[cnt]["confines_simp"] = OrderedDict()
-							contours[cnt]["perps"] = []
-							contours[cnt]["perps_simp"] = OrderedDict()
-							contours[cnt]["perps_virt"] = []
-							contours[cnt]["perps_virt_simp"] = OrderedDict()
+							contours[cnt]["perp"] = []
+							contours[cnt]["perp_simp"] = OrderedDict()
+							contours[cnt]["recu"] = []
+							contours[cnt]["recu_simp"] = OrderedDict()
 							#
 							for simp in simplification:
-								points_len = contours[cnt]["graphs"][simp]
+								#
+								points_lenw = contours[cnt]["graphs"][simp]
 								#
 								inst_items = []
 								#
 								re_points_len = OrderedDict()
 								#
-								for k,v in points_len.items():
-									#
+								for k,v in points_lenw.items():
 									#
 									inst_items.append(k)
 									#
 								#
 								temp_conf = []
 								temp_perp = []
-								temp_perpvirt = []
+								temp_recu = []
 								#
-								for t_point_itm in list(points_len.values()):
+								for t_point_itm in list(points_lenw.values()):
 									#
 									if t_point_itm['node'] > 0:
 										#
+										print(t_point_itm)
+										#
 										try:
-											CT = CenterTransfer(t_point_itm["coord"],inst_items,points_len)
+											#
+											CT = CenterTransfer(t_point_itm["coord"],inst_items,points_lenw)
 											CT.set_confines()
 											cfn = CT.get_confines()
 											#
@@ -271,28 +406,33 @@ for font_inst in instance_list:
 											#
 											coord_ct = [item[1] for item in cfn] # to_ct
 											#
-											cen_a = list(points_len.items())[-1]
+											cen_a = list(points_lenw.items())[-1]
 											cen_c = cen_a[1]["coord"]
 											#
-											perps_plot = make_ct_perp(coord_ct, cen_c)
+											_perp,_recu = make_ct_perp(coord_ct, cen_c)
 											#
-											contours[cnt]["perps"].append(perps_plot[0])
-											temp_perp.append(perps_plot[0])
-											contours[cnt]["perps_virt"].append(perps_plot[1])
-											temp_perpvirt.append(perps_plot[1])
+											contours[cnt]["perp"].append(_perp)
+											temp_perp.append(_perp)
+											contours[cnt]["recu"].append(_recu)
+											temp_recu.append(_recu)
+											#
 										except Exception as e:
+											#
 											pass
-											
-										#
+											#
 										#
 								#
 								print(simp, len(temp_conf))
 								#
 								contours[cnt]["confines_simp"][simp] = temp_conf#contours[cnt]["confines"]
-								contours[cnt]["perps_simp"][simp] = temp_perp#contours[cnt]["perps"]
-								contours[cnt]["perps_virt_simp"][simp] = temp_perpvirt#contours[cnt]["perps_virt"]
+								contours[cnt]["perp_simp"][simp] = temp_perp#contours[cnt]["perps"]
+								contours[cnt]["recu_simp"][simp] = temp_recu#contours[cnt]["perps_virt"]
 								#
-							#
+								'''
+								get points around confines for each instance for each contour for each simplification level
+								'''
+								#
+								#
 							#
 							plt_num = plt_num + 1
 							#
@@ -305,8 +445,94 @@ for font_inst in instance_list:
 	inst_num = inst_num + 1
 	#
 #
-
-#pprint.pprint(total_list)
+def get_instance_permutation():
+	#
+	ir = list(range(0,len(instance_list))) # instance range
+	#
+	pipl = [] # permuted interpolation list
+	#
+	for i in range(len(ir)):
+		for j in range(i,len(ir)):
+			if ir[j] == ir[i]:
+				#print ('Skipping')
+				pass
+			else:
+				pipl.append([ir[i],ir[j]])
+	#
+	return pipl
+	#
+#
+def GraphEvaluator(instances, inst_intpl_lst):
+	#
+	# instance permutation
+	#
+	for intpair in inst_intpl_lst:
+		#
+		in_a = intpair[0]
+		in_b = intpair[1]
+		#
+	#
+	# dummy access confine data for pnt2line against perpendicular of center recumbent
+	#
+	for instance in instances:
+		#
+		for letter in instances[instance]:
+			#
+			for contour in instances[instance][letter]:
+				#
+				t_contour = instances[instance][letter][contour] # this
+				#
+				inst_inx = t_contour["inst"]
+				cont_inx = t_contour["cont"]
+				#
+				t_plot = plt.figure(t_contour["plot_num"])
+				t_gca = t_plot.gca()
+				t_color = color[inst_inx]
+				#
+				for x,y in t_contour["simplified"].items():
+					#
+					print("-------------------")
+					print(x,y)
+					print(inst_inx, cont_inx)
+					#
+					simp_level = simplification[x]
+					#
+					if x == 0: # example one level 0 of simplification / removing will run whole simplification list
+						#
+						for z in y: # points
+							#
+							t_c = flipCoordPath([z],False,True)[0]
+							graph_point_from_coord = [d for d in list(t_contour["graphs"][simp_level].values()) if d['coord'] == t_c][0]
+							#
+							print ( graph_point_from_coord ) 
+							#
+							point_inx = y.index(z)+1
+							#
+							print("_______")
+							#print(t_contour["confines_simp"][simp_level][1])
+							confine_from_coord = [d for d in t_contour["confines_simp"][simp_level] if d[1][1] == t_c][0]
+							inx_conf = t_contour["confines_simp"][simp_level].index(confine_from_coord)
+							#
+							perp_from_inx = t_contour["perp_simp"][simp_level][inx_conf]
+							ct_c = perp_from_inx[1]
+							#
+							list_x = [ct_c[0][0],ct_c[1][0]]
+							list_y = [ct_c[0][1],ct_c[1][1]]
+							#
+							line = lines.Line2D(list_x,list_y, lw=5., color='r', alpha=0.4)
+							#
+							t_gca.add_line(line)
+							#
+							print(z, perp_from_inx, confine_from_coord, graph_point_from_coord)
+							#
+						#
+					#
+#
+intpl_list = get_instance_permutation()
+#
+print("INTERPOLATION LIST")
+print(intpl_list)
+#
 #
 
 #
@@ -321,6 +547,13 @@ for font_inst in instance_list:
 initiate_drawing = IterDraw(total_list, GC, plt)
 #
 initiate_drawing.run()
+#
+'''
+GraphEvaluator is part of the solver it appears here because of drawing priority, for demonstration only.
+As it contains the identification of the CT lines for each instance to run against the other instances and find 
+points that are triangulated according to solver criteria.
+'''
+GraphEvaluator(total_list, intpl_list)
 #
 plt.show()
 #

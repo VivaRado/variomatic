@@ -5,6 +5,7 @@ import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import matplotlib.path as mpath
 import matplotlib.patches as mpatches
+import matplotlib.lines as lines
 import geom
 
 from gpathwrite import *
@@ -256,19 +257,22 @@ def get_gca(plot_num, plt):
 	#
 
 
-def draw_perp_virt(coord_ct,ax):
+def draw_perp_recum(coord_ct,ax):
 	#
 	print(coord_ct)
 	#
 	for prp in coord_ct:
 
-		_perp_virtual = geom.getPerpCoord(prp[0][0], prp[0][1], prp[1][0], prp[1][1], 50)
+		_perp_virtual = geom.getPerpCoord(prp[0][0], prp[0][1], prp[1][0], prp[1][1], 100)
 		pp1 = mpatches.ConnectionPatch(prp[0],[prp[1][0],prp[1][1]],"data", lw=0.5, color="g")
 		ax.add_patch(pp1)
 		#
-		prp1 = mpatches.ConnectionPatch([_perp_virtual[0],_perp_virtual[1]],[_perp_virtual[2],_perp_virtual[3]],"data",arrowstyle='<->,head_width=.15,head_length=.15', lw=0.5, color="g")
-		prp1.set_linestyle((0, (8,2)))
-		ax.add_patch(prp1)
+		prp1 = lines.Line2D([_perp_virtual[0], _perp_virtual[2]],[_perp_virtual[1],_perp_virtual[3]], lw=0.8, color="g")
+		#
+		#prp1 = mpatches.ConnectionPatch([_perp_virtual[0],_perp_virtual[1]],[_perp_virtual[2],_perp_virtual[3]],"data",arrowstyle='<->,head_width=.15,head_length=.15', lw=0.5, color="g")
+		#prp1.set_linestyle((0, (8,2)))
+		prp1.set_dashes([3, 3])
+		ax.add_line(prp1)
 		#
 	#
 	#
