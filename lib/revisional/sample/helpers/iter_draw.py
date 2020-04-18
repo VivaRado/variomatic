@@ -5,14 +5,16 @@ from tkinter import *
 from colors import color
 import pprint
 import time
+import matplotlib.lines as lines
 #
 class IterDraw(object):
 	"""docstring for IterDraw"""
-	def __init__(self, instances, GC, plt):
+	def __init__(self, instances, GC, plt, simplification):
 		super(IterDraw, self).__init__()
 		self.instances = instances
 		self.plt = plt
 		self.GC = GC
+		self.simplification = simplification
 		#self.run_sp = 'a'
 		#
 	#
@@ -77,7 +79,7 @@ class IterDraw(object):
 					t_contour = self.instances[instance][letter][contour] # this
 					#pprint.pprint(self.instances[instance][letter][contour])
 					#
-					print(_val_smp)
+					#print(_val_smp)
 					#
 					points_lenwise = list(t_contour["graphs"][_val_smp].values())
 					inst_inx = t_contour["inst"]
@@ -109,7 +111,7 @@ class IterDraw(object):
 					#
 					contour_start_point = t_contour["coords"]["graph"][0]
 					#
-					print(contour_start_point)
+					#print(contour_start_point)
 					#
 					draw.draw_circle_on_coord(contour_start_point, t_gca, 20, t_color, False)
 					#
@@ -121,7 +123,7 @@ class IterDraw(object):
 					#
 					if redraw_pnt:
 						#
-						print("REDRAW PNT")
+						#print("REDRAW PNT")
 						#
 						draw.draw_circle_on_coord(contour_start_point, t_gca, 20, t_color, False)
 						#
@@ -134,7 +136,7 @@ class IterDraw(object):
 						#__point = list(t_contour["graph_data"]["sort_by_length"].values())[_val_pnt]["coord"]
 						__point = list(t_contour["graphs"][_val_smp].values())[_val_pnt]["coord"]
 						#
-						print(__point)
+						#print(__point)
 						#
 						g_coord_flip = geom.flipCoordPath([contour_t_pnt],False,True)
 						print(g_coord_flip)
@@ -143,8 +145,8 @@ class IterDraw(object):
 						#
 						#print("SIMP CONFINES")
 						#print(t_contour["confines_simp"][_val_smp][_val_pnt])
-						print("SIMP CONFINES SING")
-						print(t_contour["confines"][_val_pnt])
+						#print("SIMP CONFINES SING")
+						#print(t_contour["confines"][_val_pnt])
 						#
 						#coord_ct = [item[1] for item in t_contour["confines"][_val_pnt]]
 						coord_ct = [item[1] for item in t_contour["confines_simp"][_val_smp][_val_pnt]]
@@ -152,7 +154,42 @@ class IterDraw(object):
 						#draw.plot_region_line(t_gca, coord_ct, t_color, _plt)
 						#
 						#_perp_actual = geom.getPerpCoord(prp[0][0], prp[0][1], prp[1][0], prp[1][1], 1000)
-						
+					#
+					'''
+					for x,y in t_contour["simplified"].items():
+						#
+						print("-------------------")
+						print(x,y)
+						print(inst_inx, cont_inx)
+						#
+						simp_level = self.simplification[x]
+						#
+						if x == 0: # example one level 0 of simplification / removing will run whole simplification list
+							#
+							for z in y: # points
+								#
+								t_c = geom.flipCoordPath([z],False,True)[0]
+								graph_point_from_coord = [d for d in list(t_contour["graphs"][simp_level].values()) if d['coord'] == t_c][0]
+								#
+								point_inx = y.index(z)+1
+								#
+								confine_from_coord = [d for d in t_contour["confines_simp"][simp_level] if d[1][1] == t_c][0]
+								inx_conf = t_contour["confines_simp"][simp_level].index(confine_from_coord)
+								#
+								perp_from_inx = t_contour["perp_simp"][simp_level][inx_conf]
+								ct_c = perp_from_inx[1]
+								#
+								list_x = [ct_c[0][0],ct_c[1][0]]
+								list_y = [ct_c[0][1],ct_c[1][1]]
+								#
+								line = lines.Line2D(list_x,list_y, lw=5., color=t_color, alpha=0.4)
+								#
+								t_gca.add_line(line)
+								#
+							#
+						#
+					#
+					'''
 
 
 	def redraw(self, graph, ctt):

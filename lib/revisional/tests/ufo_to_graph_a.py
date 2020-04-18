@@ -47,133 +47,9 @@ total_list = {}
 CH = {}
 GC = {}
 #
-def do_ct_sort_a(_f, __point,to_ct,perps_plot, lt_p,ax,bax, _plt, travel_sort = False):
-	#
-	#
-	_b_instance = _f.m_instances[1]
-	#
-	#__cent_b = list(_b_instance["graph_data"]["sort_by_length"].values())[-1]["coord"]
-	#
-	per_ct = []
-	#
-	c = 0
-	#
-	for cts in to_ct:
-		#
-		sta_a = perps_plot[c][0]
-		end_a = perps_plot[c][1]
-		sta_b = perps_plot[c][2]
-		end_b = perps_plot[c][3]
-		#
-		all_match = []
-		all_match_len = []
-		#
-		#
-		for lt in lt_p:
-			#
-			lt_x = lt[1][0]
-			lt_y = lt[1][1]
-			#
-			pnt_dist_a = pnt2line([lt_x,lt_y], sta_a, end_a) # point, sta_a, end
-			pnt_dist_b = pnt2line([lt_x,lt_y], sta_b, end_b) # point, sta_a, end
-			#
-			if _plt:
-			#
-				# lines met on line from center to current point
-				_p_g = getPerpCoord(cts[0], cts[1],pnt_dist_b[1][0], pnt_dist_b[1][1], 5)
-				prp1 = mpatches.ConnectionPatch([_p_g[0],_p_g[1]],[_p_g[2],_p_g[3]],"data", lw=0.5, color="g")
-				ax.add_patch(prp1)
-			# distance of those positions from current point
-			#t_b_dist = int(math.hypot(cts[0]-pnt_dist_b[1][0], cts[1]-pnt_dist_b[1][1]))
-			#
-			#
-			# t_a_dist = math.hypot(cts[0]-lt_x, cts[1]-lt_y)
-			# t_b_c_dist = math.hypot(__cent_b[0]-lt_x, __cent_b[1]-lt_y)
-			# t_a_c_dist = math.hypot(__cent_b[0]-cts[0], __cent_b[1]-cts[1])
-			# #
-			# pnt_dist_a = list(pnt_dist_a)
-			# #
-			# pnt_dist_a.insert(1, t_a_dist)
-			# #
-			# pnt_dist_a = tuple(pnt_dist_a)
-			# #
-			# _area = area([[cts[0],cts[1]],pnt_dist_a[2],[lt_x,lt_y]])
-			# #
-			# center_m_point = distance([__cent_b[0], __cent_b[1]],[lt_x,lt_y])
-			# center_s_point = distance([__cent_b[0], __cent_b[1]],__point)
-			# sm_point = distance([lt_x,lt_y],__point)
-			# #
-			# m_angle = get_angle_b([__cent_b[0], __cent_b[1]],[lt_x,lt_y])
-			# s_angle = get_angle_b([__cent_b[0], __cent_b[1]],__point)
-			# #
-			
-			#
-			# new_match = [
-			# 	(lt[2],lt[3]), 
-			# 	pnt_dist_a, #
-			# 	_area,
-			# 	_area,
-			# 	[cts[0],cts[1]], 
-			# 	[lt_x,lt_y], #
-			# 	t_b_dist,
-			# 	abs(abs(t_b_c_dist) - abs(t_a_c_dist)),
-			# 	abs(center_m_point - center_s_point),
-			# 	abs(m_angle-s_angle),
-			# 	sm_point,
-			# 	_area+pnt_dist_a[0]+abs(center_m_point - center_s_point)+abs(m_angle-s_angle)+sm_point
-			# 	]
-			# #
-			# #
-			# if new_match not in all_match:
-			# 	#
-			# 	all_match.append(new_match)
-			# 	#
-			# #
-			# if _plt:
-			# 	#
-			# 	if show_center_transfer_b == True:
-						
-			# 		prp1 = mpatches.ConnectionPatch([lt_x, lt_y],[pnt_dist_a[2][0],pnt_dist_a[2][1]],"data", lw=0.2, color="r")
-			# 		#
-			# 		ax.add_patch(prp1)	
-			# 		#
-			# 		prp1 = mpatches.ConnectionPatch([lt_x,lt_y],__point,"data", lw=1, color="k")
-			# 		#
-			# 		ax.add_patch(prp1)	
-			#
-		#
-		# sorted_all_match = sorted(all_match, key=lambda x: x[3]+x[1][0]+x[8]+x[9]+x[10])[:3]
-		# #
-		# #
-		# for x in sorted_all_match:
-		# 	#
-		# 	#
-		# 	l1 = x[4]
-		# 	l2 = x[1][2]
-		# 	l3 = x[5]
-		# 	#
-		# 	if _plt:
-		# 		#
-		# 		poly = plt.Polygon([l1,l2,l3], color='g',alpha=0.1)
-		# 		ax.add_patch(poly)
-		# 		#
-		# 		dst1 = mpatches.ConnectionPatch([cts[0], cts[1]],[x[1][0],x[1][1]],"data", lw=0.4, color="g")
-		# 		#
-		# 		ax.add_patch(dst1)
-		# 	#
-		#
-		#per_ct.append(sorted_all_match)
-		#
-		c = c + 1
-		#
-	
-	#
-	return per_ct
-	#
-		
-	#
-
+max_radius = 200
 #
+
 def get_point_inx_line(numpoints, num, loc):
 	#
 	#
@@ -229,7 +105,16 @@ def make_ct_perp(coord_ct, cen_c):
 			[_perp_virtual[0],_perp_virtual[1]],[_perp_virtual[2],_perp_virtual[3]],
 			[_perp_actual[0], _perp_actual[1]], [_perp_actual[2], _perp_actual[3]]
 		])
-		#
+		'''
+		perps.append([
+				[_perp[0],_perp[1]],
+				[_perp[2],_perp[3]],
+				[_perp_b[0],_perp_b[1]],
+				[_perp_b[2],_perp_b[3]]
+			])
+		'''
+		# [[169, -56], [4, 56], [8365, -5609], [-8191, 5609]]
+
 	#
 	return [perpendic,recumbent]
 	#
@@ -393,7 +278,7 @@ for font_inst in instance_list:
 									#
 									if t_point_itm['node'] > 0:
 										#
-										print(t_point_itm)
+										#print(t_point_itm)
 										#
 										try:
 											#
@@ -422,7 +307,7 @@ for font_inst in instance_list:
 											#
 										#
 								#
-								print(simp, len(temp_conf))
+								#print(simp, len(temp_conf))
 								#
 								contours[cnt]["confines_simp"][simp] = temp_conf#contours[cnt]["confines"]
 								contours[cnt]["perp_simp"][simp] = temp_perp#contours[cnt]["perps"]
@@ -462,17 +347,55 @@ def get_instance_permutation():
 	return pipl
 	#
 #
-def GraphEvaluator(instances, inst_intpl_lst):
+def tc_get_pca(t_contour,simp_level,conf_inx,pos):
 	#
-	# instance permutation
-	#
-	for intpair in inst_intpl_lst:
+	if pos == "p":
 		#
-		in_a = intpair[0]
-		in_b = intpair[1]
+		get_pos = 0
+		#
+	elif pos == "c":
+		#
+		get_pos = 1
+		#
+	elif pos == "a":
+		#
+		get_pos = 2
 		#
 	#
-	# dummy access confine data for pnt2line against perpendicular of center recumbent
+	return t_contour["perp_simp"][simp_level][conf_inx][get_pos]
+	#
+#
+def tc_get_point_b_coord(t_contour, simp_level, coordinate):
+	#
+	return [d for d in list(t_contour["graphs"][simp_level].values()) if d['coord'] == coordinate][0]
+	#
+#
+def tc_get_simp_conf_b_coord(t_contour, simp_level, coordinate):
+	#
+	confine_from_coord = [d for d in t_contour["confines_simp"][simp_level] if d[1][1] == coordinate][0]
+	confine_index = t_contour["confines_simp"][simp_level].index(confine_from_coord)
+	#
+	return confine_index, confine_from_coord
+	#
+#
+def get_perp(ct, rep):
+	#
+	if rep == "virt":
+		#
+		list_x = [ct[0][0],ct[1][0]]
+		list_y = [ct[0][1],ct[1][1]]
+		#
+	elif rep == "real":
+		#
+		list_x = [ct[2][0],ct[3][0]]
+		list_y = [ct[2][1],ct[3][1]]
+		#
+	#
+	#
+	return list_x, list_y
+	#
+#
+def get_tc(instances, inx):
 	#
 	for instance in instances:
 		#
@@ -480,53 +403,310 @@ def GraphEvaluator(instances, inst_intpl_lst):
 			#
 			for contour in instances[instance][letter]:
 				#
-				t_contour = instances[instance][letter][contour] # this
+				t_contour = instances[instance][letter][contour]
 				#
 				inst_inx = t_contour["inst"]
-				cont_inx = t_contour["cont"]
 				#
-				t_plot = plt.figure(t_contour["plot_num"])
-				t_gca = t_plot.gca()
-				t_color = color[inst_inx]
+				if inx == inst_inx:
+					#
+					return t_contour # this
+					#
 				#
-				for x,y in t_contour["simplified"].items():
+				else:
+					pass
+				#
+	#
+#
+def draw_cts(t_contour):
+	#
+	inst_inx = t_contour["inst"]
+	cont_inx = t_contour["cont"]
+	#
+	t_plot = plt.figure(t_contour["plot_num"])
+	t_gca = t_plot.gca()
+	t_color = color[inst_inx]
+	#
+	for x,y in t_contour["simplified"].items():
+		#
+		simp_level = simplification[x]
+		#
+		if x == 0: # example one level 0 of simplification / removing will run whole simplification list
+			#
+			for z in y: # points
+				#
+				t_coord = flipCoordPath([z],False,True)[0]
+				#
+				#graph_point_from_coord = tc_get_point_b_coord(t_contour,simp_level,t_coord)
+				#
+				conf_inx, conf_dat = tc_get_simp_conf_b_coord(t_contour,simp_level,t_coord)
+				#
+				pca_crd_c = tc_get_pca(t_contour,simp_level,conf_inx,"c")
+				#
+				list_x, list_y = get_perp(pca_crd_c, "virt")
+				#
+				line = lines.Line2D(list_x,list_y, lw=1., color=t_color, alpha=0.4)
+				#
+				t_gca.add_line(line)
+				#
+				#__point = t_coord#list(_a_instance["graph_data"]["sort_by_length"].values())[iter_point]["coord"]
+				#points_arr = get_points_around(__point,points_a,points_b,l_s, a_items, b_items, ax, bax,_plt, _color)
+				#
+				print(pca_crd_c)
+#
+#
+def get_points_around(__point, points_a,points_b, l_s, ax, bax, _plt=False, _color=False):
+	#
+	#
+	matched_target = []
+	
+	#
+	#center_a = points_a.get(a_items[-1])["coord"]
+	#
+	for z in l_s:
+		#
+		p_c = 0
+		t_psca_coord = z[1][1]#points_b.get(a_items[p_c])["coord"]
+		#
+		
+		if _plt:
+			#
+			circl = plt.Circle(t_psca_coord, max_radius, color=_color[0], fill=False, alpha=0.5, lw=0.5)
+			
+			circl.set_radius(max_radius)
+			circl.set_linestyle((0, (2,4)))
+			
+			ax.add_patch(circl)
+		#
+		
+		found_p = False
+		#
+		for v in points_b:
+			#
+			#
+			#if k!=(0,0):
+			#
+			contains = False
+			#
+			c_rad = 0
+			for x in range(max_radius):
+				#
+				t_circle = [t_psca_coord,c_rad]
+				#
+				t_b_coord = flipCoordPath([v],False,True)[0]#["coord"]
+				t_b_order = points_b.index(v)#.get(b_items[p_c])["order"]
+				#
+				contains = in_circle(t_b_coord,t_circle)
+				#
+				#print("- CHECK IN CIRCLE - contains")
+				#print(t_b_coord, contains)
+				#
+				if contains:
 					#
-					print("-------------------")
-					print(x,y)
-					print(inst_inx, cont_inx)
 					#
-					simp_level = simplification[x]
+					found_p = True
 					#
-					if x == 0: # example one level 0 of simplification / removing will run whole simplification list
+					#Path = mpath.Path
+					#
+					t_b_dist = math.hypot(t_b_coord[0]-__point[0], t_b_coord[1]-__point[1])
+					#
+					new_match = [t_b_dist,t_b_coord,p_c,t_b_order]
+					#
+					if new_match not in matched_target:
 						#
-						for z in y: # points
+						matched_target.append(new_match)
+						#
+						if _plt:
 							#
-							t_c = flipCoordPath([z],False,True)[0]
-							graph_point_from_coord = [d for d in list(t_contour["graphs"][simp_level].values()) if d['coord'] == t_c][0]
-							#
-							print ( graph_point_from_coord ) 
-							#
-							point_inx = y.index(z)+1
-							#
-							print("_______")
-							#print(t_contour["confines_simp"][simp_level][1])
-							confine_from_coord = [d for d in t_contour["confines_simp"][simp_level] if d[1][1] == t_c][0]
-							inx_conf = t_contour["confines_simp"][simp_level].index(confine_from_coord)
-							#
-							perp_from_inx = t_contour["perp_simp"][simp_level][inx_conf]
-							ct_c = perp_from_inx[1]
-							#
-							list_x = [ct_c[0][0],ct_c[1][0]]
-							list_y = [ct_c[0][1],ct_c[1][1]]
-							#
-							line = lines.Line2D(list_x,list_y, lw=5., color='r', alpha=0.4)
-							#
-							t_gca.add_line(line)
-							#
-							print(z, perp_from_inx, confine_from_coord, graph_point_from_coord)
+							pp1 = mpatches.ConnectionPatch(z[1][1],t_b_coord,"data", linestyle= "dashed", lw=0.5, color=_color[0])
+							pp1.set_linestyle((0, (2,4)))
+							ax.add_patch(pp1)
+							draw.draw_circle_on_coord(t_b_coord, ax, 2, "g")
 							#
 						#
+					break
+				#
+				c_rad = c_rad + 1
+				#
+			#
+			p_c = p_c + 1
+			#
+			#
+		#
+	#
+	sorted_cont_target = sorted(matched_target, key = lambda x: x[3])#sorted(matched_target)
+	#
+	return sorted_cont_target
+	#
+#
+def rotate_points(sorted_cont_target, len_points, is_sequence=False):
+	#
+	if is_sequence:
+		#
+		c = [j for i in is_sequence for j in i]
+		#
+	else:
+		#
+		c = [el[3] for el in sorted_cont_target]
+		orders_true = collections.deque(sorted_cont_target)
+		#
+	#
+	orders = collections.deque(c)
+	#
+	l_inx = len_points#len(points)
+	#
+	index_of_last = False
+	#
+	#
+	if l_inx in c:
+		#
+		index_of_last = c.index(l_inx)
+		#
+	#
+	if index_of_last and 1 in c :
+		#
+		if is_sequence:
+			#
+			seq_lists = is_sequence
+			#
+		else:
+			#
+			seq_lists = get_seq(c)
+			#
+		#
+		for x in seq_lists:
+			#
+			if l_inx in x:
+				#
+				rotation = len(x)
+				#
+				orders.rotate(rotation)
+				#
+				if is_sequence:
 					#
+					pass
+					#
+				else:
+					#
+					orders_true.rotate(rotation)
+					#
+			#
+		#
+	#
+	if is_sequence:
+		#
+		return list(orders)
+		#
+	else:
+		#
+		return list(orders_true)
+		#
+	#
+#
+
+def TreeEvaluator(instances, inst_intpl_lst):
+	#
+	# instance permutation
+	#
+	#print(inst_intpl_lst)
+	#
+	for intpair in inst_intpl_lst:
+		#
+		in_a = intpair[0]
+		in_b = intpair[1]
+		#
+		tc_inst_a = get_tc(instances, in_a)
+		tc_inst_b = get_tc(instances, in_b)
+		#
+		draw_cts(tc_inst_a)
+		draw_cts(tc_inst_b)
+		#
+		points_a = tc_inst_a["simplified"][0]
+		points_b = tc_inst_b["simplified"][0]
+		#
+		t_plot_a = plt.figure(tc_inst_a["plot_num"])
+		ax = t_plot_a.gca()
+		#
+		t_plot_b = plt.figure(tc_inst_b["plot_num"])
+		bax = t_plot_b.gca()
+		#
+		inst_inx = tc_inst_a["inst"]
+		cont_inx = tc_inst_a["cont"]
+		#
+		t_plot = plt.figure(tc_inst_a["plot_num"])
+		t_gca = t_plot.gca()
+		t_color = color[inst_inx]
+		#
+		__point = list(tc_inst_a["graphs"][0].values())[0]["coord"] # running for point zero
+		#
+		conf_inx, conf_dat = tc_get_simp_conf_b_coord(tc_inst_a,0,list(__point))
+		#
+		lt_p = tc_inst_a["perp_simp"][0][conf_inx]
+		#
+		l_s = [conf_dat]
+		#
+		#pca_crd_c = tc_get_pca(t_contour,0,conf_inx,"c")
+		#
+		sta_a = lt_p[1][0]
+		end_a = lt_p[1][1]
+		sta_b = lt_p[1][2]
+		end_b = lt_p[1][3]
+		#
+		all_match = []
+		all_match_len = []
+		#
+		points_arr = get_points_around(__point,points_a,points_b,l_s, ax, bax,plt, t_color)
+		#
+		l_t = points_arr
+		#
+		l_t = rotate_points(l_t, len(points_b))
+		#
+		__cent_b = list(tc_inst_b["graphs"][simp].values())[-1]["coord"]
+		#
+		#print(__cent_b)
+		#
+		for cts in tc_inst_a["confines_simp"][0][conf_inx]:
+			#
+			for lt in l_t:
+				#
+				lt_x = lt[1][0]
+				lt_y = lt[1][1]
+				#
+				pnt_dist_a = pnt2line([lt_x,lt_y], sta_a, end_a) # point, sta_a, end
+				pnt_dist_b = pnt2line([lt_x,lt_y], sta_b, end_b) # point, sta_a, end
+				#
+				t_a_dist = math.hypot(cts[1][0]-lt_x, cts[1][1]-lt_y)
+				t_b_c_dist = math.hypot(__cent_b[0]-lt_x, __cent_b[1]-lt_y)
+				t_a_c_dist = math.hypot(__cent_b[0]-cts[1][0], __cent_b[1]-cts[1][1])
+				#
+				pnt_dist_a = list(pnt_dist_a)
+				#
+				pnt_dist_a.insert(1, t_a_dist)
+				#
+				if plt:
+					#
+					# one level tree branch distance from points of instance b to confine centers extended perpendicular line to center of graph.
+					#
+					list_x, list_y = [lt_x, pnt_dist_b[1][0]],[lt_y, pnt_dist_b[1][1]]
+					line = lines.Line2D(list_x,list_y, lw=1., color="g", alpha=0.4)
+					t_gca.add_line(line)
+					#
+					# lines met on line from center to current point
+					_p_g = getPerpCoord(cts[1][0], cts[1][1],pnt_dist_b[1][0], pnt_dist_b[1][1], 5)
+					prp1 = mpatches.ConnectionPatch([_p_g[0],_p_g[1]],[_p_g[2],_p_g[3]],"data", lw=0.2, color="g")
+					t_gca.add_patch(prp1)
+					#
+					prp1 = mpatches.ConnectionPatch([lt_x, lt_y],[pnt_dist_a[2][0],pnt_dist_a[2][1]],"data", lw=0.2, color="r")
+					#
+					t_gca.add_patch(prp1)	
+					#
+					prp1 = mpatches.ConnectionPatch([lt_x,lt_y],[__cent_b[0],__cent_b[1]],"data", lw=0.2, color="k")
+					#
+					t_gca.add_patch(prp1)	
+		#
+	#
+	# dummy access confine data for pnt2line against perpendicular of center recumbent
+	#
+	
 #
 intpl_list = get_instance_permutation()
 #
@@ -544,16 +724,16 @@ print(intpl_list)
 #
 # Post-Processor
 #
-initiate_drawing = IterDraw(total_list, GC, plt)
+initiate_drawing = IterDraw(total_list, GC, plt, simplification)
 #
 initiate_drawing.run()
 #
 '''
-GraphEvaluator is part of the solver it appears here because of drawing priority, for demonstration only.
+TreeEvaluator is part of the solver it appears here because of drawing priority, for demonstration only.
 As it contains the identification of the CT lines for each instance to run against the other instances and find 
 points that are triangulated according to solver criteria.
 '''
-GraphEvaluator(total_list, intpl_list)
+TreeEvaluator(total_list, intpl_list)
 #
 plt.show()
 #
@@ -563,7 +743,7 @@ Pre-Processor
 		ContourNormalizer
 	GraphConstructor
 Solver
-	GraphEvaluator
+	TreeEvaluator
 	InstanceMatcher
 		PointNormalizer
 Post-Processor
