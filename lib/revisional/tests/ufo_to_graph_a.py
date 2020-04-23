@@ -184,6 +184,136 @@ class CenterTransfer(object):
 
 
 #
+class ContourManager(object):
+	"""
+	
+	"""
+	def __init__(self, instances):
+		#
+		self.inst = instances
+		#
+	#
+	def get_tc(self, inx):
+	#
+		for instance in self.inst:
+			#
+			for letter in self.inst[instance]:
+				#
+				for contour in self.inst[instance][letter]:
+					#
+					t_contour = self.inst[instance][letter][contour]
+					#
+					inst_inx = t_contour["inst"]
+					#
+					if inx == inst_inx:
+						#
+						return t_contour # this
+						#
+					#
+					else:
+						pass
+					#
+	#
+	def tc_get_simp_conf_b_coord(self, t_contour, simp_level, coordinate):
+		#
+		confine_from_coord = [d for d in t_contour["confines_simp"][simp_level] if d[1][1] == coordinate][0]
+		confine_index = t_contour["confines_simp"][simp_level].index(confine_from_coord)
+		#
+		return confine_index, confine_from_coord
+		#
+	#
+	def get_tc_points(self, tc, simp_level):
+		#
+		return tc["simplified"][simp_level]
+		#
+	def draw_cts(self, t_contour):
+		#
+		inst_inx = t_contour["inst"]
+		cont_inx = t_contour["cont"]
+		#
+		t_plot = plt.figure(t_contour["plot_num"])
+		t_gca = t_plot.gca()
+		t_color = color[inst_inx]
+		#
+		for x,y in t_contour["simplified"].items():
+			#
+			simp_level = simplification[x]
+			#
+			if x == 0: # example one level 0 of simplification / removing will run whole simplification list
+				#
+				for z in y: # points
+					#
+					t_coord = flipCoordPath([z],False,True)[0]
+					#
+					#graph_point_from_coord = tc_get_point_b_coord(t_contour,simp_level,t_coord)
+					#
+					conf_inx, conf_dat = self.tc_get_simp_conf_b_coord(t_contour,simp_level,t_coord)
+					#
+					pca_crd_c = tc_get_pca(t_contour,simp_level,conf_inx,"c")
+					#
+					list_x, list_y = get_perp(pca_crd_c, "virt")
+					#
+					line = lines.Line2D(list_x,list_y, lw=1., color=t_color, alpha=0.4)
+					#
+					t_gca.add_line(line)
+					#
+					#__point = t_coord#list(_a_instance["graph_data"]["sort_by_length"].values())[iter_point]["coord"]
+					#points_arr = get_points_around(__point,points_a,points_b,l_s, a_items, b_items, ax, bax,_plt, _color)
+					#
+					print(pca_crd_c)
+	# def set_confines(self):
+	# 	#
+	# 	t_fnl_d = 300#math.hypot(f_p_x-l_p_x, f_p_y-l_p_y) + 50 # target_first_and_last_distance
+	# 	p_d = 0
+	# 	#
+	# 	for k,v in self.points_len.items():
+	# 		#
+	# 		if k!=(0,0):
+	# 			#
+	# 			t_a_coord = self.points_len.get(self.inst_items[p_d])["coord"]
+	# 			t_a_order = self.points_len.get(self.inst_items[p_d])["order"]
+	# 			#
+	# 			t_circle = [t_a_coord,t_fnl_d]
+	# 			#
+	# 			contains = in_circle(self.__point,t_circle)
+	# 			#
+	# 			if contains:
+	# 				#
+	# 				t_a_dist = math.hypot(t_a_coord[0]-self.__point[0], t_a_coord[1]-self.__point[1])
+	# 				#
+	# 				self.matched_source.append([t_a_dist,t_a_coord,p_d, t_a_order])
+	# 				#
+	# 			p_d = p_d + 1
+	# 		#
+	# 	#
+	# 	self.ms_pn_s = sorted(self.matched_source, key = lambda x: x[3])
+	# 	#
+	# 	self.search_center = next(c for c in self.ms_pn_s if c[1] == self.__point)
+	# 	#
+	# 	return self.ms_pn_s
+	# 	#
+	# def get_confine(self, toget):
+	# 	#
+	# 	if toget == "c":
+	# 		#
+	# 		return self.search_center
+	# 		#
+	# 	elif toget == "p":
+	# 		#
+	# 		return next(c for c in self.ms_pn_s if c[3] == get_point_inx_line(len(self.points_len), self.search_center[3], "p"))
+	# 		#
+	# 	elif toget == "a":
+	# 		#
+	# 		return next(c for c in self.ms_pn_s if c[3] == get_point_inx_line(len(self.points_len), self.search_center[3], "a"))
+	# 		#
+
+	# def get_confines(self):
+	# 	#
+	# 	return [self.get_confine("p"), self.get_confine("c"), self.get_confine("a")]
+	# 	#
+
+
+#
 #
 # Pre-Processor
 #
@@ -370,14 +500,7 @@ def tc_get_point_b_coord(t_contour, simp_level, coordinate):
 	return [d for d in list(t_contour["graphs"][simp_level].values()) if d['coord'] == coordinate][0]
 	#
 #
-def tc_get_simp_conf_b_coord(t_contour, simp_level, coordinate):
-	#
-	confine_from_coord = [d for d in t_contour["confines_simp"][simp_level] if d[1][1] == coordinate][0]
-	confine_index = t_contour["confines_simp"][simp_level].index(confine_from_coord)
-	#
-	return confine_index, confine_from_coord
-	#
-#
+
 def get_perp(ct, rep):
 	#
 	if rep == "virt":
@@ -394,64 +517,6 @@ def get_perp(ct, rep):
 	#
 	return list_x, list_y
 	#
-#
-def get_tc(instances, inx):
-	#
-	for instance in instances:
-		#
-		for letter in instances[instance]:
-			#
-			for contour in instances[instance][letter]:
-				#
-				t_contour = instances[instance][letter][contour]
-				#
-				inst_inx = t_contour["inst"]
-				#
-				if inx == inst_inx:
-					#
-					return t_contour # this
-					#
-				#
-				else:
-					pass
-				#
-	#
-#
-def draw_cts(t_contour):
-	#
-	inst_inx = t_contour["inst"]
-	cont_inx = t_contour["cont"]
-	#
-	t_plot = plt.figure(t_contour["plot_num"])
-	t_gca = t_plot.gca()
-	t_color = color[inst_inx]
-	#
-	for x,y in t_contour["simplified"].items():
-		#
-		simp_level = simplification[x]
-		#
-		if x == 0: # example one level 0 of simplification / removing will run whole simplification list
-			#
-			for z in y: # points
-				#
-				t_coord = flipCoordPath([z],False,True)[0]
-				#
-				#graph_point_from_coord = tc_get_point_b_coord(t_contour,simp_level,t_coord)
-				#
-				conf_inx, conf_dat = tc_get_simp_conf_b_coord(t_contour,simp_level,t_coord)
-				#
-				pca_crd_c = tc_get_pca(t_contour,simp_level,conf_inx,"c")
-				#
-				list_x, list_y = get_perp(pca_crd_c, "virt")
-				#
-				line = lines.Line2D(list_x,list_y, lw=1., color=t_color, alpha=0.4)
-				#
-				t_gca.add_line(line)
-				#
-				#__point = t_coord#list(_a_instance["graph_data"]["sort_by_length"].values())[iter_point]["coord"]
-				#points_arr = get_points_around(__point,points_a,points_b,l_s, a_items, b_items, ax, bax,_plt, _color)
-				#
-				print(pca_crd_c)
 #
 #
 def get_points_around(__point, points_a,points_b, l_s, ax, bax, _plt=False, _color=False):
@@ -614,14 +679,10 @@ def TreeEvaluator(instances, inst_intpl_lst):
 		in_a = intpair[0]
 		in_b = intpair[1]
 		#
-		tc_inst_a = get_tc(instances, in_a)
-		tc_inst_b = get_tc(instances, in_b)
+		CM = ContourManager(instances)
 		#
-		draw_cts(tc_inst_a)
-		draw_cts(tc_inst_b)
-		#
-		points_a = tc_inst_a["simplified"][0]
-		points_b = tc_inst_b["simplified"][0]
+		tc_inst_a = CM.get_tc(in_a)
+		tc_inst_b = CM.get_tc(in_b)
 		#
 		t_plot_a = plt.figure(tc_inst_a["plot_num"])
 		ax = t_plot_a.gca()
@@ -636,9 +697,15 @@ def TreeEvaluator(instances, inst_intpl_lst):
 		t_gca = t_plot.gca()
 		t_color = color[inst_inx]
 		#
+		CM.draw_cts(tc_inst_a)
+		CM.draw_cts(tc_inst_b)
+		#
+		points_a = CM.get_tc_points(tc_inst_a,0)
+		points_b = CM.get_tc_points(tc_inst_b,0)
+		#
 		__point = list(tc_inst_a["graphs"][0].values())[0]["coord"] # running for point zero
 		#
-		conf_inx, conf_dat = tc_get_simp_conf_b_coord(tc_inst_a,0,list(__point))
+		conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(tc_inst_a,0,list(__point))
 		#
 		lt_p = tc_inst_a["perp_simp"][0][conf_inx]
 		#
