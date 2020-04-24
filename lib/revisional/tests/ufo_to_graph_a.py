@@ -260,7 +260,7 @@ class ContourManager(object):
 					#__point = t_coord#list(_a_instance["graph_data"]["sort_by_length"].values())[iter_point]["coord"]
 					#points_arr = get_points_around(__point,points_a,points_b,l_s, a_items, b_items, ax, bax,_plt, _color)
 					#
-					print(pca_crd_c)
+					#print(pca_crd_c)
 	# def set_confines(self):
 	# 	#
 	# 	t_fnl_d = 300#math.hypot(f_p_x-l_p_x, f_p_y-l_p_y) + 50 # target_first_and_last_distance
@@ -703,36 +703,52 @@ def TreeEvaluator(instances, inst_intpl_lst):
 		points_a = CM.get_tc_points(tc_inst_a,0)
 		points_b = CM.get_tc_points(tc_inst_b,0)
 		#
-		__point = list(tc_inst_a["graphs"][0].values())[0]["coord"] # running for point zero
+		'''
+		Iterate every graph point of instance A except graph center,
+		for every A_point create a circle of max radius and get instance B points that are in that circle,
+		for every INCIRCLED_point found create a ct branch to current A_point perpendicular infinite to graph center.
+
+		'''
 		#
-		conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(tc_inst_a,0,list(__point))
-		#
-		lt_p = tc_inst_a["perp_simp"][0][conf_inx]
-		#
-		l_s = [conf_dat]
-		#
-		#pca_crd_c = tc_get_pca(t_contour,0,conf_inx,"c")
-		#
-		sta_a = lt_p[1][0]
-		end_a = lt_p[1][1]
-		sta_b = lt_p[1][2]
-		end_b = lt_p[1][3]
-		#
-		all_match = []
-		all_match_len = []
-		#
-		points_arr = get_points_around(__point,points_a,points_b,l_s, ax, bax,plt, t_color)
-		#
-		l_t = points_arr
-		#
-		l_t = rotate_points(l_t, len(points_b))
-		#
-		__cent_b = list(tc_inst_b["graphs"][simp].values())[-1]["coord"]
-		#
-		#print(__cent_b)
-		#
-		for cts in tc_inst_a["confines_simp"][0][conf_inx]:
+		for x in points_a:#list(tc_inst_a["graphs"][0].values()):
 			#
+			#print(x["coord"])
+			#
+			#if points_a.index(x) == 10: #lower index - 1
+			#
+			__point = flipCoordPath([x],False,True)[0]#x["coord"] # running for point zero
+			#
+			conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(tc_inst_a,0,list(__point))
+			#
+			#
+			lt_p = tc_inst_a["perp_simp"][0][conf_inx]
+			#
+			l_s = [conf_dat]
+			#
+			#pca_crd_c = tc_get_pca(t_contour,0,conf_inx,"c")
+			#
+			sta_a = lt_p[1][0]
+			end_a = lt_p[1][1]
+			sta_b = lt_p[1][2]
+			end_b = lt_p[1][3]
+			#
+			all_match = []
+			all_match_len = []
+			#
+			points_arr = get_points_around(__point,points_a,points_b,l_s, ax, bax,plt, t_color)
+			#
+			l_t = points_arr
+			#
+			l_t = rotate_points(l_t, len(points_b)) # review if nessessary 
+			#
+			# graph center of instance b
+			gc_b = list(tc_inst_b["graphs"][simp].values())[-1]["coord"]
+			#
+			#pprint.pprint(tc_inst_a["confines_simp"][0])
+			#pprint.pprint(tc_inst_a["perp_simp"][0])
+			#
+			#for cts in tc_inst_a["confines_simp"][0][conf_inx]: # avoid unnessessary loop over cts
+				#
 			for lt in l_t:
 				#
 				lt_x = lt[1][0]
@@ -741,9 +757,9 @@ def TreeEvaluator(instances, inst_intpl_lst):
 				pnt_dist_a = pnt2line([lt_x,lt_y], sta_a, end_a) # point, sta_a, end
 				pnt_dist_b = pnt2line([lt_x,lt_y], sta_b, end_b) # point, sta_a, end
 				#
-				t_a_dist = math.hypot(cts[1][0]-lt_x, cts[1][1]-lt_y)
-				t_b_c_dist = math.hypot(__cent_b[0]-lt_x, __cent_b[1]-lt_y)
-				t_a_c_dist = math.hypot(__cent_b[0]-cts[1][0], __cent_b[1]-cts[1][1])
+				t_a_dist = math.hypot(__point[0]-lt_x, __point[1]-lt_y)
+				t_b_c_dist = math.hypot(gc_b[0]-lt_x, gc_b[1]-lt_y)
+				t_a_c_dist = math.hypot(gc_b[0]-__point[0], gc_b[1]-__point[1])
 				#
 				pnt_dist_a = list(pnt_dist_a)
 				#
@@ -752,24 +768,19 @@ def TreeEvaluator(instances, inst_intpl_lst):
 				if plt:
 					#
 					# one level tree branch distance from points of instance b to confine centers extended perpendicular line to center of graph.
-					#
+					# ct branch
 					list_x, list_y = [lt_x, pnt_dist_b[1][0]],[lt_y, pnt_dist_b[1][1]]
-					line = lines.Line2D(list_x,list_y, lw=1., color="g", alpha=0.4)
+					line = lines.Line2D(list_x,list_y, lw=1, color="g", alpha=0.4)
 					t_gca.add_line(line)
-					#
-					# lines met on line from center to current point
-					_p_g = getPerpCoord(cts[1][0], cts[1][1],pnt_dist_b[1][0], pnt_dist_b[1][1], 5)
-					prp1 = mpatches.ConnectionPatch([_p_g[0],_p_g[1]],[_p_g[2],_p_g[3]],"data", lw=0.2, color="g")
-					t_gca.add_patch(prp1)
-					#
-					prp1 = mpatches.ConnectionPatch([lt_x, lt_y],[pnt_dist_a[2][0],pnt_dist_a[2][1]],"data", lw=0.2, color="r")
-					#
-					t_gca.add_patch(prp1)	
-					#
-					prp1 = mpatches.ConnectionPatch([lt_x,lt_y],[__cent_b[0],__cent_b[1]],"data", lw=0.2, color="k")
-					#
-					t_gca.add_patch(prp1)	
-		#
+						#
+						#_p_g = getPerpCoord(cts[1][0], cts[1][1],pnt_dist_b[1][0], pnt_dist_b[1][1], 5)
+						#prp1 = mpatches.ConnectionPatch([_p_g[0],_p_g[1]],[_p_g[2],_p_g[3]],"data", lw=0.2, color="orange")
+						#t_gca.add_patch(prp1)
+						#
+						# instance b point segment to center of instance b
+						#prp1 = mpatches.ConnectionPatch([lt_x,lt_y],[gc_b[0],gc_b[1]],"data", lw=0.2, color="k")
+						#t_gca.add_patch(prp1)	
+			#
 	#
 	# dummy access confine data for pnt2line against perpendicular of center recumbent
 	#
@@ -777,8 +788,8 @@ def TreeEvaluator(instances, inst_intpl_lst):
 #
 intpl_list = get_instance_permutation()
 #
-print("INTERPOLATION LIST")
-print(intpl_list)
+#print("INTERPOLATION LIST")
+#print(intpl_list)
 #
 #
 

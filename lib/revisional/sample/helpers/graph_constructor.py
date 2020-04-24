@@ -196,6 +196,9 @@ class GraphConstructor():
 		#
 		for k,v in sort_by_length.items():
 			#
+			#print(k[1])
+			#print(node_order_map[k[1]])
+			#
 			sort_by_length[k]["order"] = node_order_map[k[1]]
 			#
 		#
