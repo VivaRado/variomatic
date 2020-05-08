@@ -35,15 +35,14 @@ gantt
     VRM-1010-0003 BATRIC Complete Font Matcher:                                    done, des25, 2019-09-07, 15d
     VRM-1010-0004 BATRIC Combiner:                                                 done, des26, 2019-09-22, 25d
     VRM-1011 BATRIC Documentation Update:                                                des27, 2019-10-30, 2d
+    VRM-2000 Revisional:                                                                 des28, 2020-02-10, 7d
 
 ```
 
 Schedule:
 
 *  Current:
-    *  **Planing and Scheduling** / After P.O.:
-        *  **VRM-1000** Point Importance Plan Scheduling / Andreas Kalpakidis & Madina Akhmatova
-            *  **VRM-1006** Implementing Regional Radius Match (RRM).
+    *  **VRM-2000** Revisional / Andreas Kalpakidis & Madina Akhmatova
 
 *  Completed:
     *  ~~**Assumptions Research** / 2019-March-07 until the end of 2019-March-21~~:
@@ -67,6 +66,8 @@ Schedule:
         *  ~~Demo of Region Radius Match. 2019-04-26, 8h~~
     *   **VRM-1007**:
         *  ~~VRM-1007-0001 Schematics and Explanation~~
+    *  **VRM-1000** Point Importance Plan Scheduling / Andreas Kalpakidis & Madina Akhmatova
+        *  **VRM-1006** Implementing Regional Radius Match (RRM).
 
 Task Codes:
 
@@ -88,4 +89,5 @@ Task Codes:
     *  VRM-1010-0003 BATRIC Complete Font Matcher
     *  VRM-1010-0004 BATRIC Combiner
 *  VRM-1011 BATRIC Documentation Update
+*  VRM-2000 Revisional
 

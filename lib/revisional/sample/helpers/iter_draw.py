@@ -100,8 +100,8 @@ class IterDraw(object):
 		#
 		root.geometry("100x100+1800+0")
 		#
-		frame = Frame(root, relief=SUNKEN, borderwidth=1)
-		frame.pack(side=LEFT, fill=Y)
+		frame = Frame(root, borderwidth=1)
+		frame.pack(side='top')
 		label = Label(frame, text='Max Error')
 		label.pack()
 		self.val_smp = Spinbox(frame, width=8, from_=0, to=1000000, command=self.on_simplification_value_change)
@@ -118,6 +118,7 @@ class IterDraw(object):
 		self._smp = 0
 		self._pnt = 0
 		#
+		#root.update()
 		# if self.run_sp != "":
 		# 	#
 		# 	self.val_smp.delete(0,"end")
@@ -126,6 +127,8 @@ class IterDraw(object):
 		# 	self.val_pnt.insert(0,0)
 			#
 		self.redraw(True, True)
+		#
+		#root.mainloop()
 		#
 	#
 	def on_simplification_value_change(self):

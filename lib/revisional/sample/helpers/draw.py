@@ -114,9 +114,18 @@ def get_t(ax):
 def move_figure(f,w,h, x, y):
 	"""Move figure's upper left corner to pixel (x, y)"""
 	backend = mpl.get_backend()
+	#
+	print("BACKEND - ")
+	print(backend)
+	#
 	if backend == 'TkAgg':
 		#print('TkAgg')
 		f.canvas.manager.window.wm_geometry("%dx%d+%d+%d" % (w,h, x, y))
+	elif backend == "Qt4Agg":
+		#
+		#print('Qt4Agg')
+		f.canvas.manager.window.setGeometry(x, y, w,h)
+		#
 	elif backend == 'WXAgg':
 		print('WXAgg')
 		print('NO RESIZE FUNTION FOR WINDOW')

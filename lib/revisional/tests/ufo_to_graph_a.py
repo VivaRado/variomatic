@@ -8,9 +8,21 @@ import collections
 import pprint
 import numpy as np
 from collections import OrderedDict
+
+import matplotlib
+#
+matplotlib.use("TkAgg")
+# Important Other: qt4agg, GTK3Agg 
+# Fail to run both settings window and plotting. or have issues in sizing the windows.
+# That is why meticulous work is being put in to separating the plotting process
+# and the actual solver. Please bear with me.
+#
 from matplotlib import pyplot as plt
+#plt.switch_backend("qt4agg")
 import matplotlib.patches as mpatches
 import matplotlib.lines as lines
+#
+# pip3 install PyQt5
 #
 debug = False
 #

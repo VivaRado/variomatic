@@ -166,6 +166,15 @@ provided B(i1) and V(i1) of instance.
 
 ### **Introduction / Phase Introduction / Implementation Phase / Solutions / Revisional / Functions**
 
+#### Logic Tree
+
+* ContourHolder: Takes .glif and imports the necessary data. Minor contour fixing like orientation.
+* GraphConstructor: Constructs a graph with the data necessary for the Evaluation Algorithms
+* GraphEvaluator: Evaluates the graph according to the Evaluation Algorithms
+* InstanceMatcher: Matches the Instance Points with the data collected from the Evaluator
+	* PointNormalizer: Normalizes the path types across all Instances
+
+
 #### Preparatory Functions
 
 These functions are used to create the numbers we need to run further comparison logic. We create the graphs and Center Transfer Trees for each Instance.
