@@ -256,7 +256,7 @@ def draw_topo(m_graph, _plt, i, glyph_path, move = True):
 		#
 		nx.draw_networkx_edge_labels(_g,pos,edge_labels=edge_label_map,font_size=7, font_family='monospace', bbox=dict( boxstyle="round",ec=(1, 1, 1,0.3),fc=(1, 1, 1,0.3),alpha=0.4))
 		#
-	nx.draw_networkx_labels(_g,pos,node_label_map,font_size=5.5, font_color='white', font_family='monospace', font_weight='bold')
+	nx.draw_networkx_labels(_g,pos,node_label_map,font_size=5.2, font_color='white', font_family='monospace', font_weight='bold')
 	#
 
 def get_gca(plot_num, plt):

@@ -736,7 +736,7 @@ def TreeEvaluator(instances, inst_intpl_lst):
 				#
 				#print(x["coord"])
 				#
-				if points_a.index(x) == 2: #lower index - 1
+				if points_a.index(x) == 18: #lower index - 1
 					#
 					__point = flipCoordPath([x],False,True)[0]#x["coord"] # running for point zero
 					#

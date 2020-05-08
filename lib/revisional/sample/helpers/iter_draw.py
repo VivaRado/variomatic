@@ -195,18 +195,21 @@ class IterDraw(object):
 					#
 					draw.draw_circle_on_coord(contour_start_point, t_gca, 20, t_color, False)
 					#
-					draw.draw_circle_on_coord(contour_start_point, t_gca, 20, t_color, False)
+					#draw.draw_circle_on_coord(contour_start_point, t_gca, 20, t_color, False)
 					#
-					coord_ct = [item[1] for item in t_contour["confines_simp"][_val_smp][_val_pnt]]
-					#
-					draw.plot_region_line(t_gca, coord_ct, t_color, _plt)
-					#
-					self.draw_cts(t_contour)
 					#print(t_contour["matching"])
 					
 					try:
+						#print("CONFINES -----")
+						#print(t_contour["confines_simp"][_val_smp])
+						#
+						coord_ct = [item[1] for item in t_contour["confines_simp"][_val_smp][_val_pnt]]
+						#
+						draw.plot_region_line(t_gca, coord_ct, t_color, _plt)
+						#
+						self.draw_cts(t_contour)
 						
-						for x in t_contour["matching"][0]:
+						for x in t_contour["matching"][_val_smp]:
 							#
 							print(">>>")
 							pprint.pprint(x)
@@ -218,7 +221,6 @@ class IterDraw(object):
 							line = lines.Line2D(list_x,list_y, lw=1, color="g", alpha=0.4)
 							t_gca.add_line(line)
 							#
-						
 							poly = _plt.Polygon(x[12], color='green',alpha=0.05, linewidth=0.2)
 							t_gca.add_patch(poly)
 							#
@@ -230,6 +232,14 @@ class IterDraw(object):
 							# circl.set_linestyle((0, (2,4)))
 							
 							# t_gca.add_patch(circl)
+							#print("SIMP CONFINES")
+							#print(t_contour["confines_simp"][_val_smp][_val_pnt])
+							#print("SIMP CONFINES SING")
+							#print(t_contour["confines"][_val_pnt])
+							#
+							#coord_ct = [item[1] for item in t_contour["confines"][_val_pnt]]
+							#coord_ct = [item[1] for item in t_contour["confines_simp"][_val_smp][_val_pnt]]
+							#
 							#
 							#
 					except Exception as e:
@@ -239,36 +249,56 @@ class IterDraw(object):
 						pass
 						#
 					#
-					if redraw_pnt:
-						#
-						#print("REDRAW PNT")
-						#
-						draw.draw_circle_on_coord(contour_start_point, t_gca, 20, t_color, False)
-						#
-						contour_t_pnt = points_lenwise[_val_pnt]["coord"]
-						draw.draw_circle_on_coord(contour_t_pnt, t_gca, 12, t_color, False)
-						#
-						t_simp = t_contour["simplified"][_val_smp]
-						contour_t_pnt = t_simp[_val_pnt-1]
-						#
-						#__point = list(t_contour["graph_data"]["sort_by_length"].values())[_val_pnt]["coord"]
-						__point = list(t_contour["graphs"][_val_smp].values())[_val_pnt]["coord"]
-						#
-						#print(__point)
-						#
-						g_coord_flip = geom.flipCoordPath([contour_t_pnt],False,True)
-						print(g_coord_flip)
-						#
-						draw.draw_perp_recum(t_contour["recu_simp"][_val_smp][_val_pnt], t_gca)
-						#
-						#print("SIMP CONFINES")
-						#print(t_contour["confines_simp"][_val_smp][_val_pnt])
-						#print("SIMP CONFINES SING")
-						#print(t_contour["confines"][_val_pnt])
-						#
-						#coord_ct = [item[1] for item in t_contour["confines"][_val_pnt]]
-						coord_ct = [item[1] for item in t_contour["confines_simp"][_val_smp][_val_pnt]]
-						#
+					try:
+						if redraw_pnt:
+							#
+							#print("REDRAW PNT")
+							#
+							draw.draw_circle_on_coord(contour_start_point, t_gca, 20, t_color, False)
+							#
+							contour_t_pnt = points_lenwise[_val_pnt]["coord"]
+							draw.draw_circle_on_coord(contour_t_pnt, t_gca, 12, t_color, False)
+							#
+							t_simp = t_contour["simplified"][_val_smp]
+							contour_t_pnt = t_simp[_val_pnt-1]
+							#
+							#__point = list(t_contour["graph_data"]["sort_by_length"].values())[_val_pnt]["coord"]
+							__point = list(t_contour["graphs"][_val_smp].values())[_val_pnt]["coord"]
+							#
+							#print(__point)
+							#
+							g_coord_flip = geom.flipCoordPath([contour_t_pnt],False,True)
+							print(g_coord_flip)
+							#
+							draw.draw_perp_recum(t_contour["recu_simp"][_val_smp][_val_pnt], t_gca)
+							#
+							coord_ct = [item[1] for item in t_contour["confines_simp"][_val_smp][_val_pnt]]
+							#
+							draw.plot_region_line(t_gca, coord_ct, t_color, _plt)
+							#
+							self.draw_cts(t_contour)
+							
+							for x in t_contour["matching"][_val_pnt]:
+								#
+								print(">>>")
+								pprint.pprint(x)
+								#
+								# ct branch		
+								# [ lt_crd[0], pnt_dist_b[1][0] ], [ lt_crd[1], pnt_dist_b[1][1] ]
+								list_x, list_y = [x[5][0], x[2][1][0]],[x[5][1], x[2][1][1]]
+								# print(list_x,list_y)
+								line = lines.Line2D(list_x,list_y, lw=1, color="g", alpha=0.4)
+								t_gca.add_line(line)
+								#
+								poly = _plt.Polygon(x[12], color='green',alpha=0.05, linewidth=0.2)
+								t_gca.add_patch(poly)
+								#
+								draw.draw_circle_on_coord(x[13][1], t_gca, 2, "g")
+								#
+							#
+					except Exception as e:
+						pass
+						
 						#pprint.pprint(t_contour)
 						#
 						
