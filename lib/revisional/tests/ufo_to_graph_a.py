@@ -497,6 +497,7 @@ def get_instance_permutation():
 				pass
 			else:
 				pipl.append([ir[i],ir[j]])
+				pipl.append([ir[j],ir[i]])
 	#
 	return pipl
 	#
@@ -695,12 +696,11 @@ def rotate_points(sorted_cont_target, len_points, is_sequence=False):
 #
 def TreeEvaluator(instances, inst_intpl_lst):
 	#
-	# instance permutation
-	#
 	inst_data = []
-	#print(inst_intpl_lst)
 	#
 	for intpair in inst_intpl_lst:
+		#
+		print("RUN FOR", intpair)
 		#
 		in_a = intpair[0]
 		in_b = intpair[1]
@@ -721,13 +721,8 @@ def TreeEvaluator(instances, inst_intpl_lst):
 		#
 		for cnt in tc_inst_a:
 			#
-			#
 			inst_inx = cnt["inst"]
 			cont_inx = cnt["cont"]
-			#
-			
-			#plt.axis('off')
-			#
 			#
 			t_plot_a = plt.figure(cnt["plot_num"])
 			ax = t_plot_a.gca()
@@ -739,18 +734,11 @@ def TreeEvaluator(instances, inst_intpl_lst):
 			t_gca = t_plot.gca()
 			t_color = color[inst_inx]
 			#
-			#CM.draw_cts(cnt)
-			#CM.draw_cts(tc_inst_b[cont_inx])
-			#
 			points_a = CM.get_tc_points(cnt,0)
 			points_b = CM.get_tc_points(tc_inst_b[cont_inx],0)
 			#
 			#
 			for x in points_a:#list(tc_inst_a["graphs"][0].values()):
-				#
-				#print(x["coord"])
-				#
-				#if points_a.index(x) == 18: #lower index - 1
 				#
 				__point = flipCoordPath([x],False,True)[0]#x["coord"] # running for point zero
 				#
@@ -826,23 +814,25 @@ def TreeEvaluator(instances, inst_intpl_lst):
 					s_angle = get_angle_b(gc_b,__point)
 					#
 					# gather ct matching data # make into dictionary
-					new_match = [
-						(lt[2],lt[3]), 
-						pnt_dist_a, #
-						pnt_dist_b, # pre _area check conflict
-						_area,
-						[__point[0],__point[1]], 
-						lt_crd, #
-						t_b_dist,
-						abs(abs(t_b_c_dist) - abs(t_a_c_dist)),
-						abs(center_m_point - center_s_point),
-						abs(m_angle-s_angle),
-						sm_point,
-						_area+pnt_dist_a[0]+abs(center_m_point - center_s_point)+abs(m_angle-s_angle)+sm_point,
-						tri,
-						lt,
-						glyph_point_index
-						]
+					#
+					new_match = {
+						"point_graph_inx":	(lt[2],lt[3]), 
+						"pnt_dist_a": 		pnt_dist_a, #
+						"pnt_dist_b":		pnt_dist_b, # pre _area check conflict
+						"area":				_area,
+						"pnt_crd":			[__point[0],__point[1]], 
+						"lt_crd":			lt_crd, #
+						"t_b_dist":			t_b_dist,
+						"t_dist":			abs(abs(t_b_c_dist) - abs(t_a_c_dist)),
+						"center_dist":		abs(center_m_point - center_s_point),
+						"angle":			abs(m_angle-s_angle),
+						"sm_point":			sm_point,
+						"calc_a":			_area+pnt_dist_a[0]+abs(center_m_point - center_s_point)+abs(m_angle-s_angle)+sm_point,
+						"tri":				tri,
+						"lt":				lt,
+						"gpi":				glyph_point_index,
+						"max_radius":		max_radius
+						}
 					#
 					if 0 not in cnt["matching"].keys():
 						#
@@ -851,37 +841,10 @@ def TreeEvaluator(instances, inst_intpl_lst):
 					#
 					if new_match not in cnt["matching"][0]:
 						#
-						#print("NOT IN MATCH ")
 						cnt["matching"][0].append(new_match)
 						#
 					
 					#
-					#
-					#if plt:
-						#
-						# one level tree branch distance from points of instance b to confine centers extended perpendicular line to center of graph.
-						# ct branch		# [ lt_crd[0], pnt_dist_b[1][0] ], [ lt_crd[1], pnt_dist_b[1][1] ]
-						
-						#list_x, list_y = [lt_x, pnt_dist_b[1][0]],[lt_y, pnt_dist_b[1][1]]
-						#line = lines.Line2D(list_x,list_y, lw=1, color="g", alpha=0.4)
-						#t_gca.add_line(line)
-						
-						# #
-						#poly = plt.Polygon(tri, color='green',alpha=0.05, linewidth=0.2)
-						#t_gca.add_patch(poly)
-						# #
-						#_p_g = getPerpCoord(cts[1][0], cts[1][1],pnt_dist_b[1][0], pnt_dist_b[1][1], 5)
-						#prp1 = mpatches.ConnectionPatch([_p_g[0],_p_g[1]],[_p_g[2],_p_g[3]],"data", lw=0.2, color="orange")
-						#t_gca.add_patch(prp1)
-							#
-							# instance b point segment to center of instance b
-							#prp1 = mpatches.ConnectionPatch([lt_x,lt_y],[gc_b[0],gc_b[1]],"data", lw=0.2, color="k")
-							#t_gca.add_patch(prp1)	
-					#
-					#
-	#
-	# dummy access confine data for pnt2line against perpendicular of center recumbent
-	#
 	
 #
 intpl_list = get_instance_permutation()
