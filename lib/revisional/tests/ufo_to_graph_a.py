@@ -245,244 +245,6 @@ class ContourManager(object):
 		#
 		return tc["simplified"][simp_level]
 		#
-	'''
-	def draw_cts(self, t_contour):
-		#
-		inst_inx = t_contour["inst"]
-		cont_inx = t_contour["cont"]
-		#
-		t_plot = plt.figure(t_contour["plot_num"])
-		t_gca = t_plot.gca()
-		t_color = color[inst_inx]
-		#
-		for x,y in t_contour["simplified"].items():
-			#
-			simp_level = simplification[x]
-			#
-			if x == 0: # example one level 0 of simplification / removing will run whole simplification list
-				#
-				for z in y: # points
-					#
-					t_coord = flipCoordPath([z],False,True)[0]
-					#
-					#graph_point_from_coord = tc_get_point_b_coord(t_contour,simp_level,t_coord)
-					#
-					conf_inx, conf_dat = self.tc_get_simp_conf_b_coord(t_contour,simp_level,t_coord)
-					#
-					pca_crd_c = tc_get_pca(t_contour,simp_level,conf_inx,"c")
-					#
-					list_x, list_y = get_perp(pca_crd_c, "virt")
-					#
-					line = lines.Line2D(list_x,list_y, lw=1., color=t_color, alpha=0.4)
-					#
-					t_gca.add_line(line)
-					#
-					#__point = t_coord#list(_a_instance["graph_data"]["sort_by_length"].values())[iter_point]["coord"]
-					#points_arr = get_points_around(__point,points_a,points_b,l_s, a_items, b_items, ax, bax,_plt, _color)
-					#
-					#print(pca_crd_c)
-	'''
-	# def set_confines(self):
-	# 	#
-	# 	t_fnl_d = 300#math.hypot(f_p_x-l_p_x, f_p_y-l_p_y) + 50 # target_first_and_last_distance
-	# 	p_d = 0
-	# 	#
-	# 	for k,v in self.points_len.items():
-	# 		#
-	# 		if k!=(0,0):
-	# 			#
-	# 			t_a_coord = self.points_len.get(self.inst_items[p_d])["coord"]
-	# 			t_a_order = self.points_len.get(self.inst_items[p_d])["order"]
-	# 			#
-	# 			t_circle = [t_a_coord,t_fnl_d]
-	# 			#
-	# 			contains = in_circle(self.__point,t_circle)
-	# 			#
-	# 			if contains:
-	# 				#
-	# 				t_a_dist = math.hypot(t_a_coord[0]-self.__point[0], t_a_coord[1]-self.__point[1])
-	# 				#
-	# 				self.matched_source.append([t_a_dist,t_a_coord,p_d, t_a_order])
-	# 				#
-	# 			p_d = p_d + 1
-	# 		#
-	# 	#
-	# 	self.ms_pn_s = sorted(self.matched_source, key = lambda x: x[3])
-	# 	#
-	# 	self.search_center = next(c for c in self.ms_pn_s if c[1] == self.__point)
-	# 	#
-	# 	return self.ms_pn_s
-	# 	#
-	# def get_confine(self, toget):
-	# 	#
-	# 	if toget == "c":
-	# 		#
-	# 		return self.search_center
-	# 		#
-	# 	elif toget == "p":
-	# 		#
-	# 		return next(c for c in self.ms_pn_s if c[3] == get_point_inx_line(len(self.points_len), self.search_center[3], "p"))
-	# 		#
-	# 	elif toget == "a":
-	# 		#
-	# 		return next(c for c in self.ms_pn_s if c[3] == get_point_inx_line(len(self.points_len), self.search_center[3], "a"))
-	# 		#
-
-	# def get_confines(self):
-	# 	#
-	# 	return [self.get_confine("p"), self.get_confine("c"), self.get_confine("a")]
-	# 	#
-
-
-#
-
-
-#
-# Pre-Processor
-#
-for font_inst in instance_list:
-	#
-	total_list[inst_num] = {}
-	#
-	with open(os.path.join(font_inst,'contents.plist'), 'rb') as f:
-		#
-		pl = plistlib.load(f)
-		#
-		for pl_itm in pl.items():
-			#
-			t_pl = pl_itm[1]
-			#
-			if run_specific != "":
-				#
-				glyph_name = t_pl.split(".glif")[0]
-				#
-				if run_specific == glyph_name:
-					#
-					file_exists = os.path.isfile(os.path.join(font_inst, t_pl))
-					#
-					if file_exists:
-						#
-						CH = ContourHolder(os.path.join(font_inst, t_pl), debug)
-						#
-						cont_counter = CH.len
-						#
-						for cnt in range(CH.len):
-							#
-							glyph = CH.get(cnt,"glyph")
-							#
-							total_list[inst_num][glyph] = {}
-							#
-							g_orig_coord = CH.get_glif_coord(glyph,'get_type')
-							#
-							contours = total_list[inst_num][glyph]
-							#
-							GC = GraphConstructor(CH,instance_list,cnt, inst_num, simplification, plt_num, debug)
-							#
-							contours[cnt] = GC.initiate_instance(inst_num, cnt, CH)
-							#
-							t_contour = contours[cnt]
-							#
-							points = np.asarray(contours[cnt]["coords"]["strt"])
-							#
-							contours[cnt]["matching"] = OrderedDict()
-							contours[cnt]["simplified"] = OrderedDict()
-							contours[cnt]["graphs"] = OrderedDict()
-							contours[cnt]["graphs_data"] = OrderedDict()
-							#
-							inst_inx = contours[cnt]["inst"]
-							cont_inx = contours[cnt]["cont"]
-							#
-							t_color = color[inst_inx]
-							#
-							for simp in simplification:
-								#
-								simplified_points = simplif(points, simp)
-								#
-								contours[cnt]["simplified"][simp] = simplified_points
-								done_topo = GC.make_instance_topo_b(contours[cnt], t_color,simp)
-								contours[cnt]["graphs"][simp] = done_topo[0]
-								contours[cnt]["graphs_data"][simp] = done_topo[1]
-								#
-							#
-							contours[cnt]["confines"] = []
-							contours[cnt]["confines_simp"] = OrderedDict()
-							contours[cnt]["perp"] = []
-							contours[cnt]["perp_simp"] = OrderedDict()
-							contours[cnt]["recu"] = []
-							contours[cnt]["recu_simp"] = OrderedDict()
-							#
-							for simp in simplification:
-								#
-								points_lenw = contours[cnt]["graphs"][simp]
-								#
-								inst_items = []
-								#
-								re_points_len = OrderedDict()
-								#
-								for k,v in points_lenw.items():
-									#
-									inst_items.append(k)
-									#
-								#
-								temp_conf = []
-								temp_perp = []
-								temp_recu = []
-								#
-								for t_point_itm in list(points_lenw.values()):
-									#
-									if t_point_itm['node'] > 0:
-										#
-										#print(t_point_itm)
-										#
-										try:
-											#
-											CT = CenterTransfer(t_point_itm["coord"],inst_items,points_lenw)
-											CT.set_confines()
-											cfn = CT.get_confines()
-											#
-											contours[cnt]["confines"].append(cfn)
-											temp_conf.append(cfn)
-											#
-											coord_ct = [item[1] for item in cfn] # to_ct
-											#
-											cen_a = list(points_lenw.items())[-1]
-											cen_c = cen_a[1]["coord"]
-											#
-											_perp,_recu = make_ct_perp(coord_ct, cen_c)
-											#
-											contours[cnt]["perp"].append(_perp)
-											temp_perp.append(_perp)
-											contours[cnt]["recu"].append(_recu)
-											temp_recu.append(_recu)
-											#
-										except Exception as e:
-											#
-											pass
-											#
-										#
-								#
-								#print(simp, len(temp_conf))
-								#
-								contours[cnt]["confines_simp"][simp] = temp_conf#contours[cnt]["confines"]
-								contours[cnt]["perp_simp"][simp] = temp_perp#contours[cnt]["perps"]
-								contours[cnt]["recu_simp"][simp] = temp_recu#contours[cnt]["perps_virt"]
-								#
-								'''
-								get points around confines for each instance for each contour for each simplification level
-								'''
-								#
-								#
-							#
-							plt_num = plt_num + 1
-							#
-						#
-					#
-				#
-			#
-		#
-	#
-	inst_num = inst_num + 1
-	#
 #
 def get_instance_permutation():
 	#
@@ -694,7 +456,7 @@ def rotate_points(sorted_cont_target, len_points, is_sequence=False):
 #
 
 #
-def TreeEvaluator(instances, inst_intpl_lst):
+def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 	#
 	inst_data = []
 	#
@@ -734,138 +496,261 @@ def TreeEvaluator(instances, inst_intpl_lst):
 			t_gca = t_plot.gca()
 			t_color = color[inst_inx]
 			#
-			points_a = CM.get_tc_points(cnt,0)
-			points_b = CM.get_tc_points(tc_inst_b[cont_inx],0)
+			for _val_smp in simp_levels:
+				#
+				points_a = CM.get_tc_points(cnt,_val_smp)
+				points_b = CM.get_tc_points(tc_inst_b[cont_inx],_val_smp)
+				#
+				for x in points_a:#list(tc_inst_a["graphs"][0].values()):
+					#
+					__point = flipCoordPath([x],False,True)[0]#x["coord"] # running for point zero
+					#
+					conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(cnt,_val_smp,list(__point))
+					#
+					lt_p = cnt["perp_simp"][_val_smp][conf_inx]
+					#
+					l_s = [conf_dat]
+					#
+					sta_a = lt_p[1][0]
+					end_a = lt_p[1][1]
+					sta_b = lt_p[1][2]
+					end_b = lt_p[1][3]
+					#
+					all_match = []
+					all_match_len = []
+					#
+					points_arr = get_points_around(__point,points_a,points_b,l_s, ax, bax,plt, t_color)
+					#
+					l_t = points_arr
+					#
+					l_t = rotate_points(l_t, len(points_b)) # review if nessessary 
+					#
+					# graph center of instance b
+					gc_b = list(tc_inst_b[inst_inx]["graphs"][_val_smp].values())[-1]["coord"]
+					#
+					t_contour = cnt
+					#
+					confine_from_coord = [d for d in t_contour["confines_simp"][_val_smp] if d[1][1] == __point][0]
+					glyph_point_index = t_contour["confines_simp"][_val_smp].index(confine_from_coord)
+					#
+					for lt in l_t:
+						#
+						lt_crd = lt[1]
+						lt_x = lt_crd[0]
+						lt_y = lt_crd[1]
+						#
+						pnt_dist_a = pnt2line([lt_x,lt_y], sta_a, end_a) # point, sta_a, end
+						pnt_dist_b = pnt2line([lt_x,lt_y], sta_b, end_b) # point, sta_a, end
+						#
+						# distance of those positions from current point ? review
+						t_a_dist = math.hypot(__point[0]-lt_x, __point[1]-lt_y)
+						t_b_dist = int(math.hypot(__point[0]-pnt_dist_b[1][0], __point[1]-pnt_dist_b[1][1]))
+						#
+						t_b_c_dist = math.hypot(gc_b[0]-lt_x, gc_b[1]-lt_y)
+						t_a_c_dist = math.hypot(gc_b[0]-__point[0], gc_b[1]-__point[1])
+						#
+						pnt_dist_a = list(pnt_dist_a)
+						pnt_dist_a.insert(1, t_a_dist)
+						#
+						# area
+						tri = [__point,pnt_dist_b[1],lt_crd]
+						_area = area(tri)
+						#
+						center_m_point = distance(gc_b,lt_crd)
+						center_s_point = distance(gc_b,__point)
+						sm_point = distance(lt_crd,__point)
+						#
+						m_angle = get_angle_b(gc_b,lt_crd)
+						s_angle = get_angle_b(gc_b,__point)
+						#
+						# gather ct matching data # make into dictionary
+						#
+						new_match = {
+							"point_graph_inx":	(lt[2],lt[3]), 
+							"pnt_dist_a": 		pnt_dist_a, #
+							"pnt_dist_b":		pnt_dist_b, # pre _area check conflict
+							"area":				_area,
+							"pnt_crd":			[__point[0],__point[1]], 
+							"lt_crd":			lt_crd, #
+							"t_b_dist":			t_b_dist,
+							"t_dist":			abs(abs(t_b_c_dist) - abs(t_a_c_dist)),
+							"center_dist":		abs(center_m_point - center_s_point),
+							"angle":			abs(m_angle-s_angle),
+							"sm_point":			sm_point,
+							"calc_a":			_area+pnt_dist_a[0]+abs(center_m_point - center_s_point)+abs(m_angle-s_angle)+sm_point,
+							"tri":				tri,
+							"lt":				lt,
+							"gpi":				glyph_point_index,
+							"max_radius":		max_radius
+							}
+						#
+						if _val_smp not in cnt["matching"].keys():
+							#
+							cnt["matching"][_val_smp] = []
+							#
+						#
+						if new_match not in cnt["matching"][_val_smp]:
+							#
+							cnt["matching"][_val_smp].append(new_match)
+							#
+						
+						#
+		
+#
+
+#
+# Pre-Processor
+#
+for font_inst in instance_list:
+	#
+	total_list[inst_num] = {}
+	#
+	with open(os.path.join(font_inst,'contents.plist'), 'rb') as f:
+		#
+		pl = plistlib.load(f)
+		#
+		for pl_itm in pl.items():
 			#
+			t_pl = pl_itm[1]
 			#
-			for x in points_a:#list(tc_inst_a["graphs"][0].values()):
+			if run_specific != "":
 				#
-				__point = flipCoordPath([x],False,True)[0]#x["coord"] # running for point zero
+				glyph_name = t_pl.split(".glif")[0]
 				#
-				conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(cnt,0,list(__point))
-				#
-				#
-				lt_p = cnt["perp_simp"][0][conf_inx]
-				#
-				l_s = [conf_dat]
-				#
-				#print("PERP", lt_p)
-				#
-				#pca_crd_c = tc_get_pca(t_contour,0,conf_inx,"c")
-				#
-				sta_a = lt_p[1][0]
-				end_a = lt_p[1][1]
-				sta_b = lt_p[1][2]
-				end_b = lt_p[1][3]
-				#
-				all_match = []
-				all_match_len = []
-				#
-				points_arr = get_points_around(__point,points_a,points_b,l_s, ax, bax,plt, t_color)
-				#
-				l_t = points_arr
-				#
-				l_t = rotate_points(l_t, len(points_b)) # review if nessessary 
-				#
-				# graph center of instance b
-				gc_b = list(tc_inst_b[inst_inx]["graphs"][0].values())[-1]["coord"]
-				#
-				#pprint.pprint(cnt["confines_simp"][0])
-				#pprint.pprint(cnt["perp_simp"][0])
-				#
-				_val_smp = 0
-				t_contour = cnt
-				#
-				confine_from_coord = [d for d in t_contour["confines_simp"][_val_smp] if d[1][1] == __point][0]
-				glyph_point_index = t_contour["confines_simp"][_val_smp].index(confine_from_coord)
-				#
-				#print("DURING MATCH",glyph_point_index)
-				#
-				#for cts in cnt["confines_simp"][0][conf_inx]: # avoid unnessessary loop over cts
+				if run_specific == glyph_name:
 					#
-				for lt in l_t:
+					file_exists = os.path.isfile(os.path.join(font_inst, t_pl))
 					#
-					lt_crd = lt[1]
-					lt_x = lt_crd[0]
-					lt_y = lt_crd[1]
-					#
-					pnt_dist_a = pnt2line([lt_x,lt_y], sta_a, end_a) # point, sta_a, end
-					pnt_dist_b = pnt2line([lt_x,lt_y], sta_b, end_b) # point, sta_a, end
-					#
-					# distance of those positions from current point ? review
-					t_a_dist = math.hypot(__point[0]-lt_x, __point[1]-lt_y)
-					t_b_dist = int(math.hypot(__point[0]-pnt_dist_b[1][0], __point[1]-pnt_dist_b[1][1]))
-					#
-					t_b_c_dist = math.hypot(gc_b[0]-lt_x, gc_b[1]-lt_y)
-					t_a_c_dist = math.hypot(gc_b[0]-__point[0], gc_b[1]-__point[1])
-					#
-					pnt_dist_a = list(pnt_dist_a)
-					pnt_dist_a.insert(1, t_a_dist)
-					#
-					# area
-					tri = [__point,pnt_dist_b[1],lt_crd]
-					_area = area(tri)
-					#
-					center_m_point = distance(gc_b,lt_crd)
-					center_s_point = distance(gc_b,__point)
-					sm_point = distance(lt_crd,__point)
-					#
-					m_angle = get_angle_b(gc_b,lt_crd)
-					s_angle = get_angle_b(gc_b,__point)
-					#
-					# gather ct matching data # make into dictionary
-					#
-					new_match = {
-						"point_graph_inx":	(lt[2],lt[3]), 
-						"pnt_dist_a": 		pnt_dist_a, #
-						"pnt_dist_b":		pnt_dist_b, # pre _area check conflict
-						"area":				_area,
-						"pnt_crd":			[__point[0],__point[1]], 
-						"lt_crd":			lt_crd, #
-						"t_b_dist":			t_b_dist,
-						"t_dist":			abs(abs(t_b_c_dist) - abs(t_a_c_dist)),
-						"center_dist":		abs(center_m_point - center_s_point),
-						"angle":			abs(m_angle-s_angle),
-						"sm_point":			sm_point,
-						"calc_a":			_area+pnt_dist_a[0]+abs(center_m_point - center_s_point)+abs(m_angle-s_angle)+sm_point,
-						"tri":				tri,
-						"lt":				lt,
-						"gpi":				glyph_point_index,
-						"max_radius":		max_radius
-						}
-					#
-					if 0 not in cnt["matching"].keys():
+					if file_exists:
 						#
-						cnt["matching"][0] = []
+						CH = ContourHolder(os.path.join(font_inst, t_pl), debug)
+						#
+						cont_counter = CH.len
+						#
+						for cnt in range(CH.len):
+							#
+							glyph = CH.get(cnt,"glyph")
+							#
+							total_list[inst_num][glyph] = {}
+							#
+							g_orig_coord = CH.get_glif_coord(glyph,'get_type')
+							#
+							contours = total_list[inst_num][glyph]
+							#
+							GC = GraphConstructor(CH,instance_list,cnt, inst_num, simplification, plt_num, debug)
+							#
+							contours[cnt] = GC.initiate_instance(inst_num, cnt, CH)
+							#
+							t_contour = contours[cnt]
+							#
+							points = np.asarray(contours[cnt]["coords"]["strt"])
+							#
+							contours[cnt]["matching"] = OrderedDict()
+							contours[cnt]["simplified"] = OrderedDict()
+							contours[cnt]["graphs"] = OrderedDict()
+							contours[cnt]["graphs_data"] = OrderedDict()
+							#
+							inst_inx = contours[cnt]["inst"]
+							cont_inx = contours[cnt]["cont"]
+							#
+							t_color = color[inst_inx]
+							#
+							for simp in simplification:
+								#
+								simplified_points = simplif(points, simp)
+								#
+								contours[cnt]["simplified"][simp] = simplified_points
+								done_topo = GC.make_instance_topo_b(contours[cnt], t_color,simp)
+								contours[cnt]["graphs"][simp] = done_topo[0]
+								contours[cnt]["graphs_data"][simp] = done_topo[1]
+								#
+							#
+							contours[cnt]["confines"] = []
+							contours[cnt]["confines_simp"] = OrderedDict()
+							contours[cnt]["perp"] = []
+							contours[cnt]["perp_simp"] = OrderedDict()
+							contours[cnt]["recu"] = []
+							contours[cnt]["recu_simp"] = OrderedDict()
+							#
+							for simp in simplification:
+								#
+								points_lenw = contours[cnt]["graphs"][simp]
+								#
+								inst_items = []
+								#
+								re_points_len = OrderedDict()
+								#
+								for k,v in points_lenw.items():
+									#
+									inst_items.append(k)
+									#
+								#
+								temp_conf = []
+								temp_perp = []
+								temp_recu = []
+								#
+								for t_point_itm in list(points_lenw.values()):
+									#
+									if t_point_itm['node'] > 0:
+										#
+										#print(t_point_itm)
+										#
+										try:
+											#
+											CT = CenterTransfer(t_point_itm["coord"],inst_items,points_lenw)
+											CT.set_confines()
+											cfn = CT.get_confines()
+											#
+											contours[cnt]["confines"].append(cfn)
+											temp_conf.append(cfn)
+											#
+											coord_ct = [item[1] for item in cfn] # to_ct
+											#
+											cen_a = list(points_lenw.items())[-1]
+											cen_c = cen_a[1]["coord"]
+											#
+											_perp,_recu = make_ct_perp(coord_ct, cen_c)
+											#
+											contours[cnt]["perp"].append(_perp)
+											temp_perp.append(_perp)
+											contours[cnt]["recu"].append(_recu)
+											temp_recu.append(_recu)
+											#
+										except Exception as e:
+											#
+											pass
+											#
+										#
+								#
+								#print(simp, len(temp_conf))
+								#
+								contours[cnt]["confines_simp"][simp] = temp_conf#contours[cnt]["confines"]
+								contours[cnt]["perp_simp"][simp] = temp_perp#contours[cnt]["perps"]
+								contours[cnt]["recu_simp"][simp] = temp_recu#contours[cnt]["perps_virt"]
+								#
+								'''
+								get points around confines for each instance for each contour for each simplification level
+								'''
+								#
+								#
+							#
+							plt_num = plt_num + 1
+							#
 						#
 					#
-					if new_match not in cnt["matching"][0]:
-						#
-						cnt["matching"][0].append(new_match)
-						#
-					
-					#
-	
+				#
+			#
+		#
+	#
+	inst_num = inst_num + 1
+	#
+#
 #
 intpl_list = get_instance_permutation()
 #
-print("INTERPOLATION LIST")
-print(intpl_list)
-#
-#
-
-#
 # Solver
 #
-'''
-
-'''
-#
-print(total_list)
-#
-print(len(total_list))
-#
-TreeEvaluator(total_list, intpl_list)
+TreeEvaluator(total_list, intpl_list, simplification)
 #
 # Post-Processor
 #
