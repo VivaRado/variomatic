@@ -35,7 +35,7 @@ gantt
     VRM-1010-0003 BATRIC Complete Font Matcher:                                    done, des25, 2019-09-07, 15d
     VRM-1010-0004 BATRIC Combiner:                                                 done, des26, 2019-09-22, 25d
     VRM-1011 BATRIC Documentation Update:                                                des27, 2019-10-30, 2d
-    VRM-2000 Revisional:                                                                 des28, 2020-02-10, 7d
+    VRM-2000 Revisional:                                                                 des28, 2020-02-10, 2020-06-01
 
 ```
 

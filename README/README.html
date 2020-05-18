@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
-		<title>VRD | variomatic | 0.058 | 2020/02/11</title>
+		<title>VRD | variomatic | 0.061 | 2020/05/19</title>
 		<link rel="icon" href="assets/media/thumb.ico">
 		<link rel="stylesheet" type="text/css" href="assets/css/style.css">
 		<link rel="stylesheet" type="text/css" href="assets/css/code_native.css">
@@ -1396,6 +1396,7 @@ When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
     VRM-1010-0003 BATRIC Complete Font Matcher:                                    done, des25, 2019-09-07, 15d
     VRM-1010-0004 BATRIC Combiner:                                                 done, des26, 2019-09-22, 25d
     VRM-1011 BATRIC Documentation Update:                                                des27, 2019-10-30, 2d
+    VRM-2000 Revisional:                                                                 des28, 2020-02-10, 2020-06-01
 </code></pre>
 
 <p>Schedule:</p>
@@ -1404,13 +1405,7 @@ When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
 <li><p>Current:</p>
 
 <ul>
-<li><strong>Planing and Scheduling</strong> / After P.O.:
-<ul>
-<li><strong>VRM-1000</strong> Point Importance Plan Scheduling / Andreas Kalpakidis &amp; Madina Akhmatova
-<ul>
-<li><strong>VRM-1006</strong> Implementing Regional Radius Match (RRM).</li>
-</ul></li>
-</ul></li>
+<li><strong>VRM-2000</strong> Revisional / Andreas Kalpakidis &amp; Madina Akhmatova</li>
 </ul></li>
 <li><p>Completed:</p>
 
@@ -1454,6 +1449,10 @@ When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
 <ul>
 <li><strike>VRM-1007-0001 Schematics and Explanation</strike></li>
 </ul></li>
+<li><strong>VRM-1000</strong> Point Importance Plan Scheduling / Andreas Kalpakidis &amp; Madina Akhmatova
+<ul>
+<li><strong>VRM-1006</strong> Implementing Regional Radius Match (RRM).</li>
+</ul></li>
 </ul></li>
 </ul>
 
@@ -1482,6 +1481,7 @@ When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
 <li>VRM-1010-0004 BATRIC Combiner</li>
 </ul></li>
 <li>VRM-1011 BATRIC Documentation Update</li>
+<li>VRM-2000 Revisional</li>
 </ul>
 
 <hr />
@@ -1852,6 +1852,18 @@ provided B(i1) and V(i1) of instance.
 <hr />
 
 <h3><strong>Introduction / Phase Introduction / Implementation Phase / Solutions / Revisional / Functions</strong></h3>
+
+<h4>Logic Tree</h4>
+
+<ul>
+<li>ContourHolder: Takes .glif and imports the necessary data. Minor contour fixing like orientation.</li>
+<li>GraphConstructor: Constructs a graph with the data necessary for the Evaluation Algorithms</li>
+<li>GraphEvaluator: Evaluates the graph according to the Evaluation Algorithms</li>
+<li>InstanceMatcher: Matches the Instance Points with the data collected from the Evaluator
+<ul>
+<li>PointNormalizer: Normalizes the path types across all Instances</li>
+</ul></li>
+</ul>
 
 <h4>Preparatory Functions</h4>
 

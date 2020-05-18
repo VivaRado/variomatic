@@ -37,8 +37,8 @@ Requirements:
 
 *  weasyprint
 
-	*  Linux: ```pip3 install weasyprint```
-	*  Windows: ```py -m pip install weasyprint```
+	*  Linux: ```pip3 install weasyprint==45```
+	*  Windows: ```py -m pip install weasyprint==45```
 
 
 Features:
