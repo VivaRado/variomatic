@@ -320,22 +320,19 @@ def get_points_around(__point, points_a,points_b, l_s, ax, bax, _plt=False, _col
 		t_psca_coord = z[1][1]#points_b.get(a_items[p_c])["coord"]
 		#
 		
-		if _plt:
+		#if _plt:
 			#
-			circl = plt.Circle(t_psca_coord, max_radius, color=_color[0], fill=False, alpha=0.5, lw=0.5)
+		#	circl = plt.Circle(t_psca_coord, max_radius, color=_color[0], fill=False, alpha=0.5, lw=0.5)
 			
-			circl.set_radius(max_radius)
-			circl.set_linestyle((0, (2,4)))
+		#	circl.set_radius(max_radius)
+		#	circl.set_linestyle((0, (2,4)))
 			
-			ax.add_patch(circl)
+		#	ax.add_patch(circl)
 		#
 		
 		found_p = False
 		#
 		for v in points_b:
-			#
-			#
-			#if k!=(0,0):
 			#
 			contains = False
 			#
@@ -349,15 +346,10 @@ def get_points_around(__point, points_a,points_b, l_s, ax, bax, _plt=False, _col
 				#
 				contains = in_circle(t_b_coord,t_circle)
 				#
-				#print("- CHECK IN CIRCLE - contains")
-				#print(t_b_coord, contains)
-				#
 				if contains:
 					#
 					#
 					found_p = True
-					#
-					#Path = mpath.Path
 					#
 					t_b_dist = math.hypot(t_b_coord[0]-__point[0], t_b_coord[1]-__point[1])
 					#
@@ -367,12 +359,12 @@ def get_points_around(__point, points_a,points_b, l_s, ax, bax, _plt=False, _col
 						#
 						matched_target.append(new_match)
 						#
-						if _plt:
+						#if _plt:
 							#
-							pp1 = mpatches.ConnectionPatch(z[1][1],t_b_coord,"data", linestyle= "dashed", lw=0.5, color=_color[0])
-							pp1.set_linestyle((0, (2,4)))
-							ax.add_patch(pp1)
-							draw.draw_circle_on_coord(t_b_coord, ax, 2, "g")
+						#	pp1 = mpatches.ConnectionPatch(z[1][1],t_b_coord,"data", linestyle= "dashed", lw=0.5, color=_color[0])
+						#	pp1.set_linestyle((0, (2,4)))
+						#	ax.add_patch(pp1)
+						#	draw.draw_circle_on_coord(t_b_coord, ax, 2, "g")
 							#
 						#
 					break
@@ -455,7 +447,7 @@ def rotate_points(sorted_cont_target, len_points, is_sequence=False):
 	#
 #
 
-#
+# AKA Solver Number One
 def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 	#
 	inst_data = []
