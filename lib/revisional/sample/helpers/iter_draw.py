@@ -87,6 +87,7 @@ class IterDraw(object):
 						line = lines.Line2D(list_x,list_y, lw=1., color=t_color, alpha=0.4)
 						#
 						t_gca.add_line(line)
+						#
 	#
 	def tc_get_simp_conf_b_coord(self, t_contour, simp_level, coordinate):
 		#
@@ -192,8 +193,8 @@ class IterDraw(object):
 		#
 		for instance in self.instances:
 			#
-			print("INSTANCE")
-			print(instance)
+			#print("INSTANCE")
+			#print(instance)
 			#
 			for letter in self.instances[instance]:
 				#
@@ -206,13 +207,13 @@ class IterDraw(object):
 					cont_inx = t_contour["cont"]
 					#
 					t_plot = _plt.figure(t_contour["plot_num"])
-					t_plot.clf()
+					#t_plot.clf() #remember clear figure ENABLE FOR MENU ACCESSIBILITY, DISABLE FOR DUMMY CODE
 					t_gca = t_plot.gca()
 					t_color = color[inst_inx]
 					#
 					# tight layout
 					_plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
-					_plt.tight_layout(pad=0)
+					#_plt.tight_layout(pad=0)
 					#
 				# STANDARD DRAW
 					# Draw Graphs
@@ -263,13 +264,32 @@ class IterDraw(object):
 									#
 									
 								#
+							#
+
 						except Exception as e:
 							#
 							print(e)
 							#
 							pass
 							#
+					
 					#
+					'''
+					for x in t_contour["matching_best"][_val_smp]:
+						#
+						#print(x["gpi"], _val_pnt)
+						#
+						#if x["gpi"] == _val_pnt:
+						#
+						print("MB -----")
+						print(x["tri"])
+						#
+						poly = _plt.Polygon(x["tri"], color='red',alpha=1, linewidth=0.2)
+						t_gca.add_patch(poly)
+						#
+						#
+					#
+					'''
 					
 
 	def redraw(self, graph, ctt):
