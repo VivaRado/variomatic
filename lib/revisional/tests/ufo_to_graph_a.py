@@ -837,17 +837,10 @@ def TreeGenerator(instances, inst_intpl_lst, simp_levels):
 							#
 						#
 					#
-					'''
-					#
-					sorted_all_match = sorted(cnt["matching"][_val_smp], key=lambda x: x['area']+x['pnt_dist_a'][0]+x['center_dist']+x['angle']+x['sm_point'])[:3]
-					#
-					cnt["matching_best"][_val_smp] = sorted_all_match
-					#
-					'''
+				#
+			#
 		#
-
-		#			
-		
+	#
 #
 def find_best_ctt(matches,smp,pnt):
 	#
@@ -902,7 +895,6 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 					try:
 						# dummy data
 						local_smp = 0
-						
 						#
 						__point = flipCoordPath([points_a[18]],False,True)[0]#x["coord"] # running for point zero
 						#
@@ -981,16 +973,21 @@ for font_inst in instance_list:
 							GC = GraphConstructor(CH,instance_list,cnt, inst_num, simplification, plt_num, debug)
 							#
 							contours[cnt] = GC.initiate_instance(inst_num, cnt, CH)
-							#
-							t_contour = contours[cnt]
-							#
-							points = np.asarray(contours[cnt]["coords"]["strt"])
-							#
 							contours[cnt]["matching"] = OrderedDict()
 							contours[cnt]["matching_best"] = OrderedDict()
 							contours[cnt]["simplified"] = OrderedDict()
 							contours[cnt]["graphs"] = OrderedDict()
+							contours[cnt]["confines"] = []
+							contours[cnt]["confines_simp"] = OrderedDict()
+							contours[cnt]["perp"] = []
+							contours[cnt]["perp_simp"] = OrderedDict()
+							contours[cnt]["recu"] = []
+							contours[cnt]["recu_simp"] = OrderedDict()
 							contours[cnt]["graphs_data"] = OrderedDict()
+							#
+							t_contour = contours[cnt]
+							#
+							points = np.asarray(contours[cnt]["coords"]["strt"])
 							#
 							inst_inx = contours[cnt]["inst"]
 							cont_inx = contours[cnt]["cont"]
@@ -1007,12 +1004,6 @@ for font_inst in instance_list:
 								contours[cnt]["graphs_data"][simp] = done_topo[1]
 								#
 							#
-							contours[cnt]["confines"] = []
-							contours[cnt]["confines_simp"] = OrderedDict()
-							contours[cnt]["perp"] = []
-							contours[cnt]["perp_simp"] = OrderedDict()
-							contours[cnt]["recu"] = []
-							contours[cnt]["recu_simp"] = OrderedDict()
 							#
 							for simp in simplification:
 								#
@@ -1034,8 +1025,6 @@ for font_inst in instance_list:
 								for t_point_itm in list(points_lenw.values()):
 									#
 									if t_point_itm['node'] > 0:
-										#
-										#print(t_point_itm)
 										#
 										try:
 											#
@@ -1069,10 +1058,6 @@ for font_inst in instance_list:
 								contours[cnt]["confines_simp"][simp] = temp_conf#contours[cnt]["confines"]
 								contours[cnt]["perp_simp"][simp] = temp_perp#contours[cnt]["perps"]
 								contours[cnt]["recu_simp"][simp] = temp_recu#contours[cnt]["perps_virt"]
-								#
-								'''
-								get points around confines for each instance for each contour for each simplification level
-								'''
 								#
 								#
 							#
