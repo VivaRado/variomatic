@@ -743,9 +743,9 @@ def TreeGenerator(instances, inst_intpl_lst, simp_levels):
 				points_a = CM.get_tc_points(t_contour,_val_smp)
 				points_b = CM.get_tc_points(tc_inst_b[cont_inx],_val_smp)
 				#
-				for x in points_a:#list(tc_inst_a["graphs"][0].values()):
+				for p in points_a:#list(tc_inst_a["graphs"][0].values()):
 					#
-					__point = flipCoordPath([x],False,True)[0] # flipCoordPath accepts and returns list of points so need to pass list and to get 0
+					__point = flipCoordPath([p],False,True)[0] # flipCoordPath accepts and returns list of points so need to pass list and to get 0
 					#
 					conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(t_contour,_val_smp,list(__point))
 					#
@@ -805,7 +805,7 @@ def TreeGenerator(instances, inst_intpl_lst, simp_levels):
 						m_angle = get_angle_b(gc_b,lt_crd)
 						s_angle = get_angle_b(gc_b,__point)
 						#
-						# gather ct matching data # make into dictionary
+						# gather ct matching data
 						#
 						new_match = {
 							"point_graph_inx":	(lt[2],lt[3]), 
@@ -888,7 +888,10 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 				points_a = CM.get_tc_points(t_contour,_val_smp)
 				points_b = CM.get_tc_points(tc_inst_b[cont_inx],_val_smp)
 				#
-				# for every confine point, get best matching tris and pass to triangle matching.
+				# for every confine point, get best matching opposite instance points 
+				# pass to triangle matching
+				# make probable line
+				# collect cumulative probable lines for all levels of simplification
 				#
 				if inst_inx == 0 and cont_inx == 0:
 					#
@@ -896,15 +899,12 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 						# dummy data
 						local_smp = 0
 						#
-						__point = flipCoordPath([points_a[18]],False,True)[0]#x["coord"] # running for point zero
+						__point = flipCoordPath([points_a[18]],False,True)[0]
 						#
 						confine_from_coord = [d for d in t_contour["confines_simp"][local_smp] if d[1][1] == __point][0]
 						glyph_point_index = t_contour["confines_simp"][local_smp].index(confine_from_coord)
 						#
 						conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(t_contour,local_smp,list(__point))
-						#
-						#
-						lt_p = t_contour["perp_simp"][local_smp][conf_inx]
 						#
 						for y in confine_from_coord:
 							#
