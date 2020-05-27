@@ -969,7 +969,7 @@ def get_num_seq_from_ctt_matches(sorted_all_match, points_b):
 	#
 	for x in sorted_all_match:
 		#
-		print(x)
+		#print(x)
 		#
 		point_num = x['lt'][2]
 		#
@@ -978,13 +978,13 @@ def get_num_seq_from_ctt_matches(sorted_all_match, points_b):
 	#
 	seq_lists = get_seq(seq_points)
 	#
-	print(seq_lists)
+	#print(seq_lists)
 	#-----------------------------------
 	rotated_seq = rotate_points([],len(points_b),seq_lists)
 	rot_seq = sorted(rotate_points([],len(points_b),seq_lists))
 	#psca_m_ginx = psca_glif_line_inx(t_m)
 	#
-	print(rot_seq)
+	#print(rot_seq)
 	#
 	return rot_seq
 	#
@@ -1055,15 +1055,15 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 							got_seq_match = get_num_seq_from_ctt_matches(sorted_all_match,points_b)
 							#
 							new_match = {	
-											"gpi":glyph_point_index,
-											"inx_ins":in_a,
-											"inx_ins_opp":in_b,
-											"inx_cnt":cont_inx,
-											"plot_num":t_contour["plot_num"],
-											"plot_num_opp":tc_inst_b[cont_inx]["plot_num"],
-											"best_sorted":sorted_all_match, # remove after proper certain target line implementation (probable line)
-											"seq_match":got_seq_match
-										}
+								"gpi":glyph_point_index,
+								"inx_ins":in_a,
+								"inx_ins_opp":in_b,
+								"inx_cnt":cont_inx,
+								"plot_num":t_contour["plot_num"],
+								"plot_num_opp":tc_inst_b[cont_inx]["plot_num"],
+								"best_sorted":sorted_all_match, # remove after proper certain target line implementation (probable line)
+								"seq_match":got_seq_match
+							}
 							#
 							#
 							if _val_smp not in t_contour["ctt_match_lt"].keys():
@@ -1086,8 +1086,6 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 				#
 				#print(t_contour["ctt_match_lt"][_val_smp])
 				#
-	#
-	print ('\n'+tcolor.WARNING + "DUMMY FIND BEST CTT MATCHES - DISABLE TreeEvaluator in ufo_to_graph_a.py AND ENABLE t_plot.clf() in iter_draw.py make_iter() FOR MENU ACCESSIBILITY" + tcolor.ENDC)
 	#
 #
 #

@@ -295,7 +295,7 @@ class IterDraw(object):
 						if _val_ins == y['inx_ins'] and _val_cnt == y['inx_cnt'] and _val_pnt == y['gpi']:
 							#
 							t_plot_b = _plt.figure(y['plot_num_opp'])
-							print("plot", y['plot_num'], y['inx_ins_opp'], t_plot_b)
+							#print("plot", y['plot_num'], y['inx_ins_opp'], t_plot_b)
 							#
 							t_gca_b = t_plot_b.gca()
 							#
