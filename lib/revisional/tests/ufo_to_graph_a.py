@@ -61,6 +61,7 @@ CH = {}
 GC = {}
 #
 max_radius = 300
+clip_point_count = 7 
 #
 
 def most_occuring(v,inx, keep_opp_inx=False):
@@ -853,6 +854,142 @@ def find_best_ctt(matches,smp,pnt):
 	return result
 	#
 #
+def get_seq(li):
+	seq_lists = []
+	#
+	for idx,item in enumerate(li):
+		#
+		if not idx or item-1 != seq_lists[-1][-1]:
+			
+			seq_lists.append([item])
+		else:
+
+			seq_lists[-1].append(item)
+	#
+	return seq_lists
+	#
+#
+def get_limits(_lst):
+	#
+	_min = min(_lst)
+	_max = max(_lst)
+	#
+	return [_min, _max]
+#
+def rotate_center_clip(rotated_seq, cent, len_points, clip):
+	#
+	l = rotated_seq
+	#
+	if len_points in rotated_seq and 1 in rotated_seq:
+		#
+		lst_l = []
+		lst_r = []
+		#
+		end_inx = rotated_seq.index(len_points)
+		start_inx = rotated_seq.index(1)
+		#
+		if end_inx + 1 == start_inx:
+			#
+			lst_l = rotated_seq[:start_inx]
+			lst_r = rotated_seq[start_inx:]
+			#
+			lim_l = get_limits(lst_l)
+			lim_r = get_limits(lst_r)
+			#
+			new_r = list(range(lim_r[0], lim_r[1]+1))
+			new_l = list(range(lim_l[0], lim_l[-1]+1))
+			#
+			l = new_l + new_r
+			#
+		#
+	#
+	else:
+		#
+		l = list(range(1, len_points))
+		#
+		if cent not in l:
+			#
+			l = list(range(1, len_points+1))
+			#
+		#
+	#
+	#
+	_cent = int((len(l)/2)) - int(l.index(cent))#int((len(l)/2) + l.index(cent) +1)
+	#
+	d = collections.deque(l)
+	d.rotate(_cent)
+	#
+	centered = list(d)#l[cent:] + l[:cent]
+	#
+	centered_clip = centered.copy()
+	#
+	#
+	if len(centered) % 2 == 0:
+		#
+		clip = clip + 1
+		#
+	#
+	while len(centered_clip) > clip:	
+
+		if len(centered_clip) != clip:
+
+			del centered_clip[len(centered_clip)-1:]
+
+		if len(centered_clip) != clip:
+			
+			del centered_clip[:1]
+	#
+	if len(centered) % 2 == 0:
+		#
+		del centered_clip[:1]
+		#
+	#
+	return centered_clip
+	#
+#
+'''
+def psca_glif_line_inx(psca):
+	#
+	res = []
+	#
+	for x in psca:
+		#
+		res.append([y[1] for y in x])
+		#
+	#
+	return res
+	#
+'''
+#
+
+def get_num_seq_from_ctt_matches(sorted_all_match, points_b):
+	#
+	#
+	seq_points = []
+	#
+	for x in sorted_all_match:
+		#
+		print(x)
+		#
+		point_num = x['lt'][2]
+		#
+		seq_points.append(point_num)
+		#
+	#
+	seq_lists = get_seq(seq_points)
+	#
+	print(seq_lists)
+	#-----------------------------------
+	rotated_seq = rotate_points([],len(points_b),seq_lists)
+	rot_seq = sorted(rotate_points([],len(points_b),seq_lists))
+	#psca_m_ginx = psca_glif_line_inx(t_m)
+	#
+	print(rot_seq)
+	#
+	return rot_seq
+	#
+#
+
 def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 	#
 	inst_data = []
@@ -888,36 +1025,55 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 				points_a = CM.get_tc_points(t_contour,_val_smp)
 				points_b = CM.get_tc_points(tc_inst_b[cont_inx],_val_smp)
 				#
-				# for every confine point, get best matching opposite instance points 
-				# pass to triangle matching
-				# make probable line
-				# collect cumulative probable lines for all levels of simplification
-				#
-				if inst_inx == 0 and cont_inx == 0:
+				for p in points_a:#list(tc_inst_a["graphs"][0].values()):
+					#
+					__point = flipCoordPath([p],False,True)[0] # flipCoordPath accepts and returns list of points so need to pass list and to get 0
+					#
+					conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(t_contour,_val_smp,list(__point))
+					#
+					# for every confine point, get best matching opposite instance points 
+					# pass to triangle matching
+					# make probable line
+					# collect cumulative probable lines for all levels of simplification
 					#
 					try:
-						# dummy data
-						local_smp = 0
 						#
-						__point = flipCoordPath([points_a[18]],False,True)[0]
+						confine_from_coord = [d for d in t_contour["confines_simp"][_val_smp] if d[1][1] == __point][0]
+						glyph_point_index = t_contour["confines_simp"][_val_smp].index(confine_from_coord)
 						#
-						confine_from_coord = [d for d in t_contour["confines_simp"][local_smp] if d[1][1] == __point][0]
-						glyph_point_index = t_contour["confines_simp"][local_smp].index(confine_from_coord)
-						#
-						conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(t_contour,local_smp,list(__point))
+						conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(t_contour,_val_smp,list(__point))
 						#
 						for y in confine_from_coord:
 							#
 							#
 							local_pnt = y[2]
 							#
-							t_m = find_best_ctt(t_contour["matching"],local_smp,local_pnt)
+							t_m = find_best_ctt(t_contour["matching"],_val_smp,local_pnt)
 							#
 							sorted_all_match = sorted(t_m, key=lambda x: x['area']+x['pnt_dist_a'][0]+x['center_dist']+x['angle']+x['sm_point'])[:4]
 							#
-							for x in sorted_all_match:
+							got_seq_match = get_num_seq_from_ctt_matches(sorted_all_match,points_b)
+							#
+							new_match = {	
+											"gpi":glyph_point_index,
+											"inx_ins":in_a,
+											"inx_ins_opp":in_b,
+											"inx_cnt":cont_inx,
+											"plot_num":t_contour["plot_num"],
+											"plot_num_opp":tc_inst_b[cont_inx]["plot_num"],
+											"best_sorted":sorted_all_match, # remove after proper certain target line implementation (probable line)
+											"seq_match":got_seq_match
+										}
+							#
+							#
+							if _val_smp not in t_contour["ctt_match_lt"].keys():
 								#
-								draw.draw_circle_on_coord(x["lt"][1], tgca_b, 10, "g")
+								t_contour["ctt_match_lt"][_val_smp] = []
+								#
+							#
+							if new_match not in t_contour["ctt_match_lt"][_val_smp]:
+								#
+								t_contour["ctt_match_lt"][_val_smp].append(new_match)
 								#
 							#
 					except Exception as e:
@@ -927,6 +1083,9 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 						pass
 						#
 					#
+				#
+				#print(t_contour["ctt_match_lt"][_val_smp])
+				#
 	#
 	print ('\n'+tcolor.WARNING + "DUMMY FIND BEST CTT MATCHES - DISABLE TreeEvaluator in ufo_to_graph_a.py AND ENABLE t_plot.clf() in iter_draw.py make_iter() FOR MENU ACCESSIBILITY" + tcolor.ENDC)
 	#
@@ -984,6 +1143,7 @@ for font_inst in instance_list:
 							contours[cnt]["recu"] = []
 							contours[cnt]["recu_simp"] = OrderedDict()
 							contours[cnt]["graphs_data"] = OrderedDict()
+							contours[cnt]["ctt_match_lt"] = OrderedDict()
 							#
 							t_contour = contours[cnt]
 							#
@@ -1078,16 +1238,15 @@ intpl_list = get_instance_permutation()
 # Solver
 #
 TreeGenerator(total_list, intpl_list, simplification)
-TreeEvaluator(total_list, intpl_list, simplification)
 #
-
-
+TreeEvaluator(total_list, intpl_list, simplification)
 #
 # Post-Processor
 #
 ITD = IterDraw(total_list, GC, plt, simplification)
 #
 ITD.run()
+#
 #
 '''
 TreeGenerator is part of the solver it appears here because of drawing priority, for demonstration only.

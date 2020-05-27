@@ -189,7 +189,9 @@ class IterDraw(object):
 		#
 		#
 	#
-	def make_iter(self, _val_smp, _val_pnt, _val_ins, _val_cnt, redraw_smp, redraw_pnt, _plt=False):
+	def make_iter_current(self, _val_smp, _val_pnt, _val_ins, _val_cnt, redraw_smp, redraw_pnt, _plt=False):
+		#
+		# For data that reffer to currently instansiating plot
 		#
 		for instance in self.instances:
 			#
@@ -207,7 +209,7 @@ class IterDraw(object):
 					cont_inx = t_contour["cont"]
 					#
 					t_plot = _plt.figure(t_contour["plot_num"])
-					#t_plot.clf() #remember clear figure ENABLE FOR MENU ACCESSIBILITY, DISABLE FOR DUMMY CODE
+					t_plot.clf() #remember clear figure ENABLE FOR MENU ACCESSIBILITY, DISABLE FOR DUMMY CODE
 					t_gca = t_plot.gca()
 					t_color = color[inst_inx]
 					#
@@ -231,7 +233,7 @@ class IterDraw(object):
 					# contour_start_point
 					draw.draw_circle_on_coord(contour_start_point, t_gca, 20, t_color, False)
 					#
-				# INSTANCE SPECIFIC DRAW / CONTOUR SPECIFIC DRAW
+				# CURRENT INSTANCE SPECIFIC DRAW / CONTOUR SPECIFIC DRAW
 					# Draw Center Transfer Tree Matches
 					if instance == _val_ins and contour == _val_cnt:
 						#
@@ -265,6 +267,7 @@ class IterDraw(object):
 									
 								#
 							#
+							
 
 						except Exception as e:
 							#
@@ -274,22 +277,39 @@ class IterDraw(object):
 							#
 					
 					#
-					'''
-					for x in t_contour["matching_best"][_val_smp]:
+					
+	def make_iter_opposite(self, _val_smp, _val_pnt, _val_ins, _val_cnt, redraw_smp, redraw_pnt, _plt=False):
+		#
+		# For data that reffer to opposite plots after plot instantiation
+		#
+		for instance in self.instances:
+			#
+			for letter in self.instances[instance]:
+				#
+				for contour in self.instances[instance][letter]:
+					#
+					t_contour = self.instances[instance][letter][contour] # this
+					#
+					for y in t_contour["ctt_match_lt"][_val_smp]:
 						#
-						#print(x["gpi"], _val_pnt)
-						#
-						#if x["gpi"] == _val_pnt:
-						#
-						print("MB -----")
-						print(x["tri"])
-						#
-						poly = _plt.Polygon(x["tri"], color='red',alpha=1, linewidth=0.2)
-						t_gca.add_patch(poly)
-						#
+						if _val_ins == y['inx_ins'] and _val_cnt == y['inx_cnt'] and _val_pnt == y['gpi']:
+							#
+							t_plot_b = _plt.figure(y['plot_num_opp'])
+							print("plot", y['plot_num'], y['inx_ins_opp'], t_plot_b)
+							#
+							t_gca_b = t_plot_b.gca()
+							#
+							#
+							for z in y['best_sorted']:
+								#
+								if z['lt'][2] in y['seq_match']:
+									#
+									draw.draw_circle_on_coord(z["lt"][1], t_gca_b, 10, "g")
+									#
+								#
+							#
 						#
 					#
-					'''
 					
 
 	def redraw(self, graph, ctt):
@@ -297,7 +317,8 @@ class IterDraw(object):
 		#
 		print(int(self.val_smp.get()),int(self.val_pnt.get()))
 		#
-		self.make_iter(int(self.val_smp.get()),int(self.val_pnt.get()), int(self.val_ins.get()), int(self.val_cnt.get()),graph,ctt,self.plt)
+		self.make_iter_current(int(self.val_smp.get()),int(self.val_pnt.get()), int(self.val_ins.get()), int(self.val_cnt.get()),graph,ctt,self.plt)
+		self.make_iter_opposite(int(self.val_smp.get()),int(self.val_pnt.get()), int(self.val_ins.get()), int(self.val_cnt.get()),graph,ctt,self.plt)
 		#
 		self.plt.show(block = False)
 
