@@ -49,7 +49,7 @@ font_instance_a = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AG
 font_instance_b = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
 font_instance_c = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
 #
-run_specific = "a"
+run_specific = "X_"
 instance_list = [font_instance_a, font_instance_b]
 simplification = list(range(0,3))#[0,1,2,3,4,5,6,7,8,9,10]
 #
@@ -61,7 +61,7 @@ CH = {}
 GC = {}
 #
 max_radius = 300
-clip_point_count = 7 
+clip_point_count = 7
 #
 
 def most_occuring(v,inx, keep_opp_inx=False):
@@ -489,10 +489,21 @@ class ContourManager(object):
 	#
 	def tc_get_simp_conf_b_coord(self, t_contour, simp_level, coordinate):
 		#
-		confine_from_coord = [d for d in t_contour["confines_simp"][simp_level] if d[1][1] == coordinate][0]
-		confine_index = t_contour["confines_simp"][simp_level].index(confine_from_coord)
+		#confine_from_coord = [d for d in t_contour["confines_simp"][simp_level] if d[1][1] == coordinate][0]
 		#
-		return confine_index, confine_from_coord
+		confine_from_coord_get = [d for d in t_contour["confines_simp"][simp_level] if d[1][1] == coordinate]
+		if len(confine_from_coord_get) > 0:
+			#
+			confine_from_coord = confine_from_coord_get[0]
+			#
+			confine_index = t_contour["confines_simp"][simp_level].index(confine_from_coord)
+			#
+			return confine_index, confine_from_coord
+		#
+		else:
+			#
+			return False, False
+			#
 		#
 	#
 	def get_tc_points(self, tc, simp_level):
@@ -738,106 +749,139 @@ def TreeGenerator(instances, inst_intpl_lst, simp_levels):
 			bax = t_plot_b.gca()
 			#
 			#
-			
 			for _val_smp in simp_levels:
 				#
-				points_a = CM.get_tc_points(t_contour,_val_smp)
-				points_b = CM.get_tc_points(tc_inst_b[cont_inx],_val_smp)
-				#
-				for p in points_a:#list(tc_inst_a["graphs"][0].values()):
-					#
-					__point = flipCoordPath([p],False,True)[0] # flipCoordPath accepts and returns list of points so need to pass list and to get 0
-					#
-					conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(t_contour,_val_smp,list(__point))
-					#
-					lt_p = t_contour["perp_simp"][_val_smp][conf_inx]
-					#
-					l_s = [conf_dat]
-					#
-					sta_a = lt_p[1][0]
-					end_a = lt_p[1][1]
-					sta_b = lt_p[1][2]
-					end_b = lt_p[1][3]
-					#
-					all_match = []
-					all_match_len = []
-					#
-					points_arr = get_points_around(__point,points_a,points_b,l_s)
-					#
-					l_t = points_arr
-					#
-					l_t = rotate_points(l_t, len(points_b)) # review if nessessary 
-					#
-					# graph center of instance b
+				try:
+					
+
 					gc_b = list(tc_inst_b[inst_inx]["graphs"][_val_smp].values())[-1]["coord"]
 					#
-					#t_contour = cnt
+					points_a = CM.get_tc_points(t_contour,_val_smp)
+					points_b = CM.get_tc_points(tc_inst_b[cont_inx],_val_smp)
 					#
-					confine_from_coord = [d for d in t_contour["confines_simp"][_val_smp] if d[1][1] == __point][0]
-					glyph_point_index = t_contour["confines_simp"][_val_smp].index(confine_from_coord)
-					#
-					for lt in l_t:
+					for p in points_a:#list(tc_inst_a["graphs"][0].values()):
 						#
-						lt_crd = lt[1]
-						lt_x = lt_crd[0]
-						lt_y = lt_crd[1]
+						__point = flipCoordPath([p],False,True)[0] # flipCoordPath accepts and returns list of points so need to pass list and to get 0
 						#
-						pnt_dist_a = pnt2line([lt_x,lt_y], sta_a, end_a) # point, sta_a, end
-						pnt_dist_b = pnt2line([lt_x,lt_y], sta_b, end_b) # point, sta_a, end
+						print('------------')
+						print(__point, p)
 						#
-						# distance of those positions from current point ? review
-						t_a_dist = math.hypot(__point[0]-lt_x, __point[1]-lt_y)
-						t_b_dist = int(math.hypot(__point[0]-pnt_dist_b[1][0], __point[1]-pnt_dist_b[1][1]))
-						#
-						t_b_c_dist = math.hypot(gc_b[0]-lt_x, gc_b[1]-lt_y)
-						t_a_c_dist = math.hypot(gc_b[0]-__point[0], gc_b[1]-__point[1])
-						#
-						pnt_dist_a = list(pnt_dist_a)
-						pnt_dist_a.insert(1, t_a_dist)
-						#
-						# area
-						tri = [__point,list(pnt_dist_b[1]),lt_crd]
-						_area = area(tri)
-						#
-						center_m_point = distance(gc_b,lt_crd)
-						center_s_point = distance(gc_b,__point)
-						sm_point = distance(lt_crd,__point)
-						#
-						m_angle = get_angle_b(gc_b,lt_crd)
-						s_angle = get_angle_b(gc_b,__point)
-						#
-						# gather ct matching data
-						#
-						new_match = {
-							"point_graph_inx":	(lt[2],lt[3]), 
-							"pnt_dist_a": 		pnt_dist_a, #
-							"pnt_dist_b":		pnt_dist_b, # pre _area check conflict
-							"area":				_area,
-							"pnt_crd":			[__point[0],__point[1]], 
-							"lt_crd":			lt_crd, #
-							"t_b_dist":			t_b_dist,
-							"t_dist":			abs(abs(t_b_c_dist) - abs(t_a_c_dist)),
-							"center_dist":		abs(center_m_point - center_s_point),
-							"angle":			abs(m_angle-s_angle),
-							"sm_point":			sm_point,
-							"calc_a":			_area+pnt_dist_a[0]+abs(center_m_point - center_s_point)+abs(m_angle-s_angle)+sm_point,
-							"tri":				tri,
-							"lt":				lt,
-							"gpi":				glyph_point_index,
-							"max_radius":		max_radius
-							}
-						#
-						if _val_smp not in t_contour["matching"].keys():
+						try:
+							
+							conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(t_contour,_val_smp,__point)
 							#
-							t_contour["matching"][_val_smp] = []
+							if conf_inx != False:
+								
+								#
+								lt_p = t_contour["perp_simp"][_val_smp][conf_inx]
+								#
+								l_s = [conf_dat]
+								#
+								sta_a = lt_p[1][0]
+								end_a = lt_p[1][1]
+								sta_b = lt_p[1][2]
+								end_b = lt_p[1][3]
+								#
+								all_match = []
+								all_match_len = []
+								#
+								points_arr = get_points_around(__point,points_a,points_b,l_s)
+								#
+								l_t = points_arr
+								#
+								l_t = rotate_points(l_t, len(points_b)) # review if nessessary 
+								#
+								# graph center of instance b
+								print(inst_inx)
+								print(tc_inst_b[inst_inx]["graphs"][_val_smp])
+								#
+								#
+								#t_contour = cnt
+								#
+								confine_from_coord = [d for d in t_contour["confines_simp"][_val_smp] if d[1][1] == __point][0]
+								glyph_point_index = t_contour["confines_simp"][_val_smp].index(confine_from_coord)
+								#
+								for lt in l_t:
+									#
+									lt_crd = lt[1]
+									lt_x = lt_crd[0]
+									lt_y = lt_crd[1]
+									#
+									pnt_dist_a = pnt2line([lt_x,lt_y], sta_a, end_a) # point, sta_a, end
+									pnt_dist_b = pnt2line([lt_x,lt_y], sta_b, end_b) # point, sta_a, end
+									#
+									# distance of those positions from current point ? review
+									t_a_dist = math.hypot(__point[0]-lt_x, __point[1]-lt_y)
+									t_b_dist = int(math.hypot(__point[0]-pnt_dist_b[1][0], __point[1]-pnt_dist_b[1][1]))
+									#
+									t_b_c_dist = math.hypot(gc_b[0]-lt_x, gc_b[1]-lt_y)
+									t_a_c_dist = math.hypot(gc_b[0]-__point[0], gc_b[1]-__point[1])
+									#
+									pnt_dist_a = list(pnt_dist_a)
+									pnt_dist_a.insert(1, t_a_dist)
+									#
+									# area
+									tri = [__point,list(pnt_dist_b[1]),lt_crd]
+									_area = area(tri)
+									#
+									center_m_point = distance(gc_b,lt_crd)
+									center_s_point = distance(gc_b,__point)
+									sm_point = distance(lt_crd,__point)
+									#
+									m_angle = get_angle_b(gc_b,lt_crd)
+									s_angle = get_angle_b(gc_b,__point)
+									#
+									# gather ct matching data
+									#
+									new_match = {
+										"point_graph_inx":	(lt[2],lt[3]), 
+										"pnt_dist_a": 		pnt_dist_a, #
+										"pnt_dist_b":		pnt_dist_b, # pre _area check conflict
+										"area":				_area,
+										"pnt_crd":			[__point[0],__point[1]], 
+										"lt_crd":			lt_crd, #
+										"t_b_dist":			t_b_dist,
+										"t_dist":			abs(abs(t_b_c_dist) - abs(t_a_c_dist)),
+										"center_dist":		abs(center_m_point - center_s_point),
+										"angle":			abs(m_angle-s_angle),
+										"sm_point":			sm_point,
+										"calc_a":			_area+pnt_dist_a[0]+abs(center_m_point - center_s_point)+abs(m_angle-s_angle)+sm_point,
+										"tri":				tri,
+										"lt":				lt,
+										"gpi":				glyph_point_index,
+										"max_radius":		max_radius
+										}
+									#
+									if _val_smp not in t_contour["matching"].keys():
+										#
+										t_contour["matching"][_val_smp] = []
+										#
+									#
+									if new_match not in t_contour["matching"][_val_smp]:
+										#
+										t_contour["matching"][_val_smp].append(new_match)
+										#
+									#
+							
+						except Exception as e:
+							
+							pass
 							#
-						#
-						if new_match not in t_contour["matching"][_val_smp]:
+							'''
+						except Exception as e:
 							#
-							t_contour["matching"][_val_smp].append(new_match)
+							print('POINT MATCHING EXCEPTION')
+							print(e)
 							#
-						#
-					#
+							pass
+							#
+							'''
+				except Exception as e:
+					print("graph exception")
+					pass
+					
+				
+						
 				#
 			#
 		#
@@ -1058,144 +1102,159 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 					#
 					conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(t_contour,_val_smp,list(__point))
 					#
-					# for every confine point, get best matching opposite instance points 
-					# pass to triangle matching
-					# make probable line
-					# collect cumulative probable lines for all levels of simplification
-					#
-					try:
+					if conf_inx != False:
+						
+						# for every confine point, get best matching opposite instance points 
+						# pass to triangle matching
+						# make probable line
+						# collect cumulative probable lines for all levels of simplification
 						#
-						confine_from_coord = [d for d in t_contour["confines_simp"][_val_smp] if d[1][1] == __point][0]
-						glyph_point_index = t_contour["confines_simp"][_val_smp].index(confine_from_coord)
-						#
-						#conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(t_contour,_val_smp,list(__point))
-						#
-						#print("confine from coord")
-						#print(confine_from_coord)
-						#
-						tct_ = [
-							[],
-							[],
-							[]
-						]
-						#
-						_c = 0
-						#
-						for y in confine_from_coord:
+						try:
 							#
-							local_pnt = y[2]
-							#
-							#print(local_pnt)
-							#
-							t_m = find_best_ctt(t_contour["matching"],_val_smp,local_pnt)
-							#
-							sorted_all_match = sorted(t_m, key=lambda x: x['area']+x['pnt_dist_a'][0]+x['center_dist']+x['angle']+x['sm_point'])[:3]
-							#
+							confine_from_coord_get = [d for d in t_contour["confines_simp"][_val_smp] if d[1][1] == __point]
+							if len(confine_from_coord_get) > 0:
+								#
+								confine_from_coord = confine_from_coord_get[0]
+								#
 
-							#
-							got_seq_match = get_num_seq_from_ctt_matches(sorted_all_match,points_b)
-							#
-							#
-							if _val_smp not in t_contour["ctt_match_lt"].keys():
+								glyph_point_index = t_contour["confines_simp"][_val_smp].index(confine_from_coord)
 								#
-								t_contour["ctt_match_lt"][_val_smp] = {}
+								#conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(t_contour,_val_smp,list(__point))
 								#
-							#
-							if glyph_point_index not in t_contour["ctt_match_lt"][_val_smp].keys():
+								#print("confine from coord")
+								#print(confine_from_coord)
 								#
-								t_contour["ctt_match_lt"][_val_smp][glyph_point_index] = {}
-								t_contour["ctt_match_lt"][_val_smp][glyph_point_index]["matches"] = sorted_all_match # maybe is equating multiple times...
-								
-								t_contour["ctt_match_lt"][_val_smp][glyph_point_index]["sequences"] = [
+								tct_ = [
 									[],
 									[],
 									[]
 								]
 								#
-							#
-							if got_seq_match not in tct_[_c]:
+								_c = 0
 								#
-								#t_contour["ctt_match_lt"][_val_smp][_c].append(new_match)
-								tct_[_c].append(got_seq_match)
+								for y in confine_from_coord:
+									#
+									local_pnt = y[2]
+									#
+									#print(local_pnt)
+									#
+									t_m = find_best_ctt(t_contour["matching"],_val_smp,local_pnt)
+									#
+									#sorted_all_match = sorted(t_m, key=lambda x: x['area']+x['pnt_dist_a'][0]+x['center_dist']+x['angle']+x['sm_point'])[:3]
+									#sorted_all_match = sorted(t_m, key=lambda x: x['area']+x['pnt_dist_a'][0]+x['center_dist']+x['angle']+x['sm_point'])[:3]
+									sorted_all_match = sorted(t_m, key=lambda x: x['area']+x['pnt_dist_a'][0]+x['center_dist']+x['angle']+x['sm_point'])[:2]
+									#
+
+									#
+									got_seq_match = get_num_seq_from_ctt_matches(sorted_all_match,points_b)
+									#
+									#
+									if _val_smp not in t_contour["ctt_match_lt"].keys():
+										#
+										t_contour["ctt_match_lt"][_val_smp] = {}
+										#
+									#
+									if glyph_point_index not in t_contour["ctt_match_lt"][_val_smp].keys():
+										#
+										print("ADDING MATCHES")
+										#
+										t_contour["ctt_match_lt"][_val_smp][glyph_point_index] = {}
+										t_contour["ctt_match_lt"][_val_smp][glyph_point_index]["matches"] = sorted_all_match # maybe is equating multiple times...
+										
+										t_contour["ctt_match_lt"][_val_smp][glyph_point_index]["sequences"] = [
+											[],
+											[],
+											[]
+										]
+										#
+									#
+									if got_seq_match not in tct_[_c]:
+										#
+										#t_contour["ctt_match_lt"][_val_smp][_c].append(new_match)
+										tct_[_c].append(got_seq_match)
+										#
+									#
+									_c = _c + 1
+									#
 								#
-							#
-							_c = _c + 1
-							#
-						#
-						# update each confine item with matching target sequence
-						#
-						ct_t_m = get_psca_ct_target_matches(tct_)
-						#
-						_c = 0
-						fliped_points_b = flipCoordPath(points_b,False,True)
-						
-						#
-						for x in ct_t_m:
-							#
-							x_center = x[int(len(x)/2)]
-							#
-							rs_p = rotate_center_clip(x, x_center, len(points_b)+1, clip_point_count)
-							#
-							# new_match = {	
-							# 	"gpi":glyph_point_index,
-							# 	"inx_ins":in_a,
-							# 	"inx_ins_opp":in_b,
-							# 	"inx_cnt":cont_inx,
-							# 	"plot_num":t_contour["plot_num"],
-							# 	"plot_num_opp":tc_inst_b[cont_inx]["plot_num"],
-							# 	"best_sorted":sorted_all_match, # remove after proper certain target line implementation (probable line)
-							# 	"seq_match":rs_p
-							# }
-							pnts = []
-							#
+								# update each confine item with matching target sequence
+								#
+								ct_t_m = get_psca_ct_target_matches(tct_)
+								#
+								_c = 0
+								fliped_points_b = flipCoordPath(points_b,False,True)
 								
-							#
-							for gm in rs_p:
 								#
-								#
-								pnts.append(fliped_points_b[gm-1])
-								#
-								#print("GOT PNTS")
-								#print(pnts)
-								#t_contour["ctt_match_lt"][_val_smp][glyph_point_index]["sequence_point_crd"] = pnts # maybe is equating multiple times...
+								for x in ct_t_m:
+									#
+									x_center = x[int(len(x)/2)]
+									#
+									rs_p = rotate_center_clip(x, x_center, len(points_b)+1, clip_point_count)
+									#
+									# new_match = {	
+									# 	"gpi":glyph_point_index,
+									# 	"inx_ins":in_a,
+									# 	"inx_ins_opp":in_b,
+									# 	"inx_cnt":cont_inx,
+									# 	"plot_num":t_contour["plot_num"],
+									# 	"plot_num_opp":tc_inst_b[cont_inx]["plot_num"],
+									# 	"best_sorted":sorted_all_match, # remove after proper certain target line implementation (probable line)
+									# 	"seq_match":rs_p
+									# }
+									pnts = []
+									#
+										
+									#
+									for gm in rs_p:
+										#
+										#
+										pnts.append(fliped_points_b[gm-1])
+										#
+										#print("GOT PNTS")
+										#print(pnts)
+										#t_contour["ctt_match_lt"][_val_smp][glyph_point_index]["sequence_point_crd"] = pnts # maybe is equating multiple times...
+									#
+									#
+									new_match_b = {	
+										"gpi":glyph_point_index,
+										"inx_ins":in_a,
+										"inx_ins_opp":in_b,
+										"inx_cnt":cont_inx,
+										"plot_num":t_contour["plot_num"],
+										"plot_num_opp":tc_inst_b[cont_inx]["plot_num"],
+										#"best_sorted":sorted_all_match, # remove after proper certain target line implementation (probable line)
+										"seq_match":rs_p,
+										"point_seq":pnts
+									}
+									#
+									#
+									#if new_match_b not in t_contour["ctt_match_lt"][_val_smp][glyph_point_index]["sequences"][_c]:
+										#
+										#t_contour["confines_simp"][_val_smp][glyph_point_index][_c].append(new_match)
+										#t_contour["ctt_match_lt"][_val_smp][_c] = new_match
+									t_contour["ctt_match_lt"][_val_smp][glyph_point_index]["sequences"][_c] = new_match_b
+										#
+										#print("ADDING sequences")
+										#print(new_match_b["seq_match"])
+										#
+									#
+									_c = _c + 1
+									#
 							#
+						except Exception as e:
 							#
-							new_match_b = {	
-								"gpi":glyph_point_index,
-								"inx_ins":in_a,
-								"inx_ins_opp":in_b,
-								"inx_cnt":cont_inx,
-								"plot_num":t_contour["plot_num"],
-								"plot_num_opp":tc_inst_b[cont_inx]["plot_num"],
-								#"best_sorted":sorted_all_match, # remove after proper certain target line implementation (probable line)
-								"seq_match":rs_p,
-								"point_seq":pnts
-							}
+							print(e)
+							print('TREE EVALUATOR EXCEPTION')
 							#
+							pass
 							#
-							#if new_match_b not in t_contour["ctt_match_lt"][_val_smp][glyph_point_index]["sequences"][_c]:
-								#
-								#t_contour["confines_simp"][_val_smp][glyph_point_index][_c].append(new_match)
-								#t_contour["ctt_match_lt"][_val_smp][_c] = new_match
-							t_contour["ctt_match_lt"][_val_smp][glyph_point_index]["sequences"][_c] = new_match_b
-								#
-								#print("ADDING sequences")
-								#print(new_match_b["seq_match"])
-								#
-							#
-							_c = _c + 1
-							#
+					else:
 						#
+						pass
 						#t_confine = t_contour["confines_simp"][_val_smp][glyph_point_index]
 						#
 						#print(tc_inst_b)
 						#
-						#
-					except Exception as e:
-						#
-						print(e)
-						#
-						pass
 						#
 					#
 				#
@@ -1231,6 +1290,8 @@ for font_inst in instance_list:
 						CH = ContourHolder(os.path.join(font_inst, t_pl), debug)
 						#
 						cont_counter = CH.len
+						#
+						print(cont_counter)
 						#
 						for cnt in range(CH.len):
 							#
@@ -1322,6 +1383,8 @@ for font_inst in instance_list:
 											temp_recu.append(_recu)
 											#
 										except Exception as e:
+											#
+											print(e)
 											#
 											pass
 											#
