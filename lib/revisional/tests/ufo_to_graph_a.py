@@ -969,7 +969,7 @@ def get_num_seq_from_ctt_matches(sorted_all_match, points_b):
 	#
 	for x in sorted_all_match:
 		#
-		#print(x)
+		
 		#
 		point_num = x['lt'][2]
 		#
@@ -984,12 +984,33 @@ def get_num_seq_from_ctt_matches(sorted_all_match, points_b):
 	rot_seq = sorted(rotate_points([],len(points_b),seq_lists))
 	#psca_m_ginx = psca_glif_line_inx(t_m)
 	#
-	#print(rot_seq)
+
 	#
 	return rot_seq
 	#
 #
-
+def get_psca_ct_target_matches(per_ct):
+	#
+	per_ct_points = [[],[],[]]
+	#
+	y = 0
+	#
+	for x in per_ct:
+		#
+		#
+		for z in x:
+			#
+			#print(z[0])
+			#
+			per_ct_points[y] = z
+			#
+		#
+		y = y + 1
+		#
+	#
+	return per_ct_points
+	#
+#
 def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 	#
 	inst_data = []
@@ -1008,6 +1029,9 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 		#
 		inst_data.append(len(tc_inst_a))
 		#
+		#graph_b_crd = tc_inst_b[0]["coords"]["graph"]
+		#print(graph_b_crd)
+		#
 		for t_contour in tc_inst_a:
 			#
 			inst_inx = t_contour["inst"]
@@ -1021,6 +1045,9 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 			t_color = color[inst_inx]
 			#
 			for _val_smp in simp_levels:
+				#
+				#print("LENWISE CONTOURS")
+				#print(tc_inst_b[in_b][_val_smp])
 				#
 				points_a = CM.get_tc_points(t_contour,_val_smp)
 				points_b = CM.get_tc_points(tc_inst_b[cont_inx],_val_smp)
@@ -1041,41 +1068,129 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 						confine_from_coord = [d for d in t_contour["confines_simp"][_val_smp] if d[1][1] == __point][0]
 						glyph_point_index = t_contour["confines_simp"][_val_smp].index(confine_from_coord)
 						#
-						conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(t_contour,_val_smp,list(__point))
+						#conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(t_contour,_val_smp,list(__point))
+						#
+						#print("confine from coord")
+						#print(confine_from_coord)
+						#
+						tct_ = [
+							[],
+							[],
+							[]
+						]
+						#
+						_c = 0
 						#
 						for y in confine_from_coord:
 							#
-							#
 							local_pnt = y[2]
+							#
+							#print(local_pnt)
 							#
 							t_m = find_best_ctt(t_contour["matching"],_val_smp,local_pnt)
 							#
-							sorted_all_match = sorted(t_m, key=lambda x: x['area']+x['pnt_dist_a'][0]+x['center_dist']+x['angle']+x['sm_point'])[:4]
+							sorted_all_match = sorted(t_m, key=lambda x: x['area']+x['pnt_dist_a'][0]+x['center_dist']+x['angle']+x['sm_point'])[:3]
+							#
+
 							#
 							got_seq_match = get_num_seq_from_ctt_matches(sorted_all_match,points_b)
 							#
-							new_match = {	
+							#
+							if _val_smp not in t_contour["ctt_match_lt"].keys():
+								#
+								t_contour["ctt_match_lt"][_val_smp] = {}
+								#
+							#
+							if glyph_point_index not in t_contour["ctt_match_lt"][_val_smp].keys():
+								#
+								t_contour["ctt_match_lt"][_val_smp][glyph_point_index] = {}
+								t_contour["ctt_match_lt"][_val_smp][glyph_point_index]["matches"] = sorted_all_match # maybe is equating multiple times...
+								
+								t_contour["ctt_match_lt"][_val_smp][glyph_point_index]["sequences"] = [
+									[],
+									[],
+									[]
+								]
+								#
+							#
+							if got_seq_match not in tct_[_c]:
+								#
+								#t_contour["ctt_match_lt"][_val_smp][_c].append(new_match)
+								tct_[_c].append(got_seq_match)
+								#
+							#
+							_c = _c + 1
+							#
+						#
+						# update each confine item with matching target sequence
+						#
+						ct_t_m = get_psca_ct_target_matches(tct_)
+						#
+						_c = 0
+						fliped_points_b = flipCoordPath(points_b,False,True)
+						
+						#
+						for x in ct_t_m:
+							#
+							x_center = x[int(len(x)/2)]
+							#
+							rs_p = rotate_center_clip(x, x_center, len(points_b)+1, clip_point_count)
+							#
+							# new_match = {	
+							# 	"gpi":glyph_point_index,
+							# 	"inx_ins":in_a,
+							# 	"inx_ins_opp":in_b,
+							# 	"inx_cnt":cont_inx,
+							# 	"plot_num":t_contour["plot_num"],
+							# 	"plot_num_opp":tc_inst_b[cont_inx]["plot_num"],
+							# 	"best_sorted":sorted_all_match, # remove after proper certain target line implementation (probable line)
+							# 	"seq_match":rs_p
+							# }
+							pnts = []
+							#
+								
+							#
+							for gm in rs_p:
+								#
+								#
+								pnts.append(fliped_points_b[gm-1])
+								#
+								#print("GOT PNTS")
+								#print(pnts)
+								#t_contour["ctt_match_lt"][_val_smp][glyph_point_index]["sequence_point_crd"] = pnts # maybe is equating multiple times...
+							#
+							#
+							new_match_b = {	
 								"gpi":glyph_point_index,
 								"inx_ins":in_a,
 								"inx_ins_opp":in_b,
 								"inx_cnt":cont_inx,
 								"plot_num":t_contour["plot_num"],
 								"plot_num_opp":tc_inst_b[cont_inx]["plot_num"],
-								"best_sorted":sorted_all_match, # remove after proper certain target line implementation (probable line)
-								"seq_match":got_seq_match
+								#"best_sorted":sorted_all_match, # remove after proper certain target line implementation (probable line)
+								"seq_match":rs_p,
+								"point_seq":pnts
 							}
 							#
 							#
-							if _val_smp not in t_contour["ctt_match_lt"].keys():
+							#if new_match_b not in t_contour["ctt_match_lt"][_val_smp][glyph_point_index]["sequences"][_c]:
 								#
-								t_contour["ctt_match_lt"][_val_smp] = []
+								#t_contour["confines_simp"][_val_smp][glyph_point_index][_c].append(new_match)
+								#t_contour["ctt_match_lt"][_val_smp][_c] = new_match
+							t_contour["ctt_match_lt"][_val_smp][glyph_point_index]["sequences"][_c] = new_match_b
+								#
+								#print("ADDING sequences")
+								#print(new_match_b["seq_match"])
 								#
 							#
-							if new_match not in t_contour["ctt_match_lt"][_val_smp]:
-								#
-								t_contour["ctt_match_lt"][_val_smp].append(new_match)
-								#
+							_c = _c + 1
 							#
+						#
+						#t_confine = t_contour["confines_simp"][_val_smp][glyph_point_index]
+						#
+						#print(tc_inst_b)
+						#
+						#
 					except Exception as e:
 						#
 						print(e)
@@ -1142,6 +1257,7 @@ for font_inst in instance_list:
 							contours[cnt]["recu_simp"] = OrderedDict()
 							contours[cnt]["graphs_data"] = OrderedDict()
 							contours[cnt]["ctt_match_lt"] = OrderedDict()
+							contours[cnt]["ctt_match_seq"] = OrderedDict()
 							#
 							t_contour = contours[cnt]
 							#

@@ -3349,7 +3349,7 @@ def do_rad_search(_f, _a_instance, _b_instance, iter_point, _plt=False, _color=F
 	rot_seq = sorted(rotate_points([],len(a_items),seq_lists))
 	psca_m_ginx = psca_glif_line_inx(ct_t_m)
 	#ag_prob = line_agnostic_probable(rotated_seq,psca_m_ginx)
-	#
+	# 
 	rs_p = rotate_center_clip(rotated_seq, ct_t_m[0][0][1], len(b_items)+1, clip_point_count)
 	rs_p_b = rotate_center_clip(rotated_seq, ct_t_m[0][1][1], len(b_items)+1, clip_point_count)
 	rs_p_c = rotate_center_clip(rotated_seq, ct_t_m[0][2][1], len(b_items)+1, clip_point_count)
