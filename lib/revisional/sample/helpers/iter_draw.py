@@ -52,7 +52,6 @@ class IterDraw(object):
 		self.plt = plt
 		self.GC = GC
 		self.simplification = simplification
-		#self.run_sp = 'a'
 		#
 	#
 	def draw_cts(self, t_contour, smp, pnt):
@@ -231,7 +230,7 @@ class IterDraw(object):
 					contour_start_point = t_contour["coords"]["graph"][0]
 					#
 					# contour_start_point
-					draw.draw_circle_on_coord(contour_start_point, t_gca, 20, t_color, False)
+					draw.draw_circle_on_coord(contour_start_point, t_gca, 20, t_color, False, False, '', ':')
 					#
 				# CURRENT INSTANCE SPECIFIC DRAW / CONTOUR SPECIFIC DRAW
 					# Draw Center Transfer Tree Matches
@@ -242,8 +241,7 @@ class IterDraw(object):
 							#
 							coord_ct = [item[1] for item in t_contour["confines_simp"][_val_smp][_val_pnt]]
 							#
-							print("CRD CT")
-							print(coord_ct)
+
 							#
 							draw.plot_region_line(t_gca, coord_ct, t_color, _plt)
 							#
@@ -293,94 +291,57 @@ class IterDraw(object):
 					#
 					t_contour = self.instances[instance][letter][contour] # this
 					#
-					#print("-->>>")
-					#print(len(t_contour["ctt_match_lt"][_val_smp]))
-					#
-					'''
-					for z in t_contour["confines_simp"][_val_smp]:
+					for d,z in t_contour["ctt_match_lt"][_val_smp]["sequences"].items():
 						#
-						if z[1][2] == _val_pnt:
-							#
-							#t_confine = t_contour["confines_simp"][_val_smp][_val_pnt]
-							#
-							print("FOR POINT", z[1][2])
-							#
-							print("BEST MATCH FOR", 'P',z[0][4])
-							print("BEST MATCH FOR", 'C',z[1][4])
-							print("BEST MATCH FOR", 'A',z[2][4])
-							#
+						#for z in j:
 						#
-						
-					#
-					'''
-					i = 0
-					#
-					try:
-						for x,y in t_contour["ctt_match_lt"][_val_smp].items():
 						#
-
-
-
+						if len(z) > 0:
 							#
-							if x == _val_pnt:
+							if _val_ins == z['inx_ins'] and _val_cnt == z['inx_cnt'] and _val_pnt == z['gpi']:
 								#
-								i = 0
+								print("GOT SEQUENCE")
+								print(z["seq_match"])
+								print(z["point_seq"])
 								#
-								for z in y["sequences"]:
+								t_color = color[z['inx_ins_opp']]
+								t_plot_b = _plt.figure(z['plot_num_opp'])
+								#
+								t_gca_b = t_plot_b.gca()
+								#
+								draw.plot_region_line(t_gca_b, z["point_seq"], t_color, _plt)
+								#
+								#print("------")
+								#pprint.pprint(y["matches"])
+								#
+								#draw.draw_circle_on_coord(y["matches"][i]["lt"][1], t_gca_b, 10, "r")
+								#
+								'''
+								for h in y["matches"]:
 									#
-									#print(z)
-									if _val_ins == z['inx_ins'] and _val_cnt == z['inx_cnt'] and _val_pnt == z['gpi']:
-										#
-										print("GOT SEQUENCE")
-										print(z["seq_match"])
-										#
-										t_color = color[z['inx_ins_opp']]
-										t_plot_b = _plt.figure(z['plot_num_opp'])
-										#
-										t_gca_b = t_plot_b.gca()
-										#
-										#
-										# for d in z['best_sorted']:
-										# 	#
-										# 	if d['lt'][2] in z['seq_match']:
-										# 		#
-										# 		draw.draw_circle_on_coord(d["lt"][1], t_gca_b, 10, "g")
-										# 		#
-										#opp_contour = self.instances[z['inx_ins_opp']][letter][contour]
-										#
-										draw.plot_region_line(t_gca_b, z["point_seq"], t_color, _plt)
-										#
-										#print("------")
-										#pprint.pprint(y["matches"])
-										#
-										#draw.draw_circle_on_coord(y["matches"][i]["lt"][1], t_gca_b, 10, "r")
-										#
-										for h in y["matches"]:
-											#
-											#
-											print("LT GPI")
-											print(h['lt'])
-											print(h['gpi'])
-											print(h['point_graph_inx'])
-											#for d in h['best_sorted']:
-											#
-											#if h['lt'][2] in z['seq_match']:
-											#
-											#draw.draw_circle_on_coord(h["lt_crd"], t_gca_b, 10, "r")
-											draw.draw_circle_on_coord(h["lt"][1], t_gca_b, 20, "g")
-											#
-											#
-										#
-										print("---------------------------")
-										#
 									#
-									i = i + 1
+									print("LT GPI")
+									print(h['lt'])
+									print(h['gpi'])
+									print(h['point_graph_inx'])
+									#for d in h['best_sorted']:
 									#
-					except Exception as e:
+									#if h['lt'][2] in z['seq_match']:
+									#
+									#draw.draw_circle_on_coord(h["lt_crd"], t_gca_b, 10, "r")
+									draw.draw_circle_on_coord(h["lt"][1], t_gca_b, 20, "g")
+									#
+									#
+								#
+								'''
+								#print("---------------------------")
+								#
+							#
+					#except Exception as e:
 						#
-						
-						print(e)
-						pass
+					#	print("DRAW ERROR")
+					#	print(e)
+					#	pass
 						#
 					'''
 					for y in t_contour["confines_simp"][_val_smp]:
