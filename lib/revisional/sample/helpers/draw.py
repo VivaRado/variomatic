@@ -38,7 +38,7 @@ def draw_circle_on_coord(coords, ax, rad, _color, _fill=True, _return=False, _gi
 		lnst = _dash
 		#
 
-	s_circle = plt.Circle(v_c, rad, color=_color, alpha=0.2, lw=2, fill=_fill, gid=_gid, linestyle=lnst)
+	s_circle = plt.Circle(v_c, rad, color=_color, alpha=0.5, lw=0.8, fill=_fill, gid=_gid, linestyle=lnst)
 	#
 	if _return == True:
 		#

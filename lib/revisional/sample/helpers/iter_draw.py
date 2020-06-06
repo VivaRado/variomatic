@@ -43,6 +43,14 @@ def tc_get_pca(t_contour,simp_level,conf_inx,pos):
 	return t_contour["perp_simp"][simp_level][conf_inx][get_pos]
 	#
 #
+def tc_get_simp_conf_b_coord(t_contour, simp_level, coordinate):
+	#
+	confine_from_coord = [d for d in t_contour["confines_simp"][simp_level] if d[1][1] == coordinate][0]
+	confine_index = t_contour["confines_simp"][simp_level].index(confine_from_coord)
+	#
+	return confine_index, confine_from_coord
+	#
+#
 #
 class IterDraw(object):
 	"""docstring for IterDraw"""
@@ -54,6 +62,7 @@ class IterDraw(object):
 		self.simplification = simplification
 		#
 	#
+	'''
 	def draw_cts(self, t_contour, smp, pnt):
 		#
 		inst_inx = t_contour["inst"]
@@ -75,7 +84,7 @@ class IterDraw(object):
 					#
 					#graph_point_from_coord = tc_get_point_b_coord(t_contour,simp_level,t_coord)
 					#
-					conf_inx, conf_dat = self.tc_get_simp_conf_b_coord(t_contour,simp_level,t_coord)
+					conf_inx, conf_dat = tc_get_simp_conf_b_coord(t_contour,simp_level,t_coord)
 					#
 					if conf_inx == pnt:
 						#
@@ -87,20 +96,14 @@ class IterDraw(object):
 						#
 						t_gca.add_line(line)
 						#
-	#
-	def tc_get_simp_conf_b_coord(self, t_contour, simp_level, coordinate):
-		#
-		confine_from_coord = [d for d in t_contour["confines_simp"][simp_level] if d[1][1] == coordinate][0]
-		confine_index = t_contour["confines_simp"][simp_level].index(confine_from_coord)
-		#
-		return confine_index, confine_from_coord
-		#
+					#
+	'''
 	#
 	def run(self):
 		#
 		root = Tk()
 		#
-		root.geometry("100x200+1800+0")
+		root.geometry("100x250+1800+0")
 		#
 		frame = Frame(root, borderwidth=1)
 		frame.pack(side='top')
@@ -120,18 +123,26 @@ class IterDraw(object):
 		#
 		label_instance = Label(frame, text='Instance')
 		label_instance.pack()
-		self.val_ins = Spinbox(frame, width=8, from_=0, to=1, command=self.on_instance_value_change)
+		self.val_ins = Spinbox(frame, width=8, from_=0, to=10, command=self.on_instance_value_change)
 		self.val_ins.delete(0,"end")
 		self.val_ins.insert(0,0)
 		self.val_ins.pack()
 		#
 		label_contour = Label(frame, text='Contour')
 		label_contour.pack()
-		self.val_cnt = Spinbox(frame, width=8, from_=0, to=1, command=self.on_contour_value_change)
+		self.val_cnt = Spinbox(frame, width=8, from_=0, to=10, command=self.on_contour_value_change)
 		self.val_cnt.delete(0,"end")
 		self.val_cnt.insert(0,0)
 		self.val_cnt.pack()
 		#
+		label_instance_data = Label(frame, text='Instance Data')
+		label_instance_data.pack()
+		self.val_ins_dat = Spinbox(frame, width=8, from_=0, to=10, command=self.on_instance_value_change)
+		self.val_ins_dat.delete(0,"end")
+		self.val_ins_dat.insert(0,1)
+		self.val_ins_dat.pack()
+		#
+
 		self._smp = 0
 		self._pnt = 0
 		#
@@ -168,7 +179,7 @@ class IterDraw(object):
 		self.redraw(False, True)
 		#
 	#
-	def run_draw(self,x,t_gca,_plt):
+	def draw_ctt_tri(self,x,t_gca,_plt, _clr, _rad):
 		#
 		list_x, list_y = [
 			x["lt_crd"][0], 
@@ -178,17 +189,17 @@ class IterDraw(object):
 			x["pnt_dist_b"][1][1]
 		]
 		#
-		line = lines.Line2D(list_x,list_y, lw=1, color="g", alpha=0.4)
+		line = lines.Line2D(list_x,list_y, lw=1, color=_clr, alpha=0.4)
 		t_gca.add_line(line)
 		#
-		poly = _plt.Polygon(x["tri"], color='green',alpha=0.05, linewidth=0.2)
+		poly = _plt.Polygon(x["tri"], color=_clr,alpha=0.05, linewidth=0.2)
 		t_gca.add_patch(poly)
 		#
-		draw.draw_circle_on_coord(x["lt"][1], t_gca, 2, "g")
+		draw.draw_circle_on_coord(x["lt"][1], t_gca, _rad, _clr, False, False)
 		#
 		#
 	#
-	def make_iter_current(self, _val_smp, _val_pnt, _val_ins, _val_cnt, redraw_smp, redraw_pnt, _plt=False):
+	def make_iter_current(self, _val_smp, _val_pnt, _val_ins, _val_cnt, _val_ins_dat, redraw_smp, redraw_pnt, _plt=False):
 		#
 		# For data that reffer to currently instansiating plot
 		#
@@ -241,31 +252,87 @@ class IterDraw(object):
 							#
 							coord_ct = [item[1] for item in t_contour["confines_simp"][_val_smp][_val_pnt]]
 							#
-
 							#
 							draw.plot_region_line(t_gca, coord_ct, t_color, _plt)
 							#
-							self.draw_cts(t_contour, _val_smp, _val_pnt)
+							#self.draw_cts(t_contour, _val_smp, _val_pnt)
 							#
 							added_circ = False
 							#
-							for x in t_contour["matching"][_val_smp]:
+
+							#
+							for x in t_contour["matching_best_area"][_val_smp]:
 								#
-								if x["gpi"] == _val_pnt:
+								#print(x)
+								#
+								if [_val_ins, _val_ins_dat] == x['instance_pair']:
 									#
-									if added_circ == False:
-										#
-										circl = _plt.Circle(x["pnt_crd"], x["max_radius"], color=t_color, fill=False, alpha=0.5, lw=0.5)
-										circl.set_radius(x["max_radius"])
-										circl.set_linestyle((0, (2,4)))
-										t_gca.add_patch(circl)
-										#
-										added_circ = True
-										#
+									if x["pnt_crd"] == coord_ct[0]:
+										#pass
+										self.draw_ctt_tri(x,t_gca,_plt, 'green', 1.5)
 									#
-									self.run_draw(x,t_gca,_plt)
+									if x["pnt_crd"] == coord_ct[2]:
+										#pass
+										self.draw_ctt_tri(x,t_gca,_plt, 'blue', 3)
 									#
-									
+									if x["gpi"] == _val_pnt:
+										#
+										conf_inx, conf_dat = tc_get_simp_conf_b_coord(t_contour,_val_smp,x["pnt_crd"])
+										#
+										#
+										if added_circ == False:
+											#
+											circl = _plt.Circle(x["pnt_crd"], x["max_radius"], color=t_color, fill=False, alpha=0.5, lw=0.5)
+											circl.set_radius(x["max_radius"])
+											circl.set_linestyle((0, (2,4)))
+											t_gca.add_patch(circl)
+											#
+											# draw ctt perp line
+											#
+											pca_crd_p = tc_get_pca(t_contour,_val_smp,conf_inx,"p")
+											pca_crd_c = tc_get_pca(t_contour,_val_smp,conf_inx,"c")
+											pca_crd_a = tc_get_pca(t_contour,_val_smp,conf_inx,"a")
+											#
+											pca_crd = [pca_crd_p, pca_crd_c, pca_crd_a]
+											#
+											for y in pca_crd:
+												#
+												list_x, list_y = get_perp(y, "virt")
+												#
+												_clr = 'g'
+												#
+												if 0 == pca_crd.index(y):
+													#
+													_clr = 'green'
+													#
+												#
+												elif 1 == pca_crd.index(y):
+													#
+													_clr = 'red'
+													#
+												#
+												elif 2 == pca_crd.index(y):
+													#
+													_clr = 'blue'
+													#
+												#
+												line = lines.Line2D(list_x,list_y, lw=1., color=_clr, alpha=0.4)
+												#
+												t_gca.add_line(line)
+												#
+											#
+											added_circ = True
+											#
+										#
+										#
+										# print("CTTS ++======")
+										# print(coord_ct)
+										#
+										#if pca_checks[1] == 1:
+										#
+										self.draw_ctt_tri(x,t_gca,_plt, 'red', 4.5)
+										#
+										#
 								#
 							#
 							
@@ -279,7 +346,7 @@ class IterDraw(object):
 					
 					#
 					
-	def make_iter_opposite(self, _val_smp, _val_pnt, _val_ins, _val_cnt, redraw_smp, redraw_pnt, _plt=False):
+	def make_iter_opposite(self, _val_smp, _val_pnt, _val_ins, _val_cnt, _val_ins_dat, redraw_smp, redraw_pnt, _plt=False):
 		#
 		# For data that reffer to opposite plots after plot instantiation
 		#
@@ -298,7 +365,7 @@ class IterDraw(object):
 						#
 						if len(z) > 0:
 							#
-							if _val_ins == z['inx_ins'] and _val_cnt == z['inx_cnt'] and _val_pnt == z['gpi']:
+							if _val_ins == z['inx_ins'] and _val_cnt == z['inx_cnt'] and _val_pnt == z['gpi'] and _val_ins_dat == z['inx_ins_opp']:
 								#
 								print("GOT SEQUENCE")
 								print(z["seq_match"])
@@ -391,11 +458,11 @@ class IterDraw(object):
 
 	def redraw(self, graph, ctt):
 		#
+		#self.make_iter_current(int(self.val_smp.get()),int(self.val_pnt.get()), int(self.val_ins.get()), int(self.val_cnt.get()),graph,ctt,self.plt)
+		#self.make_iter_opposite(int(self.val_smp.get()),int(self.val_pnt.get()), int(self.val_ins.get()), int(self.val_cnt.get()),graph,ctt,self.plt)
 		#
-		print(int(self.val_smp.get()),int(self.val_pnt.get()))
-		#
-		self.make_iter_current(int(self.val_smp.get()),int(self.val_pnt.get()), int(self.val_ins.get()), int(self.val_cnt.get()),graph,ctt,self.plt)
-		self.make_iter_opposite(int(self.val_smp.get()),int(self.val_pnt.get()), int(self.val_ins.get()), int(self.val_cnt.get()),graph,ctt,self.plt)
+		self.make_iter_current(int(self.val_smp.get()),int(self.val_pnt.get()), int(self.val_ins.get()), int(self.val_cnt.get()), int(self.val_ins_dat.get()),graph,ctt,self.plt)
+		self.make_iter_opposite(int(self.val_smp.get()),int(self.val_pnt.get()), int(self.val_ins.get()), int(self.val_cnt.get()), int(self.val_ins_dat.get()),graph,ctt,self.plt)
 		#
 		self.plt.show(block = False)
 

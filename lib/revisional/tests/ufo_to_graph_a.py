@@ -50,8 +50,8 @@ font_instance_a = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AG
 font_instance_b = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
 font_instance_c = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
 #
-run_specific = "W_"
-instance_list = [font_instance_a, font_instance_b]
+run_specific = "a"
+instance_list = [font_instance_b, font_instance_a]
 simplification = list(range(0,3))#[0,1,2,3,4,5,6,7,8,9,10]
 #
 inst_num = 0
@@ -802,6 +802,10 @@ def TreeGenerator(instances, inst_intpl_lst, simp_levels):
 						m_angle = get_angle_b(gc_b,lt_crd)
 						s_angle = get_angle_b(gc_b,__point)
 						#
+						#
+						# get travel distance on the line to that point
+						#print(__point, lt_crd)
+						#
 						# gather ct matching data
 						#
 						new_match = {
@@ -820,12 +824,14 @@ def TreeGenerator(instances, inst_intpl_lst, simp_levels):
 							"tri":				tri,
 							"lt":				lt,
 							"gpi":				glyph_point_index,
-							"max_radius":		max_radius
+							"max_radius":		max_radius,
+							"instance_pair":	[in_a, in_b]
 							}
 						#
 						if _val_smp not in t_contour["matching"].keys():
 							#
 							t_contour["matching"][_val_smp] = []
+							t_contour["matching_best_area"][_val_smp] = []
 							#
 						#
 						if new_match not in t_contour["matching"][_val_smp]:
@@ -907,8 +913,11 @@ def rotate_center_clip(rotated_seq, cent, len_points, clip):
 			#
 			l = list(range(1, len_points+1))
 			#
+			#return False
+		#	#
 		#
 	#
+	#print(l.index(cent))
 	#
 	_cent = int((len(l)/2)) - int(l.index(cent))#int((len(l)/2) + l.index(cent) +1)
 	#
@@ -1153,6 +1162,473 @@ def get_aggregate_line(blm, len_points, len_line):
 	return [rot_cent, inc_ghost]
 	#
 #
+def get_coord_range_finder(c_match, traces, coords, _dir, _center, bax, _plt):
+	#
+	got_point = get_point_inx_by_coord(c_match[1], coords)
+	#
+	if _dir == "p":
+		#
+		_w = "CCW"
+		_c = "orange"
+		#
+	else:
+		#
+		_w = "CW"
+		_c = "purple"
+		#
+	#
+	tracing_coords = []
+	tracing_rec = []
+	#
+	#
+	for y in traces:
+		#
+		print("-----?")
+		print(len(coords), y[0])
+		#
+		try:
+			#
+			#
+			get_moving_inx_p = get_point_inx_line_b(len(coords), y[0], _dir)
+			#
+			coord_moving_p = next(c for c in coords if coords.index(c) == get_moving_inx_p)
+			#
+			got_moving = get_coord_range(coords, c_match[1], 1, _dir, y[1])
+			#
+				#
+			tracing_coords.append([y,got_moving])
+				#
+		except Exception as e:
+			#
+			pass
+	#
+	for x in tracing_coords:
+		#
+		x[1][0].insert(0,coords[got_point-1])
+		x[1][1].insert(0,got_point)
+		#
+	#
+	#
+	for x in tracing_coords:
+		#
+		dist = 0
+		#
+		trace_coords = x[1][0]
+		#
+		i = 0
+		#
+		for y in trace_coords:
+			#
+			if i != len(trace_coords)-1:
+				#
+				got_point_t = get_point_inx_by_coord(trace_coords[i+1], coords)
+				#
+				#
+				travel_difficulty = 0
+				#
+				if got_point_t > got_point and _w == "CCW" or got_point_t < got_point and _w == "CW":
+				# 	#
+					travel_difficulty = 100
+					#
+				# else:
+				travel_mid = midpoint(y,trace_coords[i+1])
+				dist_cent = distance(_center, travel_mid)
+				#
+				dist = dist + (distance(y,trace_coords[i+1])) + travel_difficulty# + (travel_difficulty / distance(y,trace_coords[i+1])))
+				#
+			#
+			i = i + 1
+		#
+		x.append(dist)
+		#
+	#
+	if debug:
+		#
+		print ('\n'+tcolor.WARNING + "DISTANCE FROM: " + repr([got_point,coords[got_point-1]]) + tcolor.ENDC)
+	#
+	for y in tracing_coords:
+		#
+		if debug:
+			#
+			print (tcolor.WARNING + str(_w)+' TO: '+ str(y[0]) +' IS: '+ str(y[2])+ tcolor.ENDC)
+			#
+		# source point, target point, distance
+		tracing_rec.append([got_point,y[0][0],y[2]])
+		#
+	#
+	if  _plt:
+		
+		if show_travel_distance_a:
+			#
+			for x in tracing_coords:
+				#
+				plot_line(bax, x[1][0], _c, _plt)
+				#
+
+	#
+	return tracing_rec
+	#
+#
+def get_point_inx_line_b(numpoints, num, loc):
+	#
+	#
+	if loc == "p":
+		#
+		#
+		if num == 0:
+			#
+			#
+			return 1
+			#
+		#
+		else:
+			#
+			#
+			if num - 1 != numpoints:
+				#
+				return num - 1
+				#
+			else:
+				#
+				return 0
+				#
+			#
+		#
+	elif loc == "a":
+		#
+		if num - 1 == numpoints:
+			#
+			return 1
+			#
+		#
+		else:
+			#
+			#
+			if num != numpoints - 1:
+				#
+				return num + 1
+				#
+			else:
+				#
+				return 0
+				#
+			#
+		#
+	#
+#
+
+def get_coord_range(coords, p_coords, _range, _dir, move_until = False):
+	#
+	# Gathers coordinates according to _range (int) and _dir ("pre","ante"), 
+	# from given coordinate and list of coordinates, taking into account circularity.
+	#
+	gathered_coords = []
+	gathered_inx = []
+	#
+	last_point = p_coords
+	#
+	if move_until != False:
+		#
+		_range = len(coords)
+		#
+	#
+	for x in range(_range):
+		#
+		cur_inx = coords.index(last_point)
+		#
+		get_moving_inx_p = get_point_inx_line_b(len(coords), cur_inx, _dir)
+		#
+		pre_p_inx_n = next(c for c in coords if coords.index(c) == get_moving_inx_p)
+		#
+		gathered_coords.append(pre_p_inx_n)
+		#
+		last_point = pre_p_inx_n
+		#
+		if move_until != False:
+			#
+			if pre_p_inx_n == move_until:
+				#
+				break
+				#
+			#
+		#
+	#
+	for x in gathered_coords:
+		#
+		gathered_inx.append(coords.index(x)+1)
+		#
+	# 
+	return [gathered_coords, gathered_inx]
+	#
+#
+def get_point_inx_by_coord(coord, points):
+	#
+	is_ghost = False
+	#
+	for x in points:
+		#
+		if x == coord:
+			#
+			return points.index(x) + 1
+			#is_ghost = True
+			#
+		#
+	#
+#
+#
+def get_distance_from_trace(tc_inst_a, tc_inst_b, p_coords, t_match, __cent_b,bax,_plt, cont_inx, _val_smp):
+	#
+	__cent_b = list(tc_inst_b[cont_inx]["graphs"][_val_smp].values())[-1]["coord"]
+	#
+	initial_coords_a = tc_inst_a[cont_inx]["coords"]["graph"]
+	initial_coords_b = tc_inst_b[cont_inx]["coords"]["graph"]
+	#
+	got_point = get_point_inx_by_coord(p_coords, initial_coords_a)
+	#
+	checkrange = []
+	#
+	# Get two steps forward and two steps back for every ctm match for per_ct item (t_match)
+	s_pre = get_coord_range(initial_coords_a, p_coords, 2, "p")
+	
+	s_ant = get_coord_range(initial_coords_a, p_coords, 2, "a")
+	
+	#
+	print("---------s_pre")
+	print(s_pre)
+	print("---------s_ant")
+	print(s_ant)
+	#
+	'''
+	# See if those coordinates have been matched
+	#
+	t_match_pre = []
+	t_match_ant = []
+	#
+	for sp in s_pre[1]:
+		#
+		print("----")
+		print(sp)
+		#
+		p_sgrad_matched = _f.matched.get(sp, None)
+		#
+		p_t_m_o = None
+		#
+		if p_sgrad_matched != None:
+			#
+			p_t_m_o = most_occuring(p_sgrad_matched,1)
+			#
+			if p_t_m_o != None:
+				#
+				t_match_pre.append(p_t_m_o[0])
+				#
+			#
+	
+	for sa in s_ant[1]:
+		#
+		a_sgrad_matched = _f.matched.get(sa, None)
+		#
+		a_t_m_o = None
+		#
+		if a_sgrad_matched != None:
+			#
+			a_t_m_o = most_occuring(a_sgrad_matched,1,True)
+			#
+			if a_t_m_o != None:
+				#
+				t_match_ant.append(a_t_m_o[0])
+				#
+			#
+	
+	#
+	# / 
+	#
+	#
+	got_match = None
+	#
+	for x in initial_coords_b:
+		#
+		t_p = get_point_inx_by_coord(x, initial_coords_b)
+		#
+		if t_p == t_match[1]:
+			#
+			got_match = [t_match[0], x]
+			#
+		#
+	#
+	coord_dist_result = []
+	#
+	if len(t_match_pre) > 0:
+		#
+		trace_coords_p = []
+		#
+		for mtp in t_match_pre:
+			#
+			trace_coords_p.append([mtp[0],initial_coords_b[mtp[0]-1]])
+			#
+		#
+		t_coords_p = get_coord_range_finder(got_match, trace_coords_p, initial_coords_b, "p", __cent_b, bax,_plt)
+		#
+		coord_dist_result.extend(t_coords_p)
+		#
+	#
+	
+	if len(t_match_ant) > 0:
+		#
+		trace_coords_a = []
+		#
+		for mtp in t_match_ant:
+			#
+			trace_coords_a.append([mtp[0],initial_coords_b[mtp[0]-1]])
+			#
+		#
+		t_coords_a = get_coord_range_finder(got_match, trace_coords_a, initial_coords_b, "a", __cent_b, bax,_plt)
+		#
+		coord_dist_result.extend(t_coords_a)
+		#
+	#
+	#
+	dist_list_sum = []
+	#
+	for x in coord_dist_result:
+		#
+		dist_list_sum.append(x)
+		#
+		#
+	#
+	#
+	return coord_dist_result
+	#
+	'''
+
+#
+
+def travel_sort(per_ct, tc_inst_a, tc_inst_b, __point, cont_inx, _val_smp, bax, _plt):
+	#
+	__cent_b = list(tc_inst_b[cont_inx]["graphs"][_val_smp].values())[-1]["coord"]
+	#
+	#if travel_sort == True:
+	#
+	#if debug:
+		#
+	#	print("===")
+	#pprint.pprint(per_ct[0])
+		#
+	closest_travel_p = []
+	closest_travel_sc = []
+	closest_travel_a = []
+	#
+	for x in per_ct[0]:
+		#
+		print('----0')
+		print(x)
+		# (tc_inst_a, tc_inst_b, p_coords, t_match, __cent_b,bax,_plt, cont_inx, _val_smp)
+		
+		dist_trace = get_distance_from_trace(tc_inst_a, tc_inst_b,__point, x['point_graph_inx'], __cent_b,bax,_plt, cont_inx, _val_smp )
+		#
+		print(dist_trace)
+		#
+		'''
+		closest_travel_p.extend(dist_trace)
+		#
+		if debug:
+			#
+			print("TRAVEL T DISTANCE TRACE", dist_trace)
+		'''
+		
+	#
+	for x in per_ct[1]:
+		#
+		print('----1')
+		print(x)
+		#
+		'''
+		dist_trace = get_distance_from_trace(tc_inst_a, tc_inst_b,__point, x['point_graph_inx'], __cent_b,bax,_plt, cont_inx, _val_smp )
+		#
+		closest_travel_sc.extend(dist_trace)
+		#
+		if debug:
+			#
+			print("TRAVEL SC DISTANCE TRACE", dist_trace)
+		#
+		'''
+	#
+	for x in per_ct[2]:
+		#
+		print('----2')
+		print(x)
+		#
+		'''
+		dist_trace = get_distance_from_trace(tc_inst_a, tc_inst_b,__point, x['point_graph_inx'], __cent_b,bax,_plt, cont_inx, _val_smp )
+		#
+		closest_travel_a.extend(dist_trace)
+		#
+		if debug:
+			#
+			print("TRAVEL A DISTANCE TRACE", dist_trace)
+		'''
+	#
+	'''
+	sorted_travel_dist_p = sorted(closest_travel_p, key=lambda x: x[2])
+	sorted_travel_dist_sc = sorted(closest_travel_sc, key=lambda x: x[2])
+	sorted_travel_dist_a = sorted(closest_travel_a, key=lambda x: x[2])
+	#
+	if debug:
+		#
+		print("COSTST")
+		print(closest_travel_sc)
+		#
+		print("SORT")
+		pprint.pprint(sorted_travel_dist_sc)
+		#
+	#
+	sord_p = [item[0] for item in sorted_travel_dist_p]
+	sord_sc = [item[0] for item in sorted_travel_dist_sc]
+	sord_a = [item[0] for item in sorted_travel_dist_a]
+	#
+	if debug:
+		#
+		print("SORT ITEMS")
+		pprint.pprint(sord_sc)
+	#
+	sord_p_unq = list(OrderedDict.fromkeys(sord_p))[:3]
+	sord_sc_unq = list(OrderedDict.fromkeys(sord_sc))[:3]
+	sord_a_unq = list(OrderedDict.fromkeys(sord_a))[:3]
+	#
+	if debug:
+		#
+		print("UNQ")
+		pprint.pprint(sord_sc_unq)
+	#
+	
+	#
+	#return [per_ct, [sord_p_unq,sord_sc_unq, sord_a_unq]]
+	#
+	#
+	st = init_ct_sort[1]
+	#
+	c_per_ct = per_ct_ng.copy()
+	#
+	res_p = [y for x in st[0] for y in per_ct_ng[0] if y[0][1] == x] 
+	res_sc = [y for x in st[1] for y in per_ct_ng[1] if y[0][1] == x] 
+	res_a = [y for x in st[2] for y in per_ct_ng[2] if y[0][1] == x] 
+	#
+	new_tct = [
+		res_p,
+		res_sc,
+		res_a
+	]
+	#
+	#if debug:
+	#
+	pprint.pprint(c_per_ct[1])
+	print("===> NEW SC CT")
+	pprint.pprint(new_tct[1])
+	#
+	#
+	#per_ct_ng = new_tct
+	#
+	'''
+	#
 #
 def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 	#
@@ -1220,12 +1696,22 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 						[]
 					]
 					#
+					per_ct = [
+						[],
+						[],
+						[]
+					]
+					#
 					if glyph_point_index not in t_contour["ctt_match_lt"][_val_smp]["sequences"].keys():
 						#
 						t_contour["ctt_match_lt"][_val_smp]["sequences"][glyph_point_index] = []
 						#
 					#
 					_x = 0
+					#
+					# Do travel sort
+					#
+					#
 					#
 					# Get abstract point traces from CTT matches, store in tct format (P,C,A)
 					#
@@ -1235,16 +1721,38 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 						#
 						t_m = find_best_ctt(t_contour["matching"],_val_smp,local_pnt)
 						#
+						#sorted_all_match = sorted(t_m, key=lambda x: x['area']+x['pnt_dist_a'][0]+x['center_dist']+x['angle']+x['sm_point'])[:3]
 						sorted_all_match = sorted(t_m, key=lambda x: x['area']+x['pnt_dist_a'][0]+x['center_dist']+x['angle']+x['sm_point'])[:3]
+						#
+						pprint.pprint(sorted_all_match)
+						#
+						#t_m_best = OrderedDict()#deepcopy(t_contour["matching"])
+						#
+						for e in t_contour["matching"][_val_smp]:
+							#
+							if e["gpi"] == local_pnt:
+								#
+								if e in sorted_all_match:
+									#
+									if e not in t_contour["matching_best_area"][_val_smp]:
+										#
+										t_contour["matching_best_area"][_val_smp].append(e)
+										#
+								#
+							#
 						#
 						got_seq_match = get_num_seq_from_ctt_matches(sorted_all_match,points_b)
 						#
 						tct_[_x] = got_seq_match
+						per_ct[_x] = sorted_all_match
 						#
 						_x = _x + 1
 						#
 					#
 					#
+					#travel_sort(per_ct, tc_inst_a, tc_inst_b, __point, cont_inx, _val_smp, tgca_b, plt)
+					
+					
 					# Attempt to make reasonable lines from all the (P,C,A) traces.
 					'''
 						NOT ENOUGH, NEEDS PRVIOUS VERSIONS TRAVEL DISTANCE SORT OR OTHER SOLUTION 
@@ -1255,20 +1763,24 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 					abs_sequence = []
 					pnts = []
 					temp_rs_p = []
+					
 					#
+					'''
 					for x in tct_:
 						#
 						x_center = x[int(len(x)/2)]
 						#
 						for z in x:
 							#
-							rs_p = rotate_center_clip(x, z, len(points_b)+1, clip_point_count-2)
+							
 							#
-							#print(x,rs_p)
+							rs_p = rotate_center_clip(x, z, len(points_b)+1, clip_point_count-2)
 							#
 							temp_rs_p.append(rs_p)
 							#
-						#
+							#
+						
+							#print(x,rs_p)
 					#
 					blm_ct_multi = get_line_multi_ct_aggregate([temp_rs_p[0]],[temp_rs_p[1]],[temp_rs_p[2]])
 					#
@@ -1283,6 +1795,8 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 						pnts.append(fliped_points_b[gm-1])
 						#
 					#
+					'''
+					#
 					new_match_b = {	
 						"gpi":glyph_point_index,
 						"inx_ins":in_a,
@@ -1292,12 +1806,14 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 						"plot_num_opp":tc_inst_b[cont_inx]["plot_num"],
 						#"best_sorted":sorted_all_match, # remove after proper certain target line implementation (probable line)
 						"seq_match":abs_sequence,
-						"point_seq":pnts
+						"point_seq":pnts,
+						"instance_pair": [in_a, in_b]
 					}
 					#
 					t_contour["ctt_match_lt"][_val_smp]["sequences"][glyph_point_index] = new_match_b
 					#
 				#
+
 			#
 		#
 
@@ -1347,7 +1863,7 @@ for font_inst in instance_list:
 							#
 							contours[cnt] = GC.initiate_instance(inst_num, cnt, CH)
 							contours[cnt]["matching"] = OrderedDict()
-							contours[cnt]["matching_best"] = OrderedDict()
+							contours[cnt]["matching_best_area"] = OrderedDict()
 							contours[cnt]["simplified"] = OrderedDict()
 							contours[cnt]["graphs"] = OrderedDict()
 							contours[cnt]["confines"] = []
