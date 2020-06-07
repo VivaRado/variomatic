@@ -51,7 +51,7 @@ font_instance_b = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AG
 font_instance_c = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
 #
 run_specific = "a"
-instance_list = [font_instance_b, font_instance_a]
+instance_list = [font_instance_a, font_instance_b, font_instance_c]
 simplification = list(range(0,3))#[0,1,2,3,4,5,6,7,8,9,10]
 #
 inst_num = 0
@@ -845,12 +845,12 @@ def TreeGenerator(instances, inst_intpl_lst, simp_levels):
 		#
 	#
 #
-def find_best_ctt(matches,smp,pnt):
+def find_ctt_for_pnt_smp_pair(matches,smp,pnt,intpair):
 	#
 	result = []
 	#
 	for e in matches[smp]:
-		if e["gpi"] == pnt:
+		if e["gpi"] == pnt and intpair == e["instance_pair"]:
 			result.append(e)
 
 	return result
@@ -1707,39 +1707,75 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 						t_contour["ctt_match_lt"][_val_smp]["sequences"][glyph_point_index] = []
 						#
 					#
-					_x = 0
 					#
+					t_m = find_ctt_for_pnt_smp_pair(t_contour["matching"],_val_smp,conf_inx, intpair)
+					sorted_all_match = sorted(t_m, key=lambda x: x['area']+x['pnt_dist_a'][0]+x['center_dist']+x['angle']+x['sm_point'])[:3]
+					#
+					for e in t_contour["matching"][_val_smp]:
+						#
+						if e["gpi"] == conf_inx and intpair == e["instance_pair"]:
+							#
+							if e in sorted_all_match:
+								#
+								if e not in t_contour["matching_best_area"][_val_smp]:
+									#
+									t_contour["matching_best_area"][_val_smp].append(e)
+									#
+								#
+							#
+						#
 					# Do travel sort
 					#
-					#
-					#
+					'''
+					From Each PCA Confine Matches (3 for each or more)
+					Find which series corresponds to each other as beeing on the same line on the opposite instance.
+
+					Logic:
+
+						Start from C Matches (M_C)
+
+							For each M_C:
+								
+								for length of M_A (arbitrary):
+
+									move one forward on the opposite instance line
+
+										is this point (M_A_1) in M_A (Ante Matches)?
+
+											if yes:
+
+												append M_A_1B
+
+											if not:
+
+												this point must be on another line area
+
+								for length of M_P (arbitrary):
+
+									move one backward on the opposite instance line
+									
+										is this point in M_P (Pre Matches)?		
+
+											if yes:
+
+												prepend M_P_1
+
+											if not:
+
+												this point must be on another line area				
+
+					'''
+
+
 					# Get abstract point traces from CTT matches, store in tct format (P,C,A)
 					#
+					'''
+					_x = 0
 					for y in confine_from_coord:
 						#
 						local_pnt = y[2]
 						#
-						t_m = find_best_ctt(t_contour["matching"],_val_smp,local_pnt)
-						#
-						#sorted_all_match = sorted(t_m, key=lambda x: x['area']+x['pnt_dist_a'][0]+x['center_dist']+x['angle']+x['sm_point'])[:3]
-						sorted_all_match = sorted(t_m, key=lambda x: x['area']+x['pnt_dist_a'][0]+x['center_dist']+x['angle']+x['sm_point'])[:3]
-						#
-						pprint.pprint(sorted_all_match)
-						#
-						#t_m_best = OrderedDict()#deepcopy(t_contour["matching"])
-						#
-						for e in t_contour["matching"][_val_smp]:
-							#
-							if e["gpi"] == local_pnt:
-								#
-								if e in sorted_all_match:
-									#
-									if e not in t_contour["matching_best_area"][_val_smp]:
-										#
-										t_contour["matching_best_area"][_val_smp].append(e)
-										#
-								#
-							#
+
 						#
 						got_seq_match = get_num_seq_from_ctt_matches(sorted_all_match,points_b)
 						#
@@ -1749,6 +1785,7 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 						_x = _x + 1
 						#
 					#
+					'''
 					#
 					#travel_sort(per_ct, tc_inst_a, tc_inst_b, __point, cont_inx, _val_smp, tgca_b, plt)
 					

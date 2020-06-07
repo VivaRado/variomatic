@@ -48,7 +48,11 @@ def draw_circle_on_coord(coords, ax, rad, _color, _fill=True, _return=False, _gi
 		#
 		ax.add_patch(s_circle)
 		#
-
+#
+def draw_label_pca(coords,ax,_color,_text):
+	#	
+	ax.annotate(_text, xy=(coords[0],coords[1]+15), fontsize=8, verticalalignment='center', horizontalalignment='center',color=_color)
+	#
 #
 def draw_points_b(points,item_next_coord,_color,plots):
 	#

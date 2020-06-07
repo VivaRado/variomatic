@@ -179,7 +179,7 @@ class IterDraw(object):
 		self.redraw(False, True)
 		#
 	#
-	def draw_ctt_tri(self,x,t_gca,_plt, _clr, _rad):
+	def draw_ctt_tri(self,x,gca,_plt, _clr, _rad):
 		#
 		list_x, list_y = [
 			x["lt_crd"][0], 
@@ -190,13 +190,19 @@ class IterDraw(object):
 		]
 		#
 		line = lines.Line2D(list_x,list_y, lw=1, color=_clr, alpha=0.4)
-		t_gca.add_line(line)
+		gca.add_line(line)
 		#
 		poly = _plt.Polygon(x["tri"], color=_clr,alpha=0.05, linewidth=0.2)
-		t_gca.add_patch(poly)
+		gca.add_patch(poly)
 		#
-		draw.draw_circle_on_coord(x["lt"][1], t_gca, _rad, _clr, False, False)
+		draw.draw_circle_on_coord(x["lt"][1], gca, _rad, _clr, False, False)
 		#
+		#
+	#
+	def draw_pca_circles(self, crd, gca, _color, _pca_text):
+		#
+		draw.draw_circle_on_coord(crd, gca, 10, _color, False, False)
+		draw.draw_label_pca(crd, gca,_color,_pca_text)
 		#
 	#
 	def make_iter_current(self, _val_smp, _val_pnt, _val_ins, _val_cnt, _val_ins_dat, redraw_smp, redraw_pnt, _plt=False):
@@ -245,6 +251,11 @@ class IterDraw(object):
 					#
 				# CURRENT INSTANCE SPECIFIC DRAW / CONTOUR SPECIFIC DRAW
 					# Draw Center Transfer Tree Matches
+					#
+					_color_pre = 'brown'
+					_color_cnt = 'purple'
+					_color_ant = 'brown'
+					#
 					if instance == _val_ins and contour == _val_cnt:
 						#
 						try:
@@ -258,24 +269,55 @@ class IterDraw(object):
 							#self.draw_cts(t_contour, _val_smp, _val_pnt)
 							#
 							added_circ = False
+							added_pca_labels = [False,False,False]
 							#
-
-							#
+							#for x in t_contour["matching_best_area"][_val_smp]:
 							for x in t_contour["matching_best_area"][_val_smp]:
 								#
 								#print(x)
 								#
 								if [_val_ins, _val_ins_dat] == x['instance_pair']:
 									#
-									if x["pnt_crd"] == coord_ct[0]:
+									if x["pnt_crd"] == coord_ct[0]: # Pre
 										#pass
-										self.draw_ctt_tri(x,t_gca,_plt, 'green', 1.5)
+										self.draw_ctt_tri(x,t_gca,_plt, _color_pre, 1.5)
+										#
+										# drap Pre Point
+										if added_pca_labels[0] == False:
+											#
+											self.draw_pca_circles(x["pnt_crd"], t_gca, _color_pre, 'P')
+											#
+											#
+											added_pca_labels[0] = True
+											#
+										#
 									#
-									if x["pnt_crd"] == coord_ct[2]:
+									if x["pnt_crd"] == coord_ct[2]: # Ante
 										#pass
-										self.draw_ctt_tri(x,t_gca,_plt, 'blue', 3)
+										self.draw_ctt_tri(x,t_gca,_plt, _color_ant, 3)
+										#
+										if added_pca_labels[2] == False:
+											#
+											self.draw_pca_circles(x["pnt_crd"], t_gca, _color_ant, 'A')
+											#
+											#
+											added_pca_labels[2] = True
+											#
+											#
+										#
 									#
-									if x["gpi"] == _val_pnt:
+									if x["pnt_crd"]  == coord_ct[1]: # Center #x["gpi"] == _val_pnt:
+										#
+										self.draw_ctt_tri(x,t_gca,_plt, _color_cnt, 4.5)
+										#
+										if added_pca_labels[1] == False: 
+											#
+											self.draw_pca_circles(x["pnt_crd"], t_gca, _color_cnt, 'C')
+											#
+											#
+											added_pca_labels[1] = True
+											#
+										#
 										#
 										conf_inx, conf_dat = tc_get_simp_conf_b_coord(t_contour,_val_smp,x["pnt_crd"])
 										#
@@ -303,17 +345,17 @@ class IterDraw(object):
 												#
 												if 0 == pca_crd.index(y):
 													#
-													_clr = 'green'
+													_clr = _color_pre
 													#
 												#
 												elif 1 == pca_crd.index(y):
 													#
-													_clr = 'red'
+													_clr = _color_cnt
 													#
 												#
 												elif 2 == pca_crd.index(y):
 													#
-													_clr = 'blue'
+													_clr = _color_ant
 													#
 												#
 												line = lines.Line2D(list_x,list_y, lw=1., color=_clr, alpha=0.4)
@@ -330,7 +372,6 @@ class IterDraw(object):
 										#
 										#if pca_checks[1] == 1:
 										#
-										self.draw_ctt_tri(x,t_gca,_plt, 'red', 4.5)
 										#
 										#
 								#
@@ -365,43 +406,46 @@ class IterDraw(object):
 						#
 						if len(z) > 0:
 							#
-							if _val_ins == z['inx_ins'] and _val_cnt == z['inx_cnt'] and _val_pnt == z['gpi'] and _val_ins_dat == z['inx_ins_opp']:
+							if [_val_ins, _val_ins_dat] == z['instance_pair']:
 								#
-								print("GOT SEQUENCE")
-								print(z["seq_match"])
-								print(z["point_seq"])
-								#
-								t_color = color[z['inx_ins_opp']]
-								t_plot_b = _plt.figure(z['plot_num_opp'])
-								#
-								t_gca_b = t_plot_b.gca()
-								#
-								draw.plot_region_line(t_gca_b, z["point_seq"], t_color, _plt)
-								#
-								#print("------")
-								#pprint.pprint(y["matches"])
-								#
-								#draw.draw_circle_on_coord(y["matches"][i]["lt"][1], t_gca_b, 10, "r")
-								#
-								'''
-								for h in y["matches"]:
+								if _val_ins == z['inx_ins'] and _val_cnt == z['inx_cnt'] and _val_pnt == z['gpi']:
 									#
 									#
-									print("LT GPI")
-									print(h['lt'])
-									print(h['gpi'])
-									print(h['point_graph_inx'])
-									#for d in h['best_sorted']:
+									print("GOT SEQUENCE")
+									print(z["seq_match"])
+									print(z["point_seq"])
 									#
-									#if h['lt'][2] in z['seq_match']:
+									t_color = color[z['inx_ins_opp']]
+									t_plot_b = _plt.figure(z['plot_num_opp'])
 									#
-									#draw.draw_circle_on_coord(h["lt_crd"], t_gca_b, 10, "r")
-									draw.draw_circle_on_coord(h["lt"][1], t_gca_b, 20, "g")
+									t_gca_b = t_plot_b.gca()
 									#
+									draw.plot_region_line(t_gca_b, z["point_seq"], t_color, _plt)
 									#
-								#
-								'''
-								#print("---------------------------")
+									#print("------")
+									#pprint.pprint(y["matches"])
+									#
+									#draw.draw_circle_on_coord(y["matches"][i]["lt"][1], t_gca_b, 10, "r")
+									#
+									'''
+									for h in y["matches"]:
+										#
+										#
+										print("LT GPI")
+										print(h['lt'])
+										print(h['gpi'])
+										print(h['point_graph_inx'])
+										#for d in h['best_sorted']:
+										#
+										#if h['lt'][2] in z['seq_match']:
+										#
+										#draw.draw_circle_on_coord(h["lt_crd"], t_gca_b, 10, "r")
+										draw.draw_circle_on_coord(h["lt"][1], t_gca_b, 20, "g")
+										#
+										#
+									#
+									'''
+									#print("---------------------------")
 								#
 							#
 					#except Exception as e:
