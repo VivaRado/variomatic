@@ -401,26 +401,33 @@ class IterDraw(object):
 					#
 					for d,z in t_contour["ctt_match_lt"][_val_smp]["sequences"].items():
 						#
+						#print("---?")
+						#print(d,z)
 						#for z in j:
 						#
 						#
-						if len(z) > 0:
+						#if len(z) > 0:
+						#
+						for x in z:
+								
+							#print([_val_ins, _val_ins_dat], x)
 							#
-							if [_val_ins, _val_ins_dat] == z['instance_pair']:
+							if [_val_ins, _val_ins_dat] == x['instance_pair']:
 								#
-								if _val_ins == z['inx_ins'] and _val_cnt == z['inx_cnt'] and _val_pnt == z['gpi']:
-									#
+								if _val_ins == x['inx_ins'] and _val_cnt == x['inx_cnt'] and _val_pnt == x['gpi']:
 									#
 									print("GOT SEQUENCE")
-									print(z["seq_match"])
-									print(z["point_seq"])
+									print(x["ctt_lt"])
 									#
-									t_color = color[z['inx_ins_opp']]
-									t_plot_b = _plt.figure(z['plot_num_opp'])
 									#
-									t_gca_b = t_plot_b.gca()
+									#print(z["point_seq"])
 									#
-									draw.plot_region_line(t_gca_b, z["point_seq"], t_color, _plt)
+									#t_color = color[z['inx_ins_opp']]
+									#t_plot_b = _plt.figure(z['plot_num_opp'])
+									#
+									#t_gca_b = t_plot_b.gca()
+									##
+									#draw.plot_region_line(t_gca_b, z["point_seq"], t_color, _plt)
 									#
 									#print("------")
 									#pprint.pprint(y["matches"])
@@ -446,8 +453,8 @@ class IterDraw(object):
 									#
 									'''
 									#print("---------------------------")
-								#
 							#
+						#
 					#except Exception as e:
 						#
 					#	print("DRAW ERROR")

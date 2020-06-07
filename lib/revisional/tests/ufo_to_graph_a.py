@@ -1630,6 +1630,7 @@ def travel_sort(per_ct, tc_inst_a, tc_inst_b, __point, cont_inx, _val_smp, bax, 
 	'''
 	#
 #
+
 def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 	#
 	inst_data = []
@@ -1665,16 +1666,6 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 			#
 			for _val_smp in simp_levels:
 				#
-				if _val_smp not in t_contour["ctt_match_lt"].keys():
-					#
-					t_contour["ctt_match_lt"][_val_smp] = OrderedDict()
-					#
-					if 'sequences' not in t_contour["ctt_match_lt"][_val_smp].keys():
-						#
-						t_contour["ctt_match_lt"][_val_smp] = {"sequences":OrderedDict()}
-						#
-					#
-				#
 				points_a = CM.get_tc_points(t_contour,_val_smp)
 				points_b = CM.get_tc_points(tc_inst_b[cont_inx],_val_smp)
 				#
@@ -1696,18 +1687,6 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 						[]
 					]
 					#
-					per_ct = [
-						[],
-						[],
-						[]
-					]
-					#
-					if glyph_point_index not in t_contour["ctt_match_lt"][_val_smp]["sequences"].keys():
-						#
-						t_contour["ctt_match_lt"][_val_smp]["sequences"][glyph_point_index] = []
-						#
-					#
-					#
 					t_m = find_ctt_for_pnt_smp_pair(t_contour["matching"],_val_smp,conf_inx, intpair)
 					sorted_all_match = sorted(t_m, key=lambda x: x['area']+x['pnt_dist_a'][0]+x['center_dist']+x['angle']+x['sm_point'])[:3]
 					#
@@ -1724,47 +1703,138 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 								#
 							#
 						#
-					# Do travel sort
 					#
-					'''
-					From Each PCA Confine Matches (3 for each or more)
-					Find which series corresponds to each other as beeing on the same line on the opposite instance.
+					# confines are stored with the same index of points 
+					#
+				#
+				################################################################# START
+				'''
+				From Each PCA Confine Matches (3 for each or more)
+				Find which series corresponds to each other as beeing on the same line on the opposite instance.
 
-					Logic:
+				Logic:
 
-						Start from C Matches (M_C)
+					Start from C Matches (M_C)
 
-							For each M_C:
+						For each M_C:
+							
+							for length of M_A (arbitrary):
+
+								move one forward on the opposite instance line
+
+									is this point (M_A_1) in M_A (Ante Matches)?
+
+										if yes:
+
+											append M_A_1B
+
+										if not:
+
+											this point must be on another line area
+
+							for length of M_P (arbitrary):
+
+								move one backward on the opposite instance line
 								
-								for length of M_A (arbitrary):
+									is this point in M_P (Pre Matches)?		
 
-									move one forward on the opposite instance line
+										if yes:
 
-										is this point (M_A_1) in M_A (Ante Matches)?
+											prepend M_P_1
 
-											if yes:
+										if not:
 
-												append M_A_1B
+											this point must be on another line area				
 
-											if not:
+				'''
 
-												this point must be on another line area
+				if _val_smp not in t_contour["ctt_match_lt"].keys():
+					#
+					t_contour["ctt_match_lt"][_val_smp] = OrderedDict()
+					#
+					if 'sequences' not in t_contour["ctt_match_lt"][_val_smp].keys():
+						#
+						t_contour["ctt_match_lt"][_val_smp] = {"sequences":OrderedDict()}
+						#
+					#
+				#
+				points_a = CM.get_tc_points(t_contour,_val_smp)
+				points_b = CM.get_tc_points(tc_inst_b[cont_inx],_val_smp)
+				#	#
 
-								for length of M_P (arbitrary):
+				print("doing",intpair)
+				#
+				for p in points_a:
+					#
+					__point = flipCoordPath([p],False,True)[0] # flipCoordPath accepts and returns list of points so need to pass list and to get 0
+					#
+					conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(t_contour,_val_smp,list(__point))
+					#
+					if conf_inx not in t_contour["ctt_match_lt"][_val_smp]["sequences"].keys():
+						#
+						t_contour["ctt_match_lt"][_val_smp]["sequences"][conf_inx] = []
+						#
+					#
+					coord_ct = [item[1] for item in t_contour["confines_simp"][_val_smp][conf_inx]]
+					#
+					#print(__point)
+					#
+					to_ctt = [
+						[],
+						[],
+						[]
+					]
+					#
+					for x in t_contour["matching_best_area"][_val_smp]:
+						#
+						#
+						if intpair == x['instance_pair']:
+							#
+							if x["pnt_crd"] == coord_ct[0]: # Pre
+								#
+								to_ctt[0].append(x["lt_crd"])
+								#print("P",x["lt_crd"])
+								#
+							#
+							if x["pnt_crd"] == coord_ct[2]: # Ante
+								#
+								to_ctt[2].append(x["lt_crd"])
+								#print("A",x["lt_crd"])
+								#
+							#
+							if x["pnt_crd"] == coord_ct[1]: # Center
+								#
+								to_ctt[1].append(x["lt_crd"])
+								#print("C",x["lt_crd"])
+								#
+					#
+						#
+					new_match_b = {	
+						"gpi":conf_inx,
+						"pnt_crd":__point,
+						"inx_ins":in_a,
+						"inx_ins_opp":in_b,
+						"inx_cnt":cont_inx,
+						"plot_num":t_contour["plot_num"],
+						"plot_num_opp":tc_inst_b[cont_inx]["plot_num"],
+						"ctt_lt": to_ctt,
+						#"best_sorted":sorted_all_match, # remove after proper certain target line implementation (probable line)
+						#"seq_match":abs_sequence,
+						#"point_seq":pnts,
+						"instance_pair": [in_a, in_b]
+					}
+					#
+					if new_match_b not in t_contour["ctt_match_lt"][_val_smp]["sequences"][conf_inx]:
+						
+						t_contour["ctt_match_lt"][_val_smp]["sequences"][conf_inx].append(new_match_b)
 
-									move one backward on the opposite instance line
-									
-										is this point in M_P (Pre Matches)?		
+					#
+					#
+					
+				#
+				################################################################# END
+				#
 
-											if yes:
-
-												prepend M_P_1
-
-											if not:
-
-												this point must be on another line area				
-
-					'''
 
 
 					# Get abstract point traces from CTT matches, store in tct format (P,C,A)
@@ -1786,6 +1856,7 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 						#
 					#
 					'''
+					
 					#
 					#travel_sort(per_ct, tc_inst_a, tc_inst_b, __point, cont_inx, _val_smp, tgca_b, plt)
 					
@@ -1797,9 +1868,9 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 						
 					'''
 					#
-					abs_sequence = []
-					pnts = []
-					temp_rs_p = []
+					#abs_sequence = []
+					#pnts = []
+					#temp_rs_p = []
 					
 					#
 					'''
@@ -1834,26 +1905,10 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 					#
 					'''
 					#
-					new_match_b = {	
-						"gpi":glyph_point_index,
-						"inx_ins":in_a,
-						"inx_ins_opp":in_b,
-						"inx_cnt":cont_inx,
-						"plot_num":t_contour["plot_num"],
-						"plot_num_opp":tc_inst_b[cont_inx]["plot_num"],
-						#"best_sorted":sorted_all_match, # remove after proper certain target line implementation (probable line)
-						"seq_match":abs_sequence,
-						"point_seq":pnts,
-						"instance_pair": [in_a, in_b]
-					}
-					#
-					t_contour["ctt_match_lt"][_val_smp]["sequences"][glyph_point_index] = new_match_b
-					#
+					
 				#
-
 			#
 		#
-
 	#
 #
 #
