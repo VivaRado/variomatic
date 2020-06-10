@@ -321,43 +321,7 @@ def combiner(inst_s,inst_t ):
 #plt.figure(frameon=False)
 
 #
-def get_point_inx_line(numpoints, num, loc):
-	#
-	#
-	if loc == "p":
-		#
-		if num == 1:
-			#
-			return numpoints - 1
-			#
-		#
-		else:
-			#
-			return num - 1
-			#
-	elif loc == "a":
-		#
-		if num - 1 == numpoints:
-			#
-			#
-			return 1
-			#
-		#
-		else:
-			#
-			#
-			if num != numpoints - 1:
-				#
-				return num + 1
-				#
-			else:
-				#
-				return 1
-				#
-			#
-		#
-	#
-#
+
 def make_ct_perp(coord_ct, cen_c):
 	#
 	perpendic = []
@@ -394,11 +358,11 @@ class CenterTransfer(object):
 	"""
 	A 2D bounding box
 	"""
-	def __init__(self, __point, inst_items, points_len):
+	def __init__(self, __point, inst_items, points_lenw):
 
 		self.__point = __point
 		self.inst_items = inst_items
-		self.points_len = points_len
+		self.points_lenw = points_lenw
 		self.matched_source = []
 		#
 	#
@@ -407,12 +371,12 @@ class CenterTransfer(object):
 		t_fnl_d = max_radius#math.hypot(f_p_x-l_p_x, f_p_y-l_p_y) + 50 # target_first_and_last_distance
 		p_d = 0
 		#
-		for k,v in self.points_len.items():
+		for k,v in self.points_lenw.items():
 			#
 			if k!=(0,0):
 				#
-				t_a_coord = self.points_len.get(self.inst_items[p_d])["coord"]
-				t_a_order = self.points_len.get(self.inst_items[p_d])["order"]
+				t_a_coord = self.points_lenw.get(self.inst_items[p_d])["coord"]
+				t_a_order = self.points_lenw.get(self.inst_items[p_d])["order"]
 				#
 				t_circle = [t_a_coord,t_fnl_d]
 				#
@@ -438,9 +402,9 @@ class CenterTransfer(object):
 	def get_confine(self, toget):
 		#
 		# print("---")
-		# print(get_point_inx_line(len(self.points_len), self.search_center[3], 'p') )
+		# print(get_point_inx_line(len(self.points_lenw), self.search_center[3], 'p') )
 		# print(self.search_center[3])
-		# print(get_point_inx_line(len(self.points_len), self.search_center[3], 'a') )
+		# print(get_point_inx_line(len(self.points_lenw), self.search_center[3], 'a') )
 		# #
 		# print(self.ms_pn_s)
 		#
@@ -450,17 +414,17 @@ class CenterTransfer(object):
 			#
 		elif toget == "p":
 			#
-			#print(get_point_inx_line(len(self.points_len), self.search_center[3], 'p') )
+			#print(get_point_inx_line(len(self.points_lenw), self.search_center[3], 'p') )
 			#
-			#found = [c for c in self.ms_pn_s if c[3] == get_point_inx_line(len(self.points_len), self.search_center[3], "p")]
+			#found = [c for c in self.ms_pn_s if c[3] == get_point_inx_line(len(self.points_lenw), self.search_center[3], "p")]
 			#
 			#print(found)
 			#
-			return next(c for c in self.ms_pn_s if c[3] == get_point_inx_line(len(self.points_len), self.search_center[3], "p"))
+			return next(c for c in self.ms_pn_s if c[3] == get_point_inx_line_base(len(self.points_lenw), self.search_center[3], "p", 1))
 			#
 		elif toget == "a":
 			#
-			return next(c for c in self.ms_pn_s if c[3] == get_point_inx_line(len(self.points_len), self.search_center[3], "a"))
+			return next(c for c in self.ms_pn_s if c[3] == get_point_inx_line_base(len(self.points_lenw), self.search_center[3], "a", 1))
 			#
 
 	def get_confines(self):
@@ -512,6 +476,21 @@ class ContourManager(object):
 		return confine_index, confine_from_coord
 		#
 	#
+	'''
+	def tc_get_point_inx_lenw_to_cnt(self, t_contour, simp_level, coordinate):
+		#
+		point_coords = [d['coord'] for d in list(t_contour["graphs"][simp_level].values())]
+		#
+		print("---")
+		print(point_coords)
+		print(coordinate)
+		#
+		point_index = point_coords.index(coordinate)
+		#
+		return point_index
+		#
+	#
+	'''
 	def get_tc_points(self, tc, simp_level):
 		#
 		return tc["simplified"][simp_level]
@@ -1162,6 +1141,7 @@ def get_aggregate_line(blm, len_points, len_line):
 	return [rot_cent, inc_ghost]
 	#
 #
+'''
 def get_coord_range_finder(c_match, traces, coords, _dir, _center, bax, _plt):
 	#
 	got_point = get_point_inx_by_coord(c_match[1], coords)
@@ -1189,7 +1169,7 @@ def get_coord_range_finder(c_match, traces, coords, _dir, _center, bax, _plt):
 		try:
 			#
 			#
-			get_moving_inx_p = get_point_inx_line_b(len(coords), y[0], _dir)
+			get_moving_inx_p = get_point_inx_line_base(len(coords), y[0], _dir, 0)
 			#
 			coord_moving_p = next(c for c in coords if coords.index(c) == get_moving_inx_p)
 			#
@@ -1268,21 +1248,23 @@ def get_coord_range_finder(c_match, traces, coords, _dir, _center, bax, _plt):
 	#
 	return tracing_rec
 	#
+'''
 #
-def get_point_inx_line_b(numpoints, num, loc):
+def get_point_inx_line_base(numpoints, num, loc, base):
 	#
+	'''
+	base added as when num == 0 on "p" cant gather confines - works with base 1
+	this way i can use this function in coord_range, works with base 0
+	'''
 	#
 	if loc == "p":
 		#
-		#
-		if num == 0:
+		if num == base:
 			#
-			#
-			return 1
+			return numpoints - 1
 			#
 		#
 		else:
-			#
 			#
 			if num - 1 != numpoints:
 				#
@@ -1310,11 +1292,12 @@ def get_point_inx_line_b(numpoints, num, loc):
 				#
 			else:
 				#
-				return 0
+				return base 
 				#
 			#
 		#
 	#
+#
 #
 
 def get_coord_range(coords, p_coords, _range, _dir, move_until = False):
@@ -1332,11 +1315,15 @@ def get_coord_range(coords, p_coords, _range, _dir, move_until = False):
 		_range = len(coords)
 		#
 	#
+	#print(coords, p_coords)
+	#
 	for x in range(_range):
 		#
 		cur_inx = coords.index(last_point)
 		#
-		get_moving_inx_p = get_point_inx_line_b(len(coords), cur_inx, _dir)
+		get_moving_inx_p = get_point_inx_line_base(len(coords), cur_inx, _dir, 0)
+		#
+		#print( get_moving_inx_p )
 		#
 		pre_p_inx_n = next(c for c in coords if coords.index(c) == get_moving_inx_p)
 		#
@@ -1376,6 +1363,7 @@ def get_point_inx_by_coord(coord, points):
 	#
 #
 #
+'''
 def get_distance_from_trace(tc_inst_a, tc_inst_b, p_coords, t_match, __cent_b,bax,_plt, cont_inx, _val_smp):
 	#
 	__cent_b = list(tc_inst_b[cont_inx]["graphs"][_val_smp].values())[-1]["coord"]
@@ -1398,7 +1386,7 @@ def get_distance_from_trace(tc_inst_a, tc_inst_b, p_coords, t_match, __cent_b,ba
 	print("---------s_ant")
 	print(s_ant)
 	#
-	'''
+
 	# See if those coordinates have been matched
 	#
 	t_match_pre = []
@@ -1498,10 +1486,11 @@ def get_distance_from_trace(tc_inst_a, tc_inst_b, p_coords, t_match, __cent_b,ba
 	#
 	return coord_dist_result
 	#
-	'''
+'''
 
 #
 
+'''
 def travel_sort(per_ct, tc_inst_a, tc_inst_b, __point, cont_inx, _val_smp, bax, _plt):
 	#
 	__cent_b = list(tc_inst_b[cont_inx]["graphs"][_val_smp].values())[-1]["coord"]
@@ -1527,13 +1516,13 @@ def travel_sort(per_ct, tc_inst_a, tc_inst_b, __point, cont_inx, _val_smp, bax, 
 		#
 		print(dist_trace)
 		#
-		'''
+		
 		closest_travel_p.extend(dist_trace)
 		#
 		if debug:
 			#
 			print("TRAVEL T DISTANCE TRACE", dist_trace)
-		'''
+		
 		
 	#
 	for x in per_ct[1]:
@@ -1541,7 +1530,7 @@ def travel_sort(per_ct, tc_inst_a, tc_inst_b, __point, cont_inx, _val_smp, bax, 
 		print('----1')
 		print(x)
 		#
-		'''
+		
 		dist_trace = get_distance_from_trace(tc_inst_a, tc_inst_b,__point, x['point_graph_inx'], __cent_b,bax,_plt, cont_inx, _val_smp )
 		#
 		closest_travel_sc.extend(dist_trace)
@@ -1550,14 +1539,14 @@ def travel_sort(per_ct, tc_inst_a, tc_inst_b, __point, cont_inx, _val_smp, bax, 
 			#
 			print("TRAVEL SC DISTANCE TRACE", dist_trace)
 		#
-		'''
+		
 	#
 	for x in per_ct[2]:
 		#
 		print('----2')
 		print(x)
 		#
-		'''
+		
 		dist_trace = get_distance_from_trace(tc_inst_a, tc_inst_b,__point, x['point_graph_inx'], __cent_b,bax,_plt, cont_inx, _val_smp )
 		#
 		closest_travel_a.extend(dist_trace)
@@ -1565,9 +1554,9 @@ def travel_sort(per_ct, tc_inst_a, tc_inst_b, __point, cont_inx, _val_smp, bax, 
 		if debug:
 			#
 			print("TRAVEL A DISTANCE TRACE", dist_trace)
-		'''
+		
 	#
-	'''
+	
 	sorted_travel_dist_p = sorted(closest_travel_p, key=lambda x: x[2])
 	sorted_travel_dist_sc = sorted(closest_travel_sc, key=lambda x: x[2])
 	sorted_travel_dist_a = sorted(closest_travel_a, key=lambda x: x[2])
@@ -1627,10 +1616,147 @@ def travel_sort(per_ct, tc_inst_a, tc_inst_b, __point, cont_inx, _val_smp, bax, 
 	#
 	#per_ct_ng = new_tct
 	#
+	
+	#
+'''
+#
+def test_seek_line(to_ctt, tc_a, tc_b, _val_smp, _cnt_inx):
+	#
+	def dir_point(points, crd, _dir, _len):
+		#
+		travel_set = []
+		#
+		for x in range(_len):
+			#
+			_p = tuple(flipCoordPath([crd],False,True)[0])
+			_p_inx = points.index(_p)
+			_p_inx_moving = get_point_inx_line_base(len(points), _p_inx, _dir, 0)
+			#
+			print(_p_inx)
+			#
+			try:
+				#
+				_p_moving = next(c for c in points if points.index(c) == _p_inx_moving)
+				#
+				#return [_p_inx_moving, flipCoordPath([_p_moving],False,True)[0] ]
+				travel_set.append([_p_inx_moving, flipCoordPath([_p_moving],False,True)[0] ])
+				#
+			except Exception as e:
+				#
+				#return [None,None]
+				travel_set.append([None,None])
+				#
+			#
+	#
+	'''
+	From Each PCA Confine Matches (3 for each or more)
+	Find which series corresponds to each other as beeing on the same line on the opposite instance.
+
+	Logic:
+
+		Start from C Matches (M_C)
+
+			For each M_C:
+				
+				for length of M_A (arbitrary):
+
+					move one forward on the opposite instance line
+
+						is this point (M_A_1) in M_A (Ante Matches)?
+
+							if yes:
+
+								append M_A_1B
+
+							if not:
+
+								this point must be on another line area
+
+				for length of M_P (arbitrary):
+
+					move one backward on the opposite instance line
+					
+						is this point in M_P (Pre Matches)?		
+
+							if yes:
+
+								prepend M_P_1
+
+							if not:
+
+								this point must be on another line area				
+
 	'''
 	#
+	m_p = to_ctt[0]
+	m_c = to_ctt[1]
+	m_a = to_ctt[2]
+	#
+	pnts_smp_b = tc_b[_cnt_inx]["simplified"][_val_smp]
+	#
+	for c in m_c:
+		#
+		_c = tuple(flipCoordPath([c],False,True)[0]) # flip horizontal and tuple coord for pnts list find
+		# (coords, p_coords, _range, _dir, move_until = False)
+		c_range_ant_crds,c_range_ant_inxs  = get_coord_range(pnts_smp_b,_c, 2, 'a')
+		c_range_pre_crds,c_range_pre_inxs  = get_coord_range(pnts_smp_b,_c, 2, 'p')
+		#
+		#seek_a_inx, seek_a_crd = dir_point(pnts_smp_b, c, 'a', 1)
+		#seek_p_inx, seek_p_crd = dir_point(pnts_smp_b, c, 'p', 1)
+		#
+		if c == [250.0, 414.0]:
+				
+			print("MC")
+			print(c)
+			print("MOVE ANTE")
+			print(c_range_ant_crds)
+			print("MOVE PRE")
+			print(c_range_pre_crds)
+			#
+			#print("->", seek_a_inx)
+			#print("<-", seek_p_inx)
+			#
+			print("SEEK ANTE")
+			#
+			for s_a_crd in c_range_ant_crds:
+				#
+				_s_a_crd = list(flipCoordPath([s_a_crd],False,True)[0]) # flip and list
+				#
+				for a in m_a:
+					#
+					match = (a == _s_a_crd)
+					#
+					print(a, _s_a_crd, match)						
+					#
+				#
+			print("SEEK PRE")
+			#
+			for s_p_crd in c_range_pre_crds:
+				#
+				_s_p_crd = list(flipCoordPath([s_p_crd],False,True)[0]) # flip and list
+				#
+				for p in m_p:
+					#
+					match = (p == _s_p_crd)
+					#
+					print(p, _s_p_crd, match)
+					#
+				#
+		'''
+		print("SEEK PRE")
+		#
+		for p in m_p:
+			#
+			if [seek_p_inx, seek_p_crd] != [None,None]:
+				#
+				print(p, seek_p_crd)
+				#
+			#
+		#
+		'''
+	#
+	#
 #
-
 def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 	#
 	inst_data = []
@@ -1708,45 +1834,7 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 					#
 				#
 				################################################################# START
-				'''
-				From Each PCA Confine Matches (3 for each or more)
-				Find which series corresponds to each other as beeing on the same line on the opposite instance.
-
-				Logic:
-
-					Start from C Matches (M_C)
-
-						For each M_C:
-							
-							for length of M_A (arbitrary):
-
-								move one forward on the opposite instance line
-
-									is this point (M_A_1) in M_A (Ante Matches)?
-
-										if yes:
-
-											append M_A_1B
-
-										if not:
-
-											this point must be on another line area
-
-							for length of M_P (arbitrary):
-
-								move one backward on the opposite instance line
-								
-									is this point in M_P (Pre Matches)?		
-
-										if yes:
-
-											prepend M_P_1
-
-										if not:
-
-											this point must be on another line area				
-
-				'''
+				
 
 				if _val_smp not in t_contour["ctt_match_lt"].keys():
 					#
@@ -1760,15 +1848,15 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 				#
 				points_a = CM.get_tc_points(t_contour,_val_smp)
 				points_b = CM.get_tc_points(tc_inst_b[cont_inx],_val_smp)
-				#	#
-
+				#
+				points_a_f = flipCoordPath(points_a,False,True)
+				points_b_f = flipCoordPath(points_b,False,True)
+				#
 				print("doing",intpair)
 				#
-				for p in points_a:
+				for _p in points_a_f:
 					#
-					__point = flipCoordPath([p],False,True)[0] # flipCoordPath accepts and returns list of points so need to pass list and to get 0
-					#
-					conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(t_contour,_val_smp,list(__point))
+					conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(t_contour,_val_smp,list(_p))
 					#
 					if conf_inx not in t_contour["ctt_match_lt"][_val_smp]["sequences"].keys():
 						#
@@ -1776,8 +1864,6 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 						#
 					#
 					coord_ct = [item[1] for item in t_contour["confines_simp"][_val_smp][conf_inx]]
-					#
-					#print(__point)
 					#
 					to_ctt = [
 						[],
@@ -1808,7 +1894,13 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 								#print("C",x["lt_crd"])
 								#
 					#
-						#
+					#print("---->")
+					#print(to_ctt)
+					#
+					if intpair == [0,1]:
+						
+						test_seek_line(to_ctt, tc_inst_a, tc_inst_b, _val_smp, cont_inx)
+					#
 					new_match_b = {	
 						"gpi":conf_inx,
 						"pnt_crd":__point,
