@@ -416,18 +416,29 @@ class IterDraw(object):
 								#
 								if _val_ins == x['inx_ins'] and _val_cnt == x['inx_cnt'] and _val_pnt == x['gpi']:
 									#
-									print("GOT SEQUENCE")
+									print("GOT SEQUENCE LINE")
 									print(x["ctt_lt"])
+									print("===========================?")
+									print(x["lines"])
 									#
 									#
 									#print(z["point_seq"])
 									#
-									#t_color = color[z['inx_ins_opp']]
-									#t_plot_b = _plt.figure(z['plot_num_opp'])
+									t_color = color[x['inx_ins_opp']]
+									t_plot_b = _plt.figure(x['plot_num_opp'])
 									#
-									#t_gca_b = t_plot_b.gca()
+									t_gca_b = t_plot_b.gca()
 									##
-									#draw.plot_region_line(t_gca_b, z["point_seq"], t_color, _plt)
+									#if len(x["lines"]):
+									#
+									#for y in x["lines"]:
+									#
+									#print("--------")
+									#print(y)
+									#
+									draw.plot_region_line(t_gca_b, x["lines"], t_color, _plt)
+									#
+									#
 									#
 									#print("------")
 									#pprint.pprint(y["matches"])

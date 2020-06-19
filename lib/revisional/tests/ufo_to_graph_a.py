@@ -51,7 +51,7 @@ font_instance_b = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AG
 font_instance_c = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
 #
 run_specific = "a"
-instance_list = [font_instance_a, font_instance_b, font_instance_c]
+instance_list = [font_instance_a, font_instance_b]
 simplification = list(range(0,3))#[0,1,2,3,4,5,6,7,8,9,10]
 #
 inst_num = 0
@@ -1315,25 +1315,27 @@ def get_coord_range(coords, p_coords, _range, _dir, move_until = False):
 		_range = len(coords)
 		#
 	#
-	#print(coords, p_coords)
+	# get current start point in opp
+	cur_inx = coords.index(last_point)
+	get_moving_inx_p = get_point_inx_line_base(len(coords), cur_inx, "p", 0)
+	current_coord_start_opp = get_point_inx_line_base(len(coords), get_moving_inx_p, "a", 0)
+	moving_coord_current_start_opp = next(c for c in coords if coords.index(c) == current_coord_start_opp)
 	#
 	for x in range(_range):
 		#
 		cur_inx = coords.index(last_point)
 		#
-		get_moving_inx_p = get_point_inx_line_base(len(coords), cur_inx, _dir, 0)
+		get_moving_inx = get_point_inx_line_base(len(coords), cur_inx, _dir, 0)
 		#
-		#print( get_moving_inx_p )
+		moving_coord = next(c for c in coords if coords.index(c) == get_moving_inx)
 		#
-		pre_p_inx_n = next(c for c in coords if coords.index(c) == get_moving_inx_p)
+		gathered_coords.append(moving_coord)
 		#
-		gathered_coords.append(pre_p_inx_n)
-		#
-		last_point = pre_p_inx_n
+		last_point = moving_coord
 		#
 		if move_until != False:
 			#
-			if pre_p_inx_n == move_until:
+			if moving_coord == move_until:
 				#
 				break
 				#
@@ -1345,7 +1347,7 @@ def get_coord_range(coords, p_coords, _range, _dir, move_until = False):
 		gathered_inx.append(coords.index(x)+1)
 		#
 	# 
-	return [gathered_coords, gathered_inx]
+	return [gathered_coords, gathered_inx, [current_coord_start_opp,moving_coord_current_start_opp]]
 	#
 #
 def get_point_inx_by_coord(coord, points):
@@ -1694,54 +1696,84 @@ def test_seek_line(to_ctt, tc_a, tc_b, _val_smp, _cnt_inx):
 	#
 	pnts_smp_b = tc_b[_cnt_inx]["simplified"][_val_smp]
 	#
+	all_lines = []
+	#
 	for c in m_c:
 		#
+		#
 		_c = tuple(flipCoordPath([c],False,True)[0]) # flip horizontal and tuple coord for pnts list find
+		#
 		# (coords, p_coords, _range, _dir, move_until = False)
-		c_range_ant_crds,c_range_ant_inxs  = get_coord_range(pnts_smp_b,_c, 2, 'a')
-		c_range_pre_crds,c_range_pre_inxs  = get_coord_range(pnts_smp_b,_c, 2, 'p')
+		c_range_ant_crds,c_range_ant_inxs,curr_start_opp_a = get_coord_range(pnts_smp_b,_c, 2, 'a')
+		c_range_pre_crds,c_range_pre_inxs,curr_start_opp_p = get_coord_range(pnts_smp_b,_c, 2, 'p')
+		#
+		found_line = [flipCoordPath([curr_start_opp_a[1]],False,True)[0]]
+		#c_range_pre_crds.reverse()
+		#c_range_pre_inxs.reverse()
 		#
 		#seek_a_inx, seek_a_crd = dir_point(pnts_smp_b, c, 'a', 1)
 		#seek_p_inx, seek_p_crd = dir_point(pnts_smp_b, c, 'p', 1)
 		#
+		
 		if c == [250.0, 414.0]:
-				
 			print("MC")
 			print(c)
 			print("MOVE ANTE")
 			print(c_range_ant_crds)
 			print("MOVE PRE")
 			print(c_range_pre_crds)
-			#
+			
 			#print("->", seek_a_inx)
 			#print("<-", seek_p_inx)
-			#
+			
 			print("SEEK ANTE")
 			#
-			for s_a_crd in c_range_ant_crds:
-				#
-				_s_a_crd = list(flipCoordPath([s_a_crd],False,True)[0]) # flip and list
-				#
-				for a in m_a:
-					#
-					match = (a == _s_a_crd)
-					#
-					print(a, _s_a_crd, match)						
-					#
-				#
-			print("SEEK PRE")
+			print(curr_start_opp_a)
+			print(curr_start_opp_p)
 			#
-			for s_p_crd in c_range_pre_crds:
+		#
+		for s_a_crd in c_range_ant_crds:
+			#
+			_s_a_crd = list(flipCoordPath([s_a_crd],False,True)[0]) # flip and list
+			#
+			for a in m_a:
 				#
-				_s_p_crd = list(flipCoordPath([s_p_crd],False,True)[0]) # flip and list
+				match = (a == _s_a_crd)
 				#
-				for p in m_p:
+				#
+				if (a == _s_a_crd):
+
+					if c == [250.0, 414.0]:
+						print(a, _s_a_crd, match)
+					
+					found_line.append(a)
+				#
+			#
+		if c == [250.0, 414.0]:
+			print("SEEK PRE")
+		#
+		for s_p_crd in c_range_pre_crds:
+			#
+			_s_p_crd = list(flipCoordPath([s_p_crd],False,True)[0]) # flip and list
+			#
+			for p in m_p:
+				#
+				match = (p == _s_p_crd)
+				#
+				#
+				if (p == _s_p_crd):
 					#
-					match = (p == _s_p_crd)
+					if c == [250.0, 414.0]:
+						print(p, _s_p_crd, match)
 					#
-					print(p, _s_p_crd, match)
+					found_line.insert(0,p)
 					#
 				#
+			#
+		#
+		all_lines.append(found_line)
+		#
+		#if c == [250.0, 414.0]:
 		'''
 		print("SEEK PRE")
 		#
@@ -1755,6 +1787,15 @@ def test_seek_line(to_ctt, tc_a, tc_b, _val_smp, _cnt_inx):
 		#
 		'''
 	#
+	# longest line in terms of items
+	longest = all_lines[sorted([(i,len(l)) for i,l in enumerate(all_lines)], key=lambda t: t[1])[-1][0]]
+	#
+	print("FOUND LINES")
+	print(all_lines)
+	print("LONGEST PARTICIPANT LINE")
+	print(longest)
+	#
+	return longest
 	#
 #
 def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
@@ -1814,7 +1855,9 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 					]
 					#
 					t_m = find_ctt_for_pnt_smp_pair(t_contour["matching"],_val_smp,conf_inx, intpair)
-					sorted_all_match = sorted(t_m, key=lambda x: x['area']+x['pnt_dist_a'][0]+x['center_dist']+x['angle']+x['sm_point'])[:3]
+					#sorted_all_match = sorted(t_m, key=lambda x: x['area']+x['pnt_dist_a'][0]+x['center_dist']+x['angle']+x['sm_point'])[:3]
+					#sorted_all_match = sorted(t_m, key=lambda x: (x['area'],x['pnt_dist_a'][0],x['center_dist'],x['angle'],x['sm_point']))[:3]
+					sorted_all_match = sorted(t_m, key=lambda x: (x['area'],x['pnt_dist_a'][0]))[:6]
 					#
 					for e in t_contour["matching"][_val_smp]:
 						#
@@ -1897,9 +1940,11 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 					#print("---->")
 					#print(to_ctt)
 					#
-					if intpair == [0,1]:
+					#pass_lines = []
+					#
+					#if intpair == [0,1]:
 						
-						test_seek_line(to_ctt, tc_inst_a, tc_inst_b, _val_smp, cont_inx)
+					pass_lines = test_seek_line(to_ctt, tc_inst_a, tc_inst_b, _val_smp, cont_inx)
 					#
 					new_match_b = {	
 						"gpi":conf_inx,
@@ -1913,6 +1958,7 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 						#"best_sorted":sorted_all_match, # remove after proper certain target line implementation (probable line)
 						#"seq_match":abs_sequence,
 						#"point_seq":pnts,
+						"lines": pass_lines,
 						"instance_pair": [in_a, in_b]
 					}
 					#
