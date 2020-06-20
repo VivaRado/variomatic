@@ -205,6 +205,16 @@ class IterDraw(object):
 		draw.draw_label_pca(crd, gca,_color,_pca_text)
 		#
 	#
+	def draw_cttpa_lines(self,gca,d, _color):
+		#
+		list_x = [d[1][0][0],d[1][1][0]]
+		list_y = [d[1][0][1],d[1][1][1]]
+		#
+		line = lines.Line2D(list_x,list_y, lw=1., color=_color, alpha=1)
+		#
+		gca.add_line(line)
+		#
+	#
 	def make_iter_current(self, _val_smp, _val_pnt, _val_ins, _val_cnt, _val_ins_dat, redraw_smp, redraw_pnt, _plt=False):
 		#
 		# For data that reffer to currently instansiating plot
@@ -270,11 +280,48 @@ class IterDraw(object):
 							#
 							added_circ = False
 							added_pca_labels = [False,False,False]
+							added_cttpa = [False,False,False]
+							#
+							run_cttpa = False
 							#
 							#for x in t_contour["matching_best_area"][_val_smp]:
 							for x in t_contour["matching_best_area"][_val_smp]:
 								#
+								recu_simp_dat = t_contour["recu_simp"][_val_smp]
 								#print(x)
+								#
+								if run_cttpa == True:
+									#
+									if added_cttpa[0] == False or added_cttpa[1] == False or added_cttpa[2] == False:
+												
+										for y in recu_simp_dat:
+											#
+											for d in y:
+												#
+												if coord_ct[0] == d[0]:
+													#
+													if added_cttpa[0] == False:
+														self.draw_cttpa_lines(t_gca,d,_color_pre)
+														added_cttpa[0] = True
+														#
+													#
+												#
+												if coord_ct[1] == d[0]:
+													#
+													if added_cttpa[1] == False:
+														self.draw_cttpa_lines(t_gca,d,_color_cnt)
+														added_cttpa[1] = True
+													#
+												#
+												if coord_ct[2] == d[0]:
+													#
+													if added_cttpa[2] == False:
+														self.draw_cttpa_lines(t_gca,d,_color_ant)
+														added_cttpa[2] = True
+													#
+												#
+											#
+									#
 								#
 								if [_val_ins, _val_ins_dat] == x['instance_pair']:
 									#

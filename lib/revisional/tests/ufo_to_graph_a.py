@@ -50,7 +50,7 @@ font_instance_a = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AG
 font_instance_b = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
 font_instance_c = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
 #
-run_specific = "a"
+run_specific = "W_"
 instance_list = [font_instance_a, font_instance_b]
 simplification = list(range(0,3))#[0,1,2,3,4,5,6,7,8,9,10]
 #
@@ -322,24 +322,36 @@ def combiner(inst_s,inst_t ):
 
 #
 
-def make_ct_perp(coord_ct, cen_c):
+def make_ct_perp(coord_ct, cen_c, cfn):
 	#
 	perpendic = []
 	recumbent = []
 	#
 	for coords in coord_ct:
 		#
+		#print("---")
+		#print(coords)
+		#
 		x = coords[0]
 		y = coords[1]
-		#	
-		_perp_virtual= getPerpCoord(cen_c[0],  cen_c[1], x, y, 100) # perpendicular center to coordinate
-		_perp_actual = getPerpCoord(cen_c[0],  cen_c[1], x, y, 10000) # perpendicular to center to coordinate
 		#
-		recumbent.append([cen_c, [x,y]]) # center to coordinate
+		# perpendicular to center
+		#
+		_perp_virtual= getPerpCoord(cen_c[0], cen_c[1], x, y, 100) # perpendicular center to coordinate
+		_perp_actual = getPerpCoord(cen_c[0], cen_c[1], x, y, 10000) # perpendicular to center to coordinate
+		#
 		perpendic.append([
 			[_perp_virtual[0],_perp_virtual[1]],[_perp_virtual[2],_perp_virtual[3]],
 			[_perp_actual[0], _perp_actual[1]], [_perp_actual[2], _perp_actual[3]]
 		])
+
+		'''
+		sta_a = lt_p[1][0]
+		end_a = lt_p[1][1]
+		sta_b = lt_p[1][2]
+		end_b = lt_p[1][3]
+		'''
+
 		'''
 		perps.append([
 				[_perp[0],_perp[1]],
@@ -350,6 +362,19 @@ def make_ct_perp(coord_ct, cen_c):
 		'''
 		# [[169, -56], [4, 56], [8365, -5609], [-8191, 5609]]
 
+	#
+	# pre to ante line
+	#
+	_p = coord_ct[0]
+	_c = coord_ct[1]
+	_a = coord_ct[2]
+	#
+	#pa_angle = get_angle(_p,_a) 
+	#
+	pa_mov_seg = move_segment(_p,_a, _c)
+	pa_scl_seg = scale_segment(pa_mov_seg[0], pa_mov_seg[1], 20)
+	#
+	recumbent.append([_c,pa_mov_seg,pa_scl_seg]) # center to coordinate
 	#
 	return [perpendic,recumbent]
 	#
@@ -678,6 +703,8 @@ def TreeGenerator(instances, inst_intpl_lst, simp_levels):
 	#
 	inst_data = []
 	#
+	run_cttpa = False
+	#
 	for intpair in inst_intpl_lst:
 		#
 		print("TG RUN FOR", intpair)
@@ -724,14 +751,27 @@ def TreeGenerator(instances, inst_intpl_lst, simp_levels):
 					#conf_inx = t_contour["confines_simp"][_val_smp].index(conf_dat)
 					conf_inx, conf_dat = CM.tc_get_simp_conf_b_coord(t_contour,_val_smp,list(__point))
 					#
-					lt_p = t_contour["perp_simp"][_val_smp][conf_inx]
+					if run_cttpa == False:
+						
+						# change to relative to pca from perpendicular
+						
+						lt_p = t_contour["perp_simp"][_val_smp][conf_inx]
+						sta_a = lt_p[1][0]
+						end_a = lt_p[1][1]
+						sta_b = lt_p[1][2]
+						end_b = lt_p[1][3]
+						
+					else:
+						#
+						lt_p = t_contour["recu_simp"][_val_smp][conf_inx][0]
+						#print(lt_p)
+						sta_a = lt_p[1][0]
+						end_a = lt_p[1][1]
+						sta_b = lt_p[2][0]
+						end_b = lt_p[2][1]
 					#
 					l_s = [conf_dat]
 					#
-					sta_a = lt_p[1][0]
-					end_a = lt_p[1][1]
-					sta_b = lt_p[1][2]
-					end_b = lt_p[1][3]
 					#
 					all_match = []
 					all_match_len = []
@@ -1714,7 +1754,7 @@ def test_seek_line(to_ctt, tc_a, tc_b, _val_smp, _cnt_inx):
 		#seek_a_inx, seek_a_crd = dir_point(pnts_smp_b, c, 'a', 1)
 		#seek_p_inx, seek_p_crd = dir_point(pnts_smp_b, c, 'p', 1)
 		#
-		
+		'''
 		if c == [250.0, 414.0]:
 			print("MC")
 			print(c)
@@ -1731,6 +1771,7 @@ def test_seek_line(to_ctt, tc_a, tc_b, _val_smp, _cnt_inx):
 			print(curr_start_opp_a)
 			print(curr_start_opp_p)
 			#
+		'''
 		#
 		for s_a_crd in c_range_ant_crds:
 			#
@@ -1742,15 +1783,17 @@ def test_seek_line(to_ctt, tc_a, tc_b, _val_smp, _cnt_inx):
 				#
 				#
 				if (a == _s_a_crd):
-
+					'''
 					if c == [250.0, 414.0]:
 						print(a, _s_a_crd, match)
-					
+					'''
 					found_line.append(a)
 				#
 			#
+		'''
 		if c == [250.0, 414.0]:
 			print("SEEK PRE")
+		'''
 		#
 		for s_p_crd in c_range_pre_crds:
 			#
@@ -1762,10 +1805,10 @@ def test_seek_line(to_ctt, tc_a, tc_b, _val_smp, _cnt_inx):
 				#
 				#
 				if (p == _s_p_crd):
-					#
+					'''
 					if c == [250.0, 414.0]:
 						print(p, _s_p_crd, match)
-					#
+					'''
 					found_line.insert(0,p)
 					#
 				#
@@ -1790,10 +1833,12 @@ def test_seek_line(to_ctt, tc_a, tc_b, _val_smp, _cnt_inx):
 	# longest line in terms of items
 	longest = all_lines[sorted([(i,len(l)) for i,l in enumerate(all_lines)], key=lambda t: t[1])[-1][0]]
 	#
+	'''
 	print("FOUND LINES")
 	print(all_lines)
 	print("LONGEST PARTICIPANT LINE")
 	print(longest)
+	'''
 	#
 	return longest
 	#
@@ -1857,7 +1902,7 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 					t_m = find_ctt_for_pnt_smp_pair(t_contour["matching"],_val_smp,conf_inx, intpair)
 					#sorted_all_match = sorted(t_m, key=lambda x: x['area']+x['pnt_dist_a'][0]+x['center_dist']+x['angle']+x['sm_point'])[:3]
 					#sorted_all_match = sorted(t_m, key=lambda x: (x['area'],x['pnt_dist_a'][0],x['center_dist'],x['angle'],x['sm_point']))[:3]
-					sorted_all_match = sorted(t_m, key=lambda x: (x['area'],x['pnt_dist_a'][0]))[:6]
+					sorted_all_match = sorted(t_m, key=lambda x: (x['area']+x['pnt_dist_a'][0]))[:5]
 					#
 					for e in t_contour["matching"][_val_smp]:
 						#
@@ -2161,7 +2206,7 @@ for font_inst in instance_list:
 										cen_a = list(points_lenw.items())[-1]
 										cen_c = cen_a[1]["coord"]
 										#
-										_perp,_recu = make_ct_perp(coord_ct, cen_c)
+										_perp,_recu = make_ct_perp(coord_ct, cen_c, cfn)
 										#
 										contours[cnt]["perp"].append(_perp)
 										temp_perp.append(_perp)

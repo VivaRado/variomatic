@@ -252,3 +252,79 @@ class BoundingBox(object):
 		#
 		return "BoundingBox({}, {}, {}, {})".format(
 			self.minx, self.maxx, self.miny, self.maxy)
+
+def rotate_segment(a, b, angle):
+	# a and b are arrays of length 2 with the x, y coordinate of
+	# your segments extreme points with the form [x, y]
+
+	midpoint = [
+		(a[0] + b[0])/2,
+		(a[1] + b[1])/2
+	]
+
+	# Make the midpoint the origin
+	a_mid = [
+		a[0] - midpoint[0],
+		a[1] - midpoint[1]
+	]
+	b_mid = [
+		b[0] - midpoint[0],
+		b[1] - midpoint[1]
+	]
+
+	# Use the rotation matrix from the paper you mentioned
+	a_rotated = [
+		math.cos(angle)*a_mid[0] - math.sin(angle)*a_mid[1],
+		math.sin(angle)*a_mid[0] + math.cos(angle)*a_mid[1]
+	]
+	b_rotated = [
+		math.cos(angle)*b_mid[0] - math.sin(angle)*b_mid[1],
+		math.sin(angle)*b_mid[0] + math.cos(angle)*b_mid[1]
+	]
+
+	# Then add the midpoint coordinates to return to previous origin
+	a_rotated[0] = a_rotated[0] + midpoint[0]
+	a_rotated[1] = a_rotated[1] + midpoint[1]
+	b_rotated[0] = b_rotated[0] + midpoint[0]
+	b_rotated[1] = b_rotated[1] + midpoint[1]
+	#
+	return [a_rotated, b_rotated]
+	#
+
+def move_segment(a, b, pos):
+	# Shifting a group of points in lockstep is achieved by adding the same displacement vector to each of them.
+
+	midpoint = [
+		(a[0] + b[0])/2,
+		(a[1] + b[1])/2
+	]
+
+	# Make the midpoint the origin
+	a_mid = [
+		a[0] - midpoint[0],
+		a[1] - midpoint[1]
+	]
+	b_mid = [
+		b[0] - midpoint[0],
+		b[1] - midpoint[1]
+	]
+
+	# Then add the midpoint coordinates to return to previous origin
+	a_moved = [a_mid[0] + pos[0], a_mid[1] + pos[1]]
+	b_moved = [b_mid[0] + pos[0], b_mid[1] + pos[1]]
+	#
+	return [a_moved, b_moved]
+	#
+#
+def scale_segment(a, b,factor):
+	t0=0.5*(1.0-factor)
+	t1=0.5*(1.0+factor)
+	x1 = a[0] +(b[0] - a[0]) * t0
+	y1 = a[1] +(b[1] - a[1]) * t0
+	x2 = a[0] +(b[0] - a[0]) * t1
+	y2 = a[1] +(b[1] - a[1]) * t1
+
+	a_scaled = [x1, y1]
+	b_scaled = [x2, y2]
+
+	return [a_scaled, b_scaled]
