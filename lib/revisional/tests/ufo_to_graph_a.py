@@ -50,7 +50,7 @@ font_instance_a = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AG
 font_instance_b = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
 font_instance_c = os.path.abspath(os.path.join(dir_path, '..', 'input_data', 'AGaramondPro-Bold.ufo', 'glyphs') )
 #
-run_specific = "W_"
+run_specific = "a"
 instance_list = [font_instance_a, font_instance_b]
 simplification = list(range(0,3))#[0,1,2,3,4,5,6,7,8,9,10]
 #
@@ -822,6 +822,7 @@ def TreeGenerator(instances, inst_intpl_lst, simp_levels):
 						s_angle = get_angle_b(gc_b,__point)
 						#
 						#
+						#print(pnt_dist_a)
 						# get travel distance on the line to that point
 						#print(__point, lt_crd)
 						#
@@ -1734,6 +1735,7 @@ def test_seek_line(to_ctt, tc_a, tc_b, _val_smp, _cnt_inx):
 	m_c = to_ctt[1]
 	m_a = to_ctt[2]
 	#
+
 	pnts_smp_b = tc_b[_cnt_inx]["simplified"][_val_smp]
 	#
 	all_lines = []
@@ -1747,15 +1749,11 @@ def test_seek_line(to_ctt, tc_a, tc_b, _val_smp, _cnt_inx):
 		c_range_ant_crds,c_range_ant_inxs,curr_start_opp_a = get_coord_range(pnts_smp_b,_c, 2, 'a')
 		c_range_pre_crds,c_range_pre_inxs,curr_start_opp_p = get_coord_range(pnts_smp_b,_c, 2, 'p')
 		#
+		# add starting coordinate to line
 		found_line = [flipCoordPath([curr_start_opp_a[1]],False,True)[0]]
-		#c_range_pre_crds.reverse()
-		#c_range_pre_inxs.reverse()
 		#
-		#seek_a_inx, seek_a_crd = dir_point(pnts_smp_b, c, 'a', 1)
-		#seek_p_inx, seek_p_crd = dir_point(pnts_smp_b, c, 'p', 1)
 		#
-		'''
-		if c == [250.0, 414.0]:
+		if c == [144.0, -14.0]:
 			print("MC")
 			print(c)
 			print("MOVE ANTE")
@@ -1771,7 +1769,12 @@ def test_seek_line(to_ctt, tc_a, tc_b, _val_smp, _cnt_inx):
 			print(curr_start_opp_a)
 			print(curr_start_opp_p)
 			#
-		'''
+			print("---------------------------------")
+			print(c_range_ant_inxs)
+			print(c_range_pre_inxs)
+			#
+		
+		#
 		#
 		for s_a_crd in c_range_ant_crds:
 			#
@@ -1843,6 +1846,27 @@ def test_seek_line(to_ctt, tc_a, tc_b, _val_smp, _cnt_inx):
 	return longest
 	#
 #
+def get_mean_distance_points(points_s):
+	#
+	mean_distances = []
+	#
+	for x in points_s:
+		#
+		mean_distances.append( x['pnt_dist_a'][0] + x['area'] )
+		#
+	#
+	average = sum(mean_distances) / len(mean_distances)
+	#
+	n = 0.5
+	output = [x for x in mean_distances if abs(x - average) < np.std(mean_distances) * n or x < average ]
+	#
+	print("---------")
+	print(mean_distances)
+	print(output)
+	#featured = sorted(filesToWrite, key=lambda k: ("myKey" not in k, k.get("myKey", None)))
+	return sorted(points_s, key=lambda x: (x['pnt_dist_a'][0]+ x['area'] in output), reverse=True)
+	#
+#
 def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 	#
 	inst_data = []
@@ -1900,9 +1924,15 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 					]
 					#
 					t_m = find_ctt_for_pnt_smp_pair(t_contour["matching"],_val_smp,conf_inx, intpair)
-					#sorted_all_match = sorted(t_m, key=lambda x: x['area']+x['pnt_dist_a'][0]+x['center_dist']+x['angle']+x['sm_point'])[:3]
+					sorted_all_match = sorted(t_m, key=lambda x: x['area']+x['pnt_dist_a'][0])[:6]
 					#sorted_all_match = sorted(t_m, key=lambda x: (x['area'],x['pnt_dist_a'][0],x['center_dist'],x['angle'],x['sm_point']))[:3]
-					sorted_all_match = sorted(t_m, key=lambda x: (x['area']+x['pnt_dist_a'][0]))[:5]
+					#sorted_all_match = sorted(t_m, key=lambda x: (x['area'],x['pnt_dist_a'][0],x['center_dist'],x['angle'],x['sm_point']))[:3]
+					#
+					# clip points that are too far based on mean point distance
+					#sorted_all_match = sorted(t_m, key=lambda x: x['area'] )[:3]#
+					#sorted_all_match = get_mean_distance_points(sorted_mean_distance)[:3]#sorted(t_m, key=lambda x: (x['area']+x['pnt_dist_a'][0]))[:3]
+					#
+					#
 					#
 					for e in t_contour["matching"][_val_smp]:
 						#
@@ -1959,6 +1989,12 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 						[]
 					]
 					#
+					to_ctt_m = [
+						[],
+						[],
+						[]
+					]
+					#
 					for x in t_contour["matching_best_area"][_val_smp]:
 						#
 						#
@@ -1967,24 +2003,106 @@ def TreeEvaluator(instances, inst_intpl_lst, simp_levels):
 							if x["pnt_crd"] == coord_ct[0]: # Pre
 								#
 								to_ctt[0].append(x["lt_crd"])
+								to_ctt_m[0].append(x)
 								#print("P",x["lt_crd"])
-								#
-							#
-							if x["pnt_crd"] == coord_ct[2]: # Ante
-								#
-								to_ctt[2].append(x["lt_crd"])
-								#print("A",x["lt_crd"])
 								#
 							#
 							if x["pnt_crd"] == coord_ct[1]: # Center
 								#
 								to_ctt[1].append(x["lt_crd"])
+								to_ctt_m[1].append(x)
 								#print("C",x["lt_crd"])
 								#
+							#
+							if x["pnt_crd"] == coord_ct[2]: # Ante
+								#
+								to_ctt[2].append(x["lt_crd"])
+								to_ctt_m[2].append(x)
+								#print("A",x["lt_crd"])
+								#
+							#
 					#
-					#print("---->")
-					#print(to_ctt)
+					# do standard clear operations
 					#
+					'''
+					to_ctt_clean= [
+						[],
+						[],
+						[]
+					]
+					#
+					m_p = to_ctt[0].copy()
+					m_c = to_ctt[1].copy()
+					m_a = to_ctt[2].copy()
+					#
+					print("BESTAREA")
+					best_p = sorted(to_ctt_m[0], key=lambda x: x["area"] )[0]["area"]
+					best_a = sorted(to_ctt_m[2], key=lambda x: x["area"] )[0]["area"]
+					print(best_a, best_p)
+					#
+					for c in m_c:
+						#
+						print("------------------")
+						print(c)
+						#
+						for x in to_ctt_m[0]: # pre
+							#
+							if x["lt_crd"] == c:
+								#
+								print(x["area"], best_p)
+								#
+								if x["area"] > best_p:
+									#
+									print("----P")
+									#print(x)
+									print(c)
+									print(m_c)
+									#
+									if c in to_ctt[1]:
+										#
+										print("REMOVE P", c)
+										to_ctt[1].remove(c)
+										#
+									#
+									break
+									#to_ctt_clean[1].append(c)
+									#
+									#
+							#
+						#
+						for x in to_ctt_m[2]: # ante
+							#
+							if x["lt_crd"] == c:
+								#
+								print(x["area"], best_a)
+								#
+								if x["area"] > best_a:
+									#
+									print("----A")
+									#print(x)
+									print(c)
+									print(m_c)
+									#
+									if c in to_ctt[1]:
+										#
+										print("REMOVE A", c)
+										to_ctt[1].remove(c)
+										#
+										break
+										#
+									#
+									#to_ctt_clean[1].append(c)
+									#
+							#
+						#
+					#
+					print("---->")
+					print(to_ctt)
+					#print(m_c)
+					#to_ctt[1] = m_c
+					#print(to_ctt_clean)
+					#
+					'''
 					#pass_lines = []
 					#
 					#if intpair == [0,1]:
